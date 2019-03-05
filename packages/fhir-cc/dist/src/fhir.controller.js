@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = require("tslib");
 var convector_core_controller_1 = require("@worldsibu/convector-core-controller");
+var fhir_model_1 = require("./fhir.model");
+var invoiceStatusEnum_1 = require("./invoiceStatusEnum");
 var FhirController = (function (_super) {
     tslib_1.__extends(FhirController, _super);
     function FhirController() {
@@ -21,10 +23,20 @@ var FhirController = (function (_super) {
             });
         });
     };
-    FhirController.prototype.makePayment = function () {
+    FhirController.prototype.makePayment = function (id) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var invoice;
             return tslib_1.__generator(this, function (_a) {
-                return [2];
+                switch (_a.label) {
+                    case 0: return [4, fhir_model_1.Invoice.getOne(id)];
+                    case 1:
+                        invoice = _a.sent();
+                        invoice.status = invoiceStatusEnum_1.InvoiceStatus.BALANCED;
+                        return [4, invoice.save()];
+                    case 2:
+                        _a.sent();
+                        return [2];
+                }
             });
         });
     };

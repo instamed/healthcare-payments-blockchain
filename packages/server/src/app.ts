@@ -4,8 +4,13 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 import * as express from 'express';
-// import { DrugCtrl } from './controllers';
+import { PatientCtrl, PayerCtrl, ProviderCtrl } from './controllers';
 import * as bodyParser from 'body-parser';
+import {
+  PORT, USER, ORG, KEYSTORE,
+  NETWORKPROFILE, CHANNEL, CHAINCODE,
+  COUCHDB_PROTOCOL, COUCHDB_HOST, COUCHDB_PORT
+} from './utils';
 
 const app: express.Application = express();
 const port = process.env.PORT || 10100;
@@ -24,24 +29,22 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.use('/drug', DrugCtrl);
-
-const user = process.env.USERCERT;
-const org = process.env.ORGCERT;
-
-console.log(`PORT=${process.env.PORT}`);
-console.log(`USERCERT=${process.env.USERCERT}`);
-console.log(`ORGCERT=${process.env.ORGCERT}`);
-console.log(`KEYSTORE=${process.env.KEYSTORE}`);
-console.log(`NETWORKPROFILE=${process.env.NETWORKPROFILE}`);
-console.log(`CHANNEL=${process.env.CHANNEL}`);
-console.log(`CHAINCODE=${process.env.CHAINCODE}`);
-console.log(`COUCHDBVIEW=${process.env.COUCHDBVIEW}`);
-console.log(`COUCHDB_PROTOCOL=${process.env.COUCHDB_PROTOCOL}`);
-console.log(`COUCHDB_HOST=${process.env.COUCHDB_HOST}`);
-console.log(`COUCHDB_PORT=${process.env.COUCHDB_PORT}`);
+app.use('/patient', PatientCtrl);
+app.use('/payer', PayerCtrl);
+app.use('/provider', ProviderCtrl);
 
 app.listen(port, () =>
-  console.log(`Running as ${org}:${user} in port ${port}`));
+  console.log(`Running as ${ORG}:${USER} in port ${port}`));
 
 module.exports = app;
+
+console.log(`PORT=${PORT}`);
+console.log(`USERCERT=${USER}`);
+console.log(`ORGCERT=${ORG}`);
+console.log(`KEYSTORE=${KEYSTORE}`);
+console.log(`NETWORKPROFILE=${NETWORKPROFILE}`);
+console.log(`CHANNEL=${CHANNEL}`);
+console.log(`CHAINCODE=${CHAINCODE}`);
+console.log(`COUCHDB_PROTOCOL=${COUCHDB_PROTOCOL}`);
+console.log(`COUCHDB_HOST=${COUCHDB_HOST}`);
+console.log(`COUCHDB_PORT=${COUCHDB_PORT}`);

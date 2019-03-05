@@ -5,7 +5,8 @@ import {
   Param
 } from '@worldsibu/convector-core-controller';
 
-import { } from '../src/fhir.model';
+import { Invoice } from '../src/fhir.model';
+import { InvoiceStatus } from '../src/invoiceStatusEnum';
 import { ControllerAdapter } from '@worldsibu/convector-core-adapter';
 
 
@@ -30,10 +31,12 @@ export class FhirControllerClient extends ConvectorController {
         
   }
 
-  
-  public async makePayment() {
+  /**
+   * Pay an invoice by Id
+   * @param invoice Invoice Id
+   */public async makePayment(id: string) {
 
-          return await this.adapter.invoke(this.name, 'makePayment', this.user, );
-        
-  }
+           return await this.adapter.invoke(this.name, 'makePayment', this.user, id);
+         
+   }
 }
