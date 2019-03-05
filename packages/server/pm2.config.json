@@ -1,0 +1,18 @@
+{
+  "apps" : [
+    {
+      "name": "FHIR Server",
+      "script": "./dist/app.js",
+      "node_args": "--inspect=0.0.0.0:9222",
+      "env": {
+        "DEBUG": "fhir"
+      },
+      "watch": [
+        "src",
+        "dist",
+        "node_modules",
+        ".env"
+      ]
+    }
+  ]
+}

@@ -1,2 +1,21 @@
-# healthcare-payments-blockchain-fhir-demo
-edits are done by InstaMed Development user
+# Healthcare Payments in Blockchain FHIR Demo
+
+## How to run the project
+
+### Start from scratch
+
+This will:
+
+* Install a development *Hyperledger Fabric Network* (and remove any previous one).
+* Install the chaincode with the name `fhir` in the network.
+* Start the server and self-enroll a organization.
+
+```bash
+npm run start
+```
+
+## Tests
+
+--
+
+Edits are done by InstaMed Development user

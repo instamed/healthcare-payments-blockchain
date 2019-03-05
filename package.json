@@ -1,0 +1,35 @@
+{
+  "name": "healthcare-payments-blockchain-fhir-demo",
+  "version": "0.1.0",
+  "description": "Healthcare Payments in Blockchain FHIR Demo",
+  "files": [
+    "dist/*"
+  ],
+  "scripts": {
+    "start": "",
+    "install": "npm-run-all -s lerna:install",
+    "build": "node ./update-paths.js",
+    "env:restart": "hurl new",
+    "test": "npm-run-all -s lerna:test",
+    "server:start": "npx lerna run start:dev --scope fhir-server --stream",
+    "env:clean": "hurl clean",
+    "cc:start": "f() { npm run cc:package; npm run cc:install; }; f",
+    "cc:upgrade": "f() { npm run cc:package -- fhir org1; hurl upgrade $1 node $2  -P ./chaincode-fhir; }; f",
+    "===================INTERNALS===================": "===================NO NEED TO CALL THEM DIRECTLY===================",
+    "lerna:install": "lerna bootstrap",
+    "lerna:build": "lerna run build",
+    "cc:package": "f() { npm run lerna:build; chaincode-manager --config ./chaincode.config.json --output ./chaincode-fhir package; }; f",
+    "cc:install": "f() { hurl install fhir node -P ./chaincode-fhir; }; f",
+    "lerna:test": "lerna exec npm run test"
+  },
+  "devDependencies": {
+    "lerna": "^3.13.0",
+    "@worldsibu/convector-adapter-mock": "1.2.1-0-alpha.1fe2a2a2",
+    "@worldsibu/convector-tool-chaincode-manager": "1.2.1-0-alpha.1fe2a2a2",
+    "@worldsibu/convector-tool-dev-env": "1.2.1-0-alpha.1fe2a2a2",
+    "fabric-ca-client": "~1.4.0",
+    "fabric-client": "~1.4.0",
+    "npm-run-all": "^4.1.5",
+    "@worldsibu/hurley": "^0.5.0"
+  }
+}
