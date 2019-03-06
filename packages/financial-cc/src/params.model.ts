@@ -1,5 +1,5 @@
 import { InvoiceLineItem } from '.';
-import { Patient, Organization } from './financial.model';
+import { Patient, Organization, Claim } from './financial.model';
 
 export class AdjudicationItem {
     sequeanceNumber: number;
@@ -22,7 +22,7 @@ export class InvoiceData {
     patient: string | Patient;
     owner: string | Organization;
     amount: number;
-    claimUid: string;
+    claimUid: string|Claim;
     invoiceUid: string;
     accountUid: string;
     invoiceLineItems: InvoiceLineItem[];

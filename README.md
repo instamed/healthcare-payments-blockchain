@@ -7,7 +7,7 @@
 This will:
 
 * Install a development *Hyperledger Fabric Network* (and remove any previous one).
-* Install the chaincode with the name `fhir` in the network.
+* Install the chaincode with the name `financial` in the network.
 * Start the server and self-enroll a organization.
 
 ```bash

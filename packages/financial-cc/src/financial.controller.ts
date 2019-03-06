@@ -12,10 +12,10 @@ import {
 import { InvoiceStatus, AccountStatus, Currencies } from './enums';
 import { AdjudicationItem, InvoiceData, AccountData } from './params.model';
 import { FlatConvectorModel } from '@worldsibu/convector-core-model';
-import { ChaincodeTx } from '@worldsibu/convector-core-chaincode';
+// import { ChaincodeTx } from '@worldsibu/convector-core-chaincode';
 
 @Controller('financial')
-export class FinancialController extends ConvectorController<ChaincodeTx> {
+export class FinancialController extends ConvectorController {
 
   @Invokable()
   public async createClaim() {
@@ -373,7 +373,7 @@ export class FinancialController extends ConvectorController<ChaincodeTx> {
    * Create a new instance of `Identifier`
    * @param identifier 
    */
-  buildReference(identifier: Identifier) {
+  buildReference(identifier: Identifier|FlatConvectorModel<Identifier>) {
     let reference = new Reference();
     reference.identifier = identifier;
     return reference;
