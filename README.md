@@ -11,6 +11,8 @@ This will:
 * Start the server and self-enroll a organization.
 
 ```bash
+npm install
+
 npm run start
 ```
 
