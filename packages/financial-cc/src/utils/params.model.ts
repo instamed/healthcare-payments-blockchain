@@ -1,5 +1,6 @@
 import { InvoiceLineItem } from '..';
-import { Patient, Organization, Claim } from '../financial.model';
+import { Patient, Organization, Claim, Encounter, Procedure } from '../financial.model';
+import { FlatConvectorModel } from '@worldsibu/convector-core-model';
 
 export class AdjudicationItem {
     sequeanceNumber: number;
@@ -34,9 +35,14 @@ export class InvoiceData {
  * TODO: look for actual structure
  */
 export class Consumer { }
+/**
+ * TODO: Check for this
+ */
 export class ServiceItem {
     hcpcsCode: string;
     unitPrice: number;
     procedureUid: string;
     chargeItemUid: string;
+    encounter: FlatConvectorModel<Encounter>;
+    procedure: FlatConvectorModel<Procedure>;
 }

@@ -5,11 +5,11 @@ import {
 } from '@worldsibu/convector-core-controller';
 
 import {
-    Claim, ClaimResponse, CodeableConcept, ClaimResponseItem, InvoiceLineItemPriceComponent, Patient, Organization, Account, Encounter
+    Claim, ClaimResponse, CodeableConcept, ClaimResponseItem, InvoiceLineItemPriceComponent, Patient, Organization, Account, Encounter, Period
 } from './financial.model';
-import { AdjudicationItem, InvoiceData, AccountData, ServiceItem } from './utils/';
+import { AdjudicationItem, InvoiceData, AccountData, ServiceItem, buildIdentifier } from './utils/';
 import {
-    buildNarrative, buildInvoiceLineItems, buildClaimResponseIdentifier,
+    buildNarrative, buildInvoiceLineItems,
     buildReference, buildCoding, buildTotalCosts, buildTotalBenefits,
     buildAdjudicationItem, buildMoney, createAccount, createInvoice
 } from './utils';
@@ -25,11 +25,49 @@ export class ClaimController extends ConvectorController {
         patient: Patient,
         provider: Organization,
         payer: Organization,
-        account?: Account
+        account?: Account,
+        startDate: Date
     }) {
         const id = data.encounterUid;
         const encounter = new Encounter(id);
-        
+        // TODO: check this
+        data['encounter'] = encounter;
+
+        // Build the identifier for the Encounter from the id
+        const identifier = buildIdentifier(id, 'usual', 'Blockchain:Encounter');
+        encounter.identifier = [identifier];
+
+        const class_ = buildCoding('OBSENC', 'observation encounter', 'https://www.hl7.org/fhir/v3/ActCode/cs.html');
+        class_.userSelected = false;
+
+        encounter.class_ = class_;
+
+        encounter.resourceType = 'Encounter';
+        encounter.text = buildNarrative('generated', `<div xmlns=\"http://www.w3.org/1999/xhtml\">Encounter with patient @${data.patient.id}</div>`);
+        encounter.status = 'in-progress';
+
+        // Use the first identifier in patient for the subject identifier
+        // For this POC, patient should only ever HAVE one identifier
+        //TODO add blockchain identifier verification, IE check coding
+        encounter.subject = buildReference(data.patient.identifier[0]);
+
+        // Same goes here
+        encounter.serviceProvider = buildReference(data.provider.identifier[0]);
+
+        //TODO add logic to verify/create identifiers. For now, POC will assume identifiers are created from id on asset creation
+
+        // Set Encounter start-date to now
+        encounter.period = new Period();
+        encounter.period.start = data.startDate;
+
+        // Note Encounter assets are defined in the core model file
+        // Add the Encounter to the ledger
+        for (let service of data.services) {
+            service.encounter = encounter;
+            await createService(service);
+        }
+
+        await closeEncounter(data);
     }
 
     @Invokable()
@@ -44,7 +82,7 @@ export class ClaimController extends ConvectorController {
         const id = data.uid;
         const claimResponse = new ClaimResponse(id);
         let invoiceLineItems = await buildInvoiceLineItems(data.claim.item);
-        claimResponse.identifier = [buildClaimResponseIdentifier(id)];
+        claimResponse.identifier = [buildIdentifier(id, 'usual', 'Blockchain:ClaimResponse')];
         claimResponse.resourceType = 'ClaimResponse';
 
         claimResponse.text = buildNarrative('generated', `<div xmlns=\"http://www.w3.org/1999/xhtml\">ClaimResponse for Claim @${data.claim.id}</div>`);

@@ -4,17 +4,9 @@ import {
   Invokable
 } from '@worldsibu/convector-core-controller';
 import {
-  Invoice, Claim, ClaimResponse, Identifier, CodeableConcept,
-  ClaimResponseItem, InvoiceLineItemPriceComponent, Patient,
-  Organization
+  Invoice
 } from './financial.model';
 import { InvoiceStatus } from './utils/enums';
-import { AdjudicationItem, InvoiceData, AccountData, Consumer } from './utils/params.model';
-import {
-  buildNarrative, buildInvoiceLineItems, buildClaimResponseIdentifier,
-  buildReference, buildCoding, buildTotalCosts, buildTotalBenefits,
-  buildAdjudicationItem, buildMoney, createAccount, createInvoice
-} from './utils';
 
 @Controller('payment')
 export class PaymentController extends ConvectorController {

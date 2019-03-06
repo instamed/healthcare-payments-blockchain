@@ -9,6 +9,8 @@ import {
     AccountData, InvoiceData,
     AccountStatus, InvoiceStatus, Currencies
 } from './';
+import { ServiceItem } from './params.model';
+import { Procedure } from '../financial.model';
 
 /**
    * 
@@ -71,10 +73,10 @@ export async function buildInvoiceLineItems(items: FlatConvectorModel<ClaimItem>
     return invoiceLineItems;
 }
 
-export function buildClaimResponseIdentifier(id: string) {
+export function buildIdentifier(id: string, use?: string, system?: string) {
     let identifier = new Identifier();
-    identifier.use = 'usual';
-    identifier.system = 'Blockchain:ClaimResponse';
+    identifier.use = use || 'usual';
+    identifier.system = system || 'Blockchain:ClaimResponse';
     identifier.value = id;
     return identifier;
 }
@@ -215,4 +217,132 @@ export function buildMoney(value: number, currency?: string) {
     amount.value = value;
     amount.currency = currency || Currencies.USD;
     return amount;
+}
+
+export async function createService(data: ServiceItem) {
+    const procedureId = data.procedureUid;
+    const procedure = new Procedure(procedureId);
+    data.procedure = procedure;
+
+    procedure.identifier = [identifier];
+    /**
+ 
+      // Build the identifier for the Procedure from the id
+      const identifier = factory.newConcept('org.fhir.datatypes', 'Identifier');
+      identifier.use = "usual";
+      identifier.system = "Blockchain:Procedure";
+      identifier.value = procedure_id;
+      procedure.identifier = [];
+      procedure.identifier.push(identifier);
+      
+      procedure.resourceType = "Procedure";
+      procedure.text = factory.newConcept('org.fhir.datatypes', 'Narrative');
+      procedure.text.status = "generated";
+      procedure.text.div = "<div xmlns=\"http://www.w3.org/1999/xhtml\">Procedure for encounter @" + data.encounter.id + "</div>";
+      procedure.status = "completed";
+      
+      // Use same subject as the Encounter's patient
+      procedure.subject = data.encounter.subject;
+      
+      // Set context to be a reference to the Encounter's first identifier (Should only be one for PoC)
+      procedure.encounter = factory.newConcept('org.fhir.datatypes', 'Reference');
+      procedure.encounter.identifier = data.encounter.identifier[0];
+      
+      
+      // Set performer to the providing Organization
+      const performer = factory.newConcept('org.fhir.procedure.datatypes', 'ProcedurePerformer');
+      performer.actor = data.encounter.serviceProvider;
+      performer.onBehalfOf = data.encounter.serviceProvider;
+      procedure.performer = [];
+      procedure.performer.push(performer);
+      
+      
+      // Set HCPCS code
+      procedure.code = factory.newConcept('org.fhir.datatypes', 'CodeableConcept');
+      //!TODO ADD CODING LOGIC
+      procedure.code.coding = [];
+      procedure.code.coding.push(factory.newConcept('org.fhir.datatypes', 'Coding'));
+      procedure.code.coding[0].system = "https://www.hl7.org/fhir/cpt.html";
+      procedure.code.coding[0].code = data.hcpcs_code;
+      
+      
+      // Add the transaction date as the performed date for the PoC
+      procedure.performedDateTime = new Date();
+      
+      //TODO add logic to verify/create identifiers. For now, POC will assume identifiers are created from id on asset creation
+      
+      // Note Encounter assets are defined in the core model file
+      let assetRegistry = await getAssetRegistry('org.fhir.core.Procedure');
+      // Add the Encounter to the asset registry
+      await assetRegistry.add(procedure);
+      
+      
+      //-----------------------------------------------
+      //-Now add ChargeItem corresponding to procedure-
+      //-----------------------------------------------
+      
+      // Make a unique ID for ChargeItem
+      const chargeItem_id = data.uid_chargeItem;
+      
+      const chargeItem = factory.newResource('org.fhir.core', 'ChargeItem', chargeItem_id);
+      data.chargeItem = chargeItem;
+      // Build the identifier for the ChargeItem from the id
+      const chargeItemIdentifier = factory.newConcept('org.fhir.datatypes', 'Identifier');
+      chargeItemIdentifier.system = "Blockchain:ChargeItem";
+      chargeItemIdentifier.value = chargeItem_id;
+      // Unlike procedures, ChargeItems have only one Identifier in data spec
+    
+      chargeItemIdentifier.use = "usual";
+      
+      chargeItem.identifier = [];
+      chargeItem.identifier.push(chargeItemIdentifier);
+      
+      chargeItem.resourceType = "ChargeItem";
+      chargeItem.text = factory.newConcept('org.fhir.datatypes', 'Narrative');
+      chargeItem.text.status = "generated";
+      chargeItem.text.div = "<div xmlns=\"http://www.w3.org/1999/xhtml\">ChargeItem for encounter @" + data.encounter.id + "</div>";
+      chargeItem.status = "billable";
+      
+      
+      chargeItem.code = factory.newConcept('org.fhir.datatypes', 'CodeableConcept');
+      chargeItem.code.text = "Some kind of billing code goes here. I don't really know, the FHIR example is in German";
+      
+      chargeItem.subject = data.encounter.subject;
+      chargeItem.context = factory.newConcept('org.fhir.datatypes', 'Reference');
+      chargeItem.context.identifier = data.encounter.identifier[0];
+      
+      chargeItem.performingOrganization = data.encounter.serviceProvider;
+      chargeItem.quantity = factory.newConcept('org.fhir.datatypes', 'Quantity');
+      chargeItem.quantity.value = data.quantity;
+      
+      //Naughty according to FHIR, but I'm going to do it for the PoC
+      // In actual application, a Contract Management System would instead be implemented.
+      chargeItem.priceOverride = factory.newConcept('org.fhir.datatypes', 'Money');
+      chargeItem.priceOverride.currency = "USD";
+      chargeItem.priceOverride.value = data.unitPrice;
+      chargeItem.overrideReason = "Prices will be stored here for PoC to make workflow more applicable.";
+        
+      
+      
+      chargeItem.enteredDate = new Date();
+      
+      chargeItem.enterer = data.encounter.serviceProvider;
+      
+      //TODO
+      //Account??
+      
+      const service = factory.newConcept('org.fhir.datatypes', 'Reference');
+      service.identifier = procedure.identifier[0];
+      chargeItem.service = [];
+      chargeItem.service.push(service);
+      
+      // Note ChargeItem assets are defined in the core model file
+      //assetRegistry = await getAssetRegistry('org.fhir.core.ChargeItem');
+      // Add the Encounter to the asset registry
+      //await assetRegistry.add(chargeItem);
+     */
+}
+
+export async function closeEncounter() {
+
 }
