@@ -1,5 +1,5 @@
-import { InvoiceLineItem } from '.';
-import { Patient, Organization, Claim } from './financial.model';
+import { InvoiceLineItem } from '..';
+import { Patient, Organization, Claim } from '../financial.model';
 
 export class AdjudicationItem {
     sequeanceNumber: number;
@@ -30,4 +30,13 @@ export class InvoiceData {
     invoiceTotalGross: number;
 }
 
+/**
+ * TODO: look for actual structure
+ */
 export class Consumer { }
+export class ServiceItem {
+    hcpcsCode: string;
+    unitPrice: number;
+    procedureUid: string;
+    chargeItemUid: string;
+}

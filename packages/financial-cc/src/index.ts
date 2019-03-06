@@ -1,2 +1,4 @@
 export * from './financial.model';
-export * from './financial.controller';
+export * from './payment.controller';
+export * from './claim.controller';
+export * from './patient.controller';
