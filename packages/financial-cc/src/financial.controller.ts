@@ -10,7 +10,7 @@ import {
   Reference, ClaimItem, Identifier, Narrative, CodeableConcept, Coding, ClaimResponseTotal, Money, ClaimResponseInsurance, ClaimResponseItem, ClaimResponseItemAdjudication, InvoiceLineItemPriceComponent, Patient, Organization, Account
 } from './financial.model';
 import { InvoiceStatus, AccountStatus, Currencies } from './enums';
-import { AdjudicationItem, InvoiceData, AccountData } from './params.model';
+import { AdjudicationItem, InvoiceData, AccountData, Consumer } from './params.model';
 import { FlatConvectorModel } from '@worldsibu/convector-core-model';
 // import { ChaincodeTx } from '@worldsibu/convector-core-chaincode';
 
@@ -20,6 +20,33 @@ export class FinancialController extends ConvectorController {
   @Invokable()
   public async createClaim() {
 
+  }
+
+  @Invokable()
+  public async addPatient(data: {
+    uid: string,
+    consumer: Consumer,
+    patientName: string,
+    managingOrganization?: Organization,
+    generalPractitioner?: Organization
+  }) {
+    const id = data.uid;
+    const patient = new Patient(id);
+
+    const identifier = new Identifier();
+    identifier.value = id;
+    identifier.system = 'Blockchain:Patient';
+    identifier.use = 'usual';
+    patient.identifier = [identifier];
+
+    // Set the necessary DomainResource stuff
+    patient.resourceType = 'Patient';
+    patient.text = this.buildNarrative('generated',
+      `<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient record for ${data.patientName}.</div>`);
+
+    patient.active = true;
+
+    await patient.save();
   }
 
   @Invokable()
@@ -373,7 +400,7 @@ export class FinancialController extends ConvectorController {
    * Create a new instance of `Identifier`
    * @param identifier 
    */
-  buildReference(identifier: Identifier|FlatConvectorModel<Identifier>) {
+  buildReference(identifier: Identifier | FlatConvectorModel<Identifier>) {
     let reference = new Reference();
     reference.identifier = identifier;
     return reference;

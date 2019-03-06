@@ -22,10 +22,12 @@ export class InvoiceData {
     patient: string | Patient;
     owner: string | Organization;
     amount: number;
-    claimUid: string|Claim;
+    claimUid: string | Claim;
     invoiceUid: string;
     accountUid: string;
     invoiceLineItems: InvoiceLineItem[];
     invoiceTotalNet: number;
     invoiceTotalGross: number;
 }
+
+export class Consumer { }
