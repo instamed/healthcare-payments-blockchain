@@ -9,9 +9,9 @@
   "//**INSIDE-DOCKER**//networkProfile": "/config/network-profiles/org1.network-profile.inside-docker.yaml",
   "controllers": [
     {
-      "name": "fhir-cc",
-      "version": "file:./packages/fhir-cc",
-      "controller": "FhirController"
+      "name": "financial-cc",
+      "version": "file:./packages/financial-cc",
+      "controller": "FinancialController"
     },
     {
       "name": "participant-cc",

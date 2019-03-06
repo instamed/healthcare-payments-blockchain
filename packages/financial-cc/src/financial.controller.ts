@@ -5,11 +5,11 @@ import {
   Param
 } from '@worldsibu/convector-core-controller';
 
-import { Invoice } from './fhir.model';
+import { Invoice } from './financial.model';
 import { InvoiceStatus } from './invoiceStatusEnum';
 
-@Controller('fhir')
-export class FhirController extends ConvectorController {
+@Controller('financial')
+export class FinancialController extends ConvectorController {
 
   @Invokable()
   public async createClaim() {
