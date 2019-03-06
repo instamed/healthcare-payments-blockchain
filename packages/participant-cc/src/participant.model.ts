@@ -7,21 +7,30 @@ import {
   Validate
 } from '@worldsibu/convector-core-model';
 
+export interface x509Identities {
+  status: boolean;
+  fingerprint: string;
+}
+
+export const x509Identities = yup.object<x509Identities>().shape({
+  status: yup.boolean().required(),
+  fingerprint: yup.string().required()
+});
+
+
 export class Participant extends ConvectorModel<Participant> {
   @ReadOnly()
-  @Required()
-  public readonly type = 'fhir.participant';
+  public readonly type = 'io.worldsibu.examples.participant';
 
+  @ReadOnly()
   @Required()
   @Validate(yup.string())
   public name: string;
 
   @ReadOnly()
-  @Required()
-  @Validate(yup.number())
-  public created: number;
+  @Validate(yup.string())
+  public msp: string;
 
-  @Required()
-  @Validate(yup.number())
-  public modified: number;
+  @Validate(yup.array(x509Identities))
+  public identities: x509Identities[];
 }

@@ -2,4 +2,5 @@
 .history
 
 **/dist/**
+**/dist/src/**
 **/client/**
