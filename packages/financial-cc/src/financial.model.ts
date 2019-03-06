@@ -380,7 +380,8 @@ export class Narrative extends Element<Narrative> {
    public status: string;
 
    @Required()
-   @Validate(yup.xhtml())
+   // TODO: Check this, used to be `yup.xhtml`
+   @Validate(yup.string())
    public div: xhtml;
 
 }
