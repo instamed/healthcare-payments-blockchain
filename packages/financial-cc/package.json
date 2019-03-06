@@ -7,28 +7,28 @@
   "files": [
     "dist/*"
   ],
-  "scripts": { 
-    "clean": "rimraf dist client", 
-    "tsc": "tsc", 
-    "build": "npm run clean && npm run client:generate && tsc", 
-    "prepare": "npm run build", 
-    "test": "npm run build && mocha -r ts-node/register tests/*.spec.ts --reporter spec", 
+  "scripts": {
+    "clean": "rimraf dist client",
+    "tsc": "tsc",
+    "build": "npm run clean && npm run client:generate && tsc",
+    "prepare": "npm run build",
+    "test": "npm run build && mocha -r ts-node/register tests/*.spec.ts --reporter spec",
     "client:generate": "generate-controller-interface -c FinancialController"
   },
-  "dependencies": { 
-    "yup": "^0.26.6", 
-    "reflect-metadata": "^0.1.12", 
-    "@worldsibu/convector-core-model": "1.2.1-0-alpha.1fe2a2a2", 
-    "@worldsibu/convector-core-controller": "1.2.1-0-alpha.1fe2a2a2"
+  "dependencies": {
+    "@worldsibu/convector-core-controller": "1.2.1-0-alpha.1fe2a2a2",
+    "@worldsibu/convector-core-model": "1.2.1-0-alpha.1fe2a2a2",
+    "participant-cc": "^0.1.0",
+    "reflect-metadata": "^0.1.12",
+    "yup": "^0.26.6"
   },
-  "devDependencies": {  
-    "@types/node": "^10.12.5",  
-    "rimraf": "^2.6.2",  
-    "ts-node": "^8.0.2",  
-    "mocha": "^5.2.0",  
-    "chai": "^4.1.2",  
-    "@types/mocha": "^5.2.5",  
-    "@types/chai": "^4.1.4" 
-  } 
+  "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.5",
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
+    "rimraf": "^2.6.2",
+    "ts-node": "^8.0.2"
+  }
 }
-
