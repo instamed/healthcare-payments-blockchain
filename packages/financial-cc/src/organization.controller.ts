@@ -13,7 +13,6 @@ export class OrganizationController extends ConvectorController {
     public async create(
         @Param(Organization)
         data: Organization) {
-        debugger;
         await data.save();
     }
 }

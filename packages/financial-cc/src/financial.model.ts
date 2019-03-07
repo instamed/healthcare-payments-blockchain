@@ -1,12 +1,12 @@
-
+import * as fhirTypes from './utils/fhirTypes';
 import * as yup from 'yup';
 import {
-  ConvectorModel,
-  FlatConvectorModel,
-  ReadOnly,
-  Required,
-  Validate,
-  Default
+   ConvectorModel,
+   FlatConvectorModel,
+   ReadOnly,
+   Required,
+   Validate,
+   Default
 } from '@worldsibu/convector-core-model';
 
 export type date = string;
@@ -28,21 +28,24 @@ export type unsignedInt = number;
 export type positiveInt = number;
 export type xhtml = string;
 //export type timestamp = string;
+yup.xhtml = yup.string;
+yup.date = yup.string;
 
 export class Financial extends ConvectorModel<Financial>{
-  
-  @ReadOnly()
-  public readonly type = 'fhir.datatypes.Financial';
-} 
+
+   @ReadOnly()
+   public readonly type = 'fhir.datatypes.Financial';
+}
 
 export abstract class Element<T extends Element<any>> extends ConvectorModel<T> {
-  
-  @Validate(yup.string())
-  public id: string;
 
-  @Validate(yup.lazy(()=> yup.array(Extension.schema())))
-  public extension?: Array<FlatConvectorModel<Extension>>;
+   @Validate(yup.string())
+   public id: string;
+
+   @Validate(yup.lazy(() => yup.array(Extension.schema())))
+   public extension?: Array<FlatConvectorModel<Extension>>;
 }
+
 
 export class Quantity extends Element<Quantity> {
    @Default('fhir.datatypes.Quantity')
@@ -68,75 +71,77 @@ export class Quantity extends Element<Quantity> {
 
 export class Extension extends Element<Extension> {
 
-  @Validate(yup.string())
-  public id: string;
+   @Validate(yup.string())
+   public id: string;
 
-  @Validate(yup.lazy(() => yup.array(Extension.schema())))
-  public extension?: Array<FlatConvectorModel<Extension>>;
+   @Validate(yup.lazy(() => yup.array(Extension.schema())))
+   public extension?: Array<FlatConvectorModel<Extension>>;
 
-  @Default('fhir.datatypes.Extension')
-  @ReadOnly()
-  public readonly type: string;
+   @Default('fhir.datatypes.Extension')
+   @ReadOnly()
+   public readonly type: string;
 
-  @Validate(yup.string())
-  public url?: string;
-  
-  @Validate(yup.number())
-  public valueInteger?: number;
-  
-  @Validate(yup.number())
-  public valueDecimal?: number;
+   @Validate(yup.string())
+   public url?: string;
 
-  // Primitives
-  @Validate(yup.string())
-  public valueDateTime?: date;
-   
-  @Validate(yup.string())
-  public valueString?: string;
-  
-  @Validate(yup.string())
-  public valueUri?: string;
-  
-  @Validate(yup.bool())
-  public valueBoolean?: string;
-   
- //o xx valueInstant optional
-  @Validate(yup.string())
-  public valueCode?: string;
-  
-  @Validate(yup.string())
-  public valueBase64Binary?: string;
-  
-  // Complex
-  @Validate(yup.lazy(() => Coding.schema()))
-  public valueCoding?: FlatConvectorModel<Coding>;
-  
-  @Validate(yup.lazy(() => CodeableConcept.schema()))
-  public valueCodeableConcept?: FlatConvectorModel<CodeableConcept>;
+   @Validate(yup.number())
+   public valueInteger?: number;
 
-  //o Attachment valueAttachment optional
-   
-  @Validate(yup.lazy(() => Identifier.schema()))
-  public valueIdentifier?: FlatConvectorModel<Identifier>;
-  
-  @Validate(yup.lazy(() => Quantity.schema()))
-  public valueQuantity?: FlatConvectorModel<Quantity>;
-  
-  @Validate(yup.lazy(() => Range.schema()))
-  public valueRange?: FlatConvectorModel<Range>;
-  
-  @Validate(yup.lazy(() => Period.schema()))
-  public valuePeriod?: FlatConvectorModel<Period>;
-  
-  @Validate(yup.lazy(() => Ratio.schema()))
-  public valueRatio?: FlatConvectorModel<Ratio>;
-  
-  @Validate(yup.lazy(() => HumanName.schema()))
-  public valueHumanName?: FlatConvectorModel<HumanName>;
-  
-  @Validate(yup.lazy(() => Address.schema()))
-  public valueAddress?: FlatConvectorModel<Address>;
-  
+   @Validate(yup.number())
+   public valueDecimal?: number;
+
+   // Primitives
+   // @Validate(yup.string())
+   // TODO
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
+   public valueDateTime?: date;
+
+   @Validate(yup.string())
+   public valueString?: string;
+
+   @Validate(yup.string())
+   public valueUri?: string;
+
+   @Validate(yup.bool())
+   public valueBoolean?: string;
+
+   //o xx valueInstant optional
+   @Validate(yup.string())
+   public valueCode?: string;
+
+   @Validate(yup.string())
+   public valueBase64Binary?: string;
+
+   // Complex
+   @Validate(yup.lazy(() => Coding.schema()))
+   public valueCoding?: FlatConvectorModel<Coding>;
+
+   @Validate(yup.lazy(() => CodeableConcept.schema()))
+   public valueCodeableConcept?: FlatConvectorModel<CodeableConcept>;
+
+   //o Attachment valueAttachment optional
+
+   @Validate(yup.lazy(() => Identifier.schema()))
+   public valueIdentifier?: FlatConvectorModel<Identifier>;
+
+   @Validate(yup.lazy(() => Quantity.schema()))
+   public valueQuantity?: FlatConvectorModel<Quantity>;
+
+   @Validate(yup.lazy(() => Range.schema()))
+   public valueRange?: FlatConvectorModel<Range>;
+
+   @Validate(yup.lazy(() => Period.schema()))
+   public valuePeriod?: FlatConvectorModel<Period>;
+
+   @Validate(yup.lazy(() => Ratio.schema()))
+   public valueRatio?: FlatConvectorModel<Ratio>;
+
+   @Validate(yup.lazy(() => HumanName.schema()))
+   public valueHumanName?: FlatConvectorModel<HumanName>;
+
+   @Validate(yup.lazy(() => Address.schema()))
+   public valueAddress?: FlatConvectorModel<Address>;
+
    //o ContactPoint valueContactPoint optional
    //o Schedule valueSchedule optional
    //o Reference valueReference optional
@@ -144,55 +149,53 @@ export class Extension extends Element<Extension> {
 
 export abstract class BackboneElement extends Element<BackboneElement> {
 
-  @Validate(yup.lazy(() => Extension.schema()))
-  public modifierExtension?: Extension;
- 
+   @Validate(yup.lazy(() => Extension.schema()))
+   public modifierExtension?: Extension;
+
 }
 
 //SimpleQuantity is a restriction of Quantity without comparator
-export class  SimpleQuantity extends Quantity {
+export class SimpleQuantity extends Quantity {
 
    @Default('fhir.datatypes.SimpleQuantity')
    @ReadOnly()
    public readonly type: string;
- 
+
 }
 
 // Asset inhertitance datatypes
 export abstract class Resource<T extends Resource<any>> extends ConvectorModel<T> { // identified by id
-  
-  @Required()
-  @Validate(yup.string())
-  public id: string;
-  
-  @Validate(yup.string())
-  public implicitRules?: uri;
-  
-  @Validate(yup.string())
-  public language?: code;
-  
-  @Validate(yup.lazy(() => Meta.schema()))
-  public meta?: FlatConvectorModel<Meta>;
+
+   @Required()
+   @Validate(yup.string())
+   public id: string;
+
+   @Validate(yup.string())
+   public implicitRules?: uri;
+
+   @Validate(yup.string())
+   public language?: code;
+
+   @Validate(yup.lazy(() => Meta.schema()))
+   public meta?: FlatConvectorModel<Meta>;
 }
 
-// TODO: make DomainResource extendable
 export abstract class DomainResource<T extends DomainResource<any>> extends Resource<T> {
- 
-  @Required()
-  @Validate(yup.string())
-  public resourceType: string;
-  
-  @Validate(yup.lazy(() => Narrative.schema()))
-  public text?: FlatConvectorModel<Narrative>;
-  
-  @Validate(yup.lazy(() => Resource.schema()))
-  public contained?: FlatConvectorModel<Resource<any>>;
-  
-  @Validate(yup.lazy(() => Extension.schema()))
-  public extension?: Extension;
-  
-  @Validate(yup.lazy(() => Extension.schema()))
-  public modifierExtension?: Extension;
+   @Required()
+   @Validate(yup.string())
+   public resourceType: string;
+
+   @Validate(yup.lazy(() => Narrative.schema()))
+   public text?: FlatConvectorModel<Narrative>;
+
+   @Validate(yup.lazy(() => Resource.schema()))
+   public contained?: FlatConvectorModel<Resource<any>>;
+
+   @Validate(yup.lazy(() => Extension.schema()))
+   public extension?: Extension;
+
+   @Validate(yup.lazy(() => Extension.schema()))
+   public modifierExtension?: Extension;
 }
 
 
@@ -202,10 +205,10 @@ export class Period extends Element<Period> {
    public readonly type: string;
 
    @Validate(yup.date())
-   public start?: Date;
+   public start?: date;
 
    @Validate(yup.date())
-   public end?: Date;
+   public end?: date;
 
 }
 
@@ -240,7 +243,7 @@ export class Timing extends Element<Timing> {
    public readonly type: string;
 
    @Validate(yup.array(yup.date()))
-   public event? : Array<Date>;
+   public event?: Array<date>;
 
    @Validate(yup.lazy(() => TimingRepeat.schema()))
    public repeat?: FlatConvectorModel<TimingRepeat>;
@@ -288,7 +291,7 @@ export class Annotation extends Element<Annotation> {
    public authorString?: string;
 
    @Validate(yup.date())
-   public time?: Date;
+   public time?: date;
 
    @Required()
    @Validate(yup.string())
@@ -361,7 +364,7 @@ export class Meta extends Element<Meta> {
    public source?: string;
 
    @Validate(yup.array(yup.string()))
-   public profile? : Array<string>; //StructureDefinition
+   public profile?: Array<string>; //StructureDefinition
 
    @Validate(yup.lazy(() => yup.array(Coding.schema())))
    public security?: Array<FlatConvectorModel<Coding>>;
@@ -381,8 +384,7 @@ export class Narrative extends Element<Narrative> {
    public status: string;
 
    @Required()
-   // TODO: Check this, used to be `yup.xhtml`
-   @Validate(yup.string())
+   @Validate(yup.xhtml())
    public div: xhtml;
 
 }
@@ -454,13 +456,13 @@ export class TimingRepeat extends BackboneElement {
    public periodUnit?: string;
 
    @Validate(yup.array(yup.string()))
-   public dayOfWeek? : Array<string>;
+   public dayOfWeek?: Array<string>;
 
    @Validate(yup.array(yup.string()))
-   public timeOfDay? : Array<string>;
+   public timeOfDay?: Array<string>;
 
    @Validate(yup.array(yup.string()))
-   public when? : Array<string>;
+   public when?: Array<string>;
 
    @Validate(yup.number())
    public offset?: number;
@@ -494,7 +496,7 @@ export class Attachment extends Element<Attachment> {
    public title?: string;
 
    @Validate(yup.date())
-   public creation?: Date;
+   public creation?: date;
 
 }
 
@@ -513,7 +515,7 @@ export class Address extends Element<Address> {
    public text?: string;
 
    @Validate(yup.array(yup.string()))
-   public line? : Array<string>;
+   public line?: Array<string>;
 
    @Validate(yup.string())
    public city?: string;
@@ -598,13 +600,13 @@ export class HumanName extends Element<HumanName> {
    public family?: string;
 
    @Validate(yup.array(yup.string()))
-   public given? : Array<string>;
+   public given?: Array<string>;
 
    @Validate(yup.array(yup.string()))
-   public prefix? : Array<string>;
+   public prefix?: Array<string>;
 
    @Validate(yup.array(yup.string()))
-   public suffix? : Array<string>;
+   public suffix?: Array<string>;
 
    @Validate(yup.lazy(() => Period.schema()))
    public period?: FlatConvectorModel<Period>;
@@ -656,7 +658,6 @@ export class AccountGuarantor extends BackboneElement {
 
 }
 
-// TODO: pass extension type
 export class Account extends DomainResource<Account> {
    @Default('fhir.datatypes.Account')
    @ReadOnly()
@@ -713,7 +714,6 @@ export class ChargeItemPerformer extends BackboneElement {
 
 }
 
-// TODO: pass extension type
 export class ChargeItem extends DomainResource<ChargeItem> {
    @Default('fhir.datatypes.ChargeItem')
    @ReadOnly()
@@ -723,10 +723,10 @@ export class ChargeItem extends DomainResource<ChargeItem> {
    public identifier?: Array<FlatConvectorModel<Identifier>>;
 
    @Validate(yup.array(yup.string()))
-   public definitionUri? : Array<string>;
+   public definitionUri?: Array<string>;
 
    @Validate(yup.array(yup.string()))
-   public definitionCanonical? : Array<string>; //ChargeItemDefinition
+   public definitionCanonical?: Array<string>; //ChargeItemDefinition
 
    @Required()
    @Validate(yup.string())
@@ -747,7 +747,7 @@ export class ChargeItem extends DomainResource<ChargeItem> {
    public context?: FlatConvectorModel<Reference>; //Encounter|EpisodeOfCare
 
    @Validate(yup.date())
-   public occurrenceDateTime?: Date;
+   public occurrenceDateTime?: date;
 
    @Validate(yup.lazy(() => Period.schema()))
    public occurrencePeriod?: FlatConvectorModel<Period>;
@@ -786,7 +786,7 @@ export class ChargeItem extends DomainResource<ChargeItem> {
    public enterer?: FlatConvectorModel<Reference>; //Practitioner|PractitionerRole|Organization|Patient|Device|RelatedPerson
 
    @Validate(yup.date())
-   public enteredDate?: Date;
+   public enteredDate?: date;
 
    @Validate(yup.lazy(() => yup.array(CodeableConcept.schema())))
    public reason?: Array<FlatConvectorModel<CodeableConcept>>;
@@ -883,7 +883,7 @@ export class ClaimSupportingInfo extends BackboneElement {
    public code?: FlatConvectorModel<CodeableConcept>;
 
    @Validate(yup.date())
-   public timingDate?: Date;
+   public timingDate?: date;
 
    @Validate(yup.lazy(() => Period.schema()))
    public timingPeriod?: FlatConvectorModel<Period>;
@@ -897,7 +897,7 @@ export class ClaimSupportingInfo extends BackboneElement {
    @Validate(yup.lazy(() => Quantity.schema()))
    public valueQuantity?: FlatConvectorModel<Quantity>;
 
-//   @Validate(yup.lazy(() => Attachment.schema()))
+   //   @Validate(yup.lazy(() => Attachment.schema()))
    public valueAttachment?: FlatConvectorModel<Attachment>;
 
    @Validate(yup.lazy(() => Reference.schema()))
@@ -949,7 +949,7 @@ export class ClaimProcedure extends BackboneElement {
    public type_?: Array<FlatConvectorModel<CodeableConcept>>;
 
    @Validate(yup.date())
-   public date?: Date;
+   public date?: date;
 
    @Required()
    @Validate(yup.lazy(() => CodeableConcept.schema()))
@@ -988,7 +988,7 @@ export class ClaimInsurance extends BackboneElement {
    public businessArrangement?: string;
 
    @Validate(yup.array(yup.string()))
-   public preAuthRef? : Array<string>;
+   public preAuthRef?: Array<string>;
 
    @Validate(yup.lazy(() => Reference.schema()))
    public claimResponse?: FlatConvectorModel<Reference>; //ClaimResponse
@@ -1002,7 +1002,7 @@ export class ClaimAccident extends BackboneElement {
 
    @Required()
    @Validate(yup.date())
-   public date: Date;
+   public date: date;
 
    @Validate(yup.lazy(() => CodeableConcept.schema()))
    public type_?: FlatConvectorModel<CodeableConcept>;
@@ -1025,16 +1025,16 @@ export class ClaimItem extends BackboneElement {
    public sequence: number;
 
    @Validate(yup.array(yup.number()))
-   public careTeamSequence? : Array<number>;
+   public careTeamSequence?: Array<number>;
 
    @Validate(yup.array(yup.number()))
-   public diagnosisSequence? : Array<number>;
+   public diagnosisSequence?: Array<number>;
 
    @Validate(yup.array(yup.number()))
-   public procedureSequence? : Array<number>;
+   public procedureSequence?: Array<number>;
 
    @Validate(yup.array(yup.number()))
-   public informationSequence? : Array<number>;
+   public informationSequence?: Array<number>;
 
    @Validate(yup.lazy(() => CodeableConcept.schema()))
    public revenue?: FlatConvectorModel<CodeableConcept>;
@@ -1053,7 +1053,7 @@ export class ClaimItem extends BackboneElement {
    public programCode?: Array<FlatConvectorModel<CodeableConcept>>;
 
    @Validate(yup.date())
-   public servicedDate?: Date;
+   public servicedDate?: date;
 
    @Validate(yup.lazy(() => Period.schema()))
    public servicedPeriod?: FlatConvectorModel<Period>;
@@ -1183,7 +1183,6 @@ export class ClaimItemDetailSubDetail extends BackboneElement {
 
 }
 
-// TODO: pass extension type
 export class Claim extends DomainResource<Claim> {
    @Default('fhir.datatypes.Claim')
    @ReadOnly()
@@ -1191,6 +1190,11 @@ export class Claim extends DomainResource<Claim> {
 
    @Validate(yup.lazy(() => yup.array(Identifier.schema())))
    public identifier?: Array<FlatConvectorModel<Identifier>>;
+
+   // // TODO: this is new
+   // @Required()
+   // @Validate(yup.string())
+   // public encounterUid: string;
 
    @Required()
    @Validate(yup.string())
@@ -1216,7 +1220,7 @@ export class Claim extends DomainResource<Claim> {
 
    @Required()
    @Validate(yup.date())
-   public created: Date;
+   public created: date;
 
    @Validate(yup.lazy(() => Reference.schema()))
    public enterer?: FlatConvectorModel<Reference>; //Practitioner|PractitionerRole
@@ -1290,7 +1294,7 @@ export class ClaimResponseItem extends BackboneElement {
    public itemSequence: number;
 
    @Validate(yup.array(yup.number()))
-   public noteNumber? : Array<number>;
+   public noteNumber?: Array<number>;
 
    @Validate(yup.lazy(() => yup.array(ClaimResponseItemAdjudication.schema())))
    public adjudication?: Array<FlatConvectorModel<ClaimResponseItemAdjudication>>;
@@ -1330,7 +1334,7 @@ export class ClaimResponseItemDetail extends BackboneElement {
    public detailSequence: number;
 
    @Validate(yup.array(yup.number()))
-   public noteNumber? : Array<number>;
+   public noteNumber?: Array<number>;
 
    @Validate(yup.lazy(() => yup.array(ClaimResponseItemAdjudication.schema())))
    public adjudication?: Array<FlatConvectorModel<ClaimResponseItemAdjudication>>;
@@ -1350,7 +1354,7 @@ export class ClaimResponseItemDetailSubDetail extends BackboneElement {
    public subDetailSequence: number;
 
    @Validate(yup.array(yup.number()))
-   public noteNumber? : Array<number>;
+   public noteNumber?: Array<number>;
 
    @Validate(yup.lazy(() => yup.array(ClaimResponseItemAdjudication.schema())))
    public adjudication?: Array<FlatConvectorModel<ClaimResponseItemAdjudication>>;
@@ -1363,13 +1367,13 @@ export class ClaimResponseAddItem extends BackboneElement {
    public readonly type: string;
 
    @Validate(yup.array(yup.number()))
-   public itemSequence? : Array<number>;
+   public itemSequence?: Array<number>;
 
    @Validate(yup.array(yup.number()))
-   public detailSequence? : Array<number>;
+   public detailSequence?: Array<number>;
 
    @Validate(yup.array(yup.number()))
-   public subdetailSequence? : Array<number>;
+   public subdetailSequence?: Array<number>;
 
    @Validate(yup.lazy(() => yup.array(Reference.schema())))
    public provider?: Array<FlatConvectorModel<Reference>>; //Practitioner|PractitionerRole|Organization
@@ -1385,7 +1389,7 @@ export class ClaimResponseAddItem extends BackboneElement {
    public programCode?: Array<FlatConvectorModel<CodeableConcept>>;
 
    @Validate(yup.date())
-   public servicedDate?: Date;
+   public servicedDate?: date;
 
    @Validate(yup.lazy(() => Period.schema()))
    public servicedPeriod?: FlatConvectorModel<Period>;
@@ -1418,7 +1422,7 @@ export class ClaimResponseAddItem extends BackboneElement {
    public subSite?: Array<FlatConvectorModel<CodeableConcept>>;
 
    @Validate(yup.array(yup.number()))
-   public noteNumber? : Array<number>;
+   public noteNumber?: Array<number>;
 
    @Validate(yup.lazy(() => yup.array(ClaimResponseItemAdjudication.schema())))
    public adjudication?: Array<FlatConvectorModel<ClaimResponseItemAdjudication>>;
@@ -1453,7 +1457,7 @@ export class ClaimResponseAddItemDetail extends BackboneElement {
    public net?: FlatConvectorModel<Money>;
 
    @Validate(yup.array(yup.number()))
-   public noteNumber? : Array<number>;
+   public noteNumber?: Array<number>;
 
    @Validate(yup.lazy(() => yup.array(ClaimResponseItemAdjudication.schema())))
    public adjudication?: Array<FlatConvectorModel<ClaimResponseItemAdjudication>>;
@@ -1488,7 +1492,7 @@ export class ClaimResponseAddItemDetailSubDetail extends BackboneElement {
    public net?: FlatConvectorModel<Money>;
 
    @Validate(yup.array(yup.number()))
-   public noteNumber? : Array<number>;
+   public noteNumber?: Array<number>;
 
    @Validate(yup.lazy(() => yup.array(ClaimResponseItemAdjudication.schema())))
    public adjudication?: Array<FlatConvectorModel<ClaimResponseItemAdjudication>>;
@@ -1526,7 +1530,7 @@ export class ClaimResponsePayment extends BackboneElement {
    public adjustmentReason?: FlatConvectorModel<CodeableConcept>;
 
    @Validate(yup.date())
-   public date?: Date;
+   public date?: date;
 
    @Required()
    @Validate(yup.lazy(() => Money.schema()))
@@ -1602,7 +1606,6 @@ export class ClaimResponseError extends BackboneElement {
 
 }
 
-// TODO: pass extension type
 export class ClaimResponse extends DomainResource<ClaimResponse> {
    @Default('fhir.datatypes.ClaimResponse')
    @ReadOnly()
@@ -1632,7 +1635,7 @@ export class ClaimResponse extends DomainResource<ClaimResponse> {
 
    @Required()
    @Validate(yup.date())
-   public created: Date;
+   public created: date;
 
    @Required()
    @Validate(yup.lazy(() => Reference.schema()))
@@ -1681,7 +1684,7 @@ export class ClaimResponse extends DomainResource<ClaimResponse> {
    @Validate(yup.lazy(() => CodeableConcept.schema()))
    public formCode?: FlatConvectorModel<CodeableConcept>;
 
-//   @Validate(yup.lazy(() => Attachment.schema()))
+   //   @Validate(yup.lazy(() => Attachment.schema()))
    public form?: FlatConvectorModel<Attachment>;
 
    @Validate(yup.lazy(() => yup.array(ClaimResponseProcessNote.schema())))
@@ -1752,7 +1755,6 @@ export class CoverageCostToBeneficiaryException extends BackboneElement {
 
 }
 
-// TODO: pass extension type
 export class Coverage extends DomainResource<Coverage> {
    @Default('fhir.datatypes.Coverage')
    @ReadOnly()
@@ -1931,7 +1933,6 @@ export class EncounterLocation extends BackboneElement {
 
 }
 
-// TODO: pass extension type
 export class Encounter extends DomainResource<Encounter> {
    @Default('fhir.datatypes.Encounter')
    @ReadOnly()
@@ -2081,7 +2082,7 @@ export class ExplanationOfBenefitSupportingInfo extends BackboneElement {
    public code?: FlatConvectorModel<CodeableConcept>;
 
    @Validate(yup.date())
-   public timingDate?: Date;
+   public timingDate?: date;
 
    @Validate(yup.lazy(() => Period.schema()))
    public timingPeriod?: FlatConvectorModel<Period>;
@@ -2095,7 +2096,7 @@ export class ExplanationOfBenefitSupportingInfo extends BackboneElement {
    @Validate(yup.lazy(() => Quantity.schema()))
    public valueQuantity?: FlatConvectorModel<Quantity>;
 
-//   @Validate(yup.lazy(() => Attachment.schema()))
+   //   @Validate(yup.lazy(() => Attachment.schema()))
    public valueAttachment?: FlatConvectorModel<Attachment>;
 
    @Validate(yup.lazy(() => Reference.schema()))
@@ -2147,7 +2148,7 @@ export class ExplanationOfBenefitProcedure extends BackboneElement {
    public type_?: Array<FlatConvectorModel<CodeableConcept>>;
 
    @Validate(yup.date())
-   public date?: Date;
+   public date?: date;
 
    @Required()
    @Validate(yup.lazy(() => CodeableConcept.schema()))
@@ -2176,7 +2177,7 @@ export class ExplanationOfBenefitInsurance extends BackboneElement {
    public coverage: FlatConvectorModel<Reference>; //Coverage
 
    @Validate(yup.array(yup.string()))
-   public preAuthRef? : Array<string>;
+   public preAuthRef?: Array<string>;
 
 }
 
@@ -2186,7 +2187,7 @@ export class ExplanationOfBenefitAccident extends BackboneElement {
    public readonly type: string;
 
    @Validate(yup.date())
-   public date?: Date;
+   public date?: date;
 
    @Validate(yup.lazy(() => CodeableConcept.schema()))
    public type_?: FlatConvectorModel<CodeableConcept>;
@@ -2209,16 +2210,16 @@ export class ExplanationOfBenefitItem extends BackboneElement {
    public sequence: number;
 
    @Validate(yup.array(yup.number()))
-   public careTeamSequence? : Array<number>;
+   public careTeamSequence?: Array<number>;
 
    @Validate(yup.array(yup.number()))
-   public diagnosisSequence? : Array<number>;
+   public diagnosisSequence?: Array<number>;
 
    @Validate(yup.array(yup.number()))
-   public procedureSequence? : Array<number>;
+   public procedureSequence?: Array<number>;
 
    @Validate(yup.array(yup.number()))
-   public informationSequence? : Array<number>;
+   public informationSequence?: Array<number>;
 
    @Validate(yup.lazy(() => CodeableConcept.schema()))
    public revenue?: FlatConvectorModel<CodeableConcept>;
@@ -2237,7 +2238,7 @@ export class ExplanationOfBenefitItem extends BackboneElement {
    public programCode?: Array<FlatConvectorModel<CodeableConcept>>;
 
    @Validate(yup.date())
-   public servicedDate?: Date;
+   public servicedDate?: date;
 
    @Validate(yup.lazy(() => Period.schema()))
    public servicedPeriod?: FlatConvectorModel<Period>;
@@ -2276,7 +2277,7 @@ export class ExplanationOfBenefitItem extends BackboneElement {
    public encounter?: Array<FlatConvectorModel<Reference>>; //Encounter
 
    @Validate(yup.array(yup.number()))
-   public noteNumber? : Array<number>;
+   public noteNumber?: Array<number>;
 
    @Validate(yup.lazy(() => yup.array(ExplanationOfBenefitItemAdjudication.schema())))
    public adjudication?: Array<FlatConvectorModel<ExplanationOfBenefitItemAdjudication>>;
@@ -2347,7 +2348,7 @@ export class ExplanationOfBenefitItemDetail extends BackboneElement {
    public udi?: Array<FlatConvectorModel<Reference>>; //Device
 
    @Validate(yup.array(yup.number()))
-   public noteNumber? : Array<number>;
+   public noteNumber?: Array<number>;
 
    @Validate(yup.lazy(() => yup.array(ExplanationOfBenefitItemAdjudication.schema())))
    public adjudication?: Array<FlatConvectorModel<ExplanationOfBenefitItemAdjudication>>;
@@ -2398,7 +2399,7 @@ export class ExplanationOfBenefitItemDetailSubDetail extends BackboneElement {
    public udi?: Array<FlatConvectorModel<Reference>>; //Device
 
    @Validate(yup.array(yup.number()))
-   public noteNumber? : Array<number>;
+   public noteNumber?: Array<number>;
 
    @Validate(yup.lazy(() => yup.array(ExplanationOfBenefitItemAdjudication.schema())))
    public adjudication?: Array<FlatConvectorModel<ExplanationOfBenefitItemAdjudication>>;
@@ -2411,13 +2412,13 @@ export class ExplanationOfBenefitAddItem extends BackboneElement {
    public readonly type: string;
 
    @Validate(yup.array(yup.number()))
-   public itemSequence? : Array<number>;
+   public itemSequence?: Array<number>;
 
    @Validate(yup.array(yup.number()))
-   public detailSequence? : Array<number>;
+   public detailSequence?: Array<number>;
 
    @Validate(yup.array(yup.number()))
-   public subDetailSequence? : Array<number>;
+   public subDetailSequence?: Array<number>;
 
    @Validate(yup.lazy(() => yup.array(Reference.schema())))
    public provider?: Array<FlatConvectorModel<Reference>>; //Practitioner|PractitionerRole|Organization
@@ -2433,7 +2434,7 @@ export class ExplanationOfBenefitAddItem extends BackboneElement {
    public programCode?: Array<FlatConvectorModel<CodeableConcept>>;
 
    @Validate(yup.date())
-   public servicedDate?: Date;
+   public servicedDate?: date;
 
    @Validate(yup.lazy(() => Period.schema()))
    public servicedPeriod?: FlatConvectorModel<Period>;
@@ -2466,7 +2467,7 @@ export class ExplanationOfBenefitAddItem extends BackboneElement {
    public subSite?: Array<FlatConvectorModel<CodeableConcept>>;
 
    @Validate(yup.array(yup.number()))
-   public noteNumber? : Array<number>;
+   public noteNumber?: Array<number>;
 
    @Validate(yup.lazy(() => yup.array(ExplanationOfBenefitItemAdjudication.schema())))
    public adjudication?: Array<FlatConvectorModel<ExplanationOfBenefitItemAdjudication>>;
@@ -2501,7 +2502,7 @@ export class ExplanationOfBenefitAddItemDetail extends BackboneElement {
    public net?: FlatConvectorModel<Money>;
 
    @Validate(yup.array(yup.number()))
-   public noteNumber? : Array<number>;
+   public noteNumber?: Array<number>;
 
    @Validate(yup.lazy(() => yup.array(ExplanationOfBenefitItemAdjudication.schema())))
    public adjudication?: Array<FlatConvectorModel<ExplanationOfBenefitItemAdjudication>>;
@@ -2536,7 +2537,7 @@ export class ExplanationOfBenefitAddItemDetailSubDetail extends BackboneElement 
    public net?: FlatConvectorModel<Money>;
 
    @Validate(yup.array(yup.number()))
-   public noteNumber? : Array<number>;
+   public noteNumber?: Array<number>;
 
    @Validate(yup.lazy(() => yup.array(ExplanationOfBenefitItemAdjudication.schema())))
    public adjudication?: Array<FlatConvectorModel<ExplanationOfBenefitItemAdjudication>>;
@@ -2573,7 +2574,7 @@ export class ExplanationOfBenefitPayment extends BackboneElement {
    public adjustmentReason?: FlatConvectorModel<CodeableConcept>;
 
    @Validate(yup.date())
-   public date?: Date;
+   public date?: date;
 
    @Validate(yup.lazy(() => Money.schema()))
    public amount?: FlatConvectorModel<Money>;
@@ -2660,7 +2661,6 @@ export class ExplanationOfBenefitBenefitBalanceFinancial extends BackboneElement
 
 }
 
-// TODO: pass extension type
 export class ExplanationOfBenefit extends DomainResource<ExplanationOfBenefit> {
    @Default('fhir.datatypes.ExplanationOfBenefit')
    @ReadOnly()
@@ -2693,7 +2693,7 @@ export class ExplanationOfBenefit extends DomainResource<ExplanationOfBenefit> {
 
    @Required()
    @Validate(yup.date())
-   public created: Date;
+   public created: date;
 
    @Validate(yup.lazy(() => Reference.schema()))
    public enterer?: FlatConvectorModel<Reference>; //Practitioner|PractitionerRole
@@ -2747,7 +2747,7 @@ export class ExplanationOfBenefit extends DomainResource<ExplanationOfBenefit> {
    public disposition?: string;
 
    @Validate(yup.array(yup.string()))
-   public preAuthRef? : Array<string>;
+   public preAuthRef?: Array<string>;
 
    @Validate(yup.lazy(() => yup.array(Period.schema())))
    public preAuthRefPeriod?: Array<FlatConvectorModel<Period>>;
@@ -2791,7 +2791,7 @@ export class ExplanationOfBenefit extends DomainResource<ExplanationOfBenefit> {
    @Validate(yup.lazy(() => CodeableConcept.schema()))
    public formCode?: FlatConvectorModel<CodeableConcept>;
 
-//   @Validate(yup.lazy(() => Attachment.schema()))
+   //   @Validate(yup.lazy(() => Attachment.schema()))
    public form?: FlatConvectorModel<Attachment>;
 
    @Validate(yup.lazy(() => yup.array(ExplanationOfBenefitProcessNote.schema())))
@@ -2861,7 +2861,6 @@ export class InvoiceLineItemPriceComponent extends BackboneElement {
 
 }
 
-// TODO: pass extension type
 export class Invoice extends DomainResource<Invoice> {
    @Default('fhir.datatypes.Invoice')
    @ReadOnly()
@@ -2887,7 +2886,7 @@ export class Invoice extends DomainResource<Invoice> {
    public recipient?: FlatConvectorModel<Reference>; //Organization|Patient|RelatedPerson
 
    @Validate(yup.date())
-   public date?: Date;
+   public date?: date;
 
    @Validate(yup.lazy(() => yup.array(InvoiceParticipant.schema())))
    public participant?: Array<FlatConvectorModel<InvoiceParticipant>>;
@@ -2938,7 +2937,6 @@ export class OrganizationContact extends BackboneElement {
 
 }
 
-// TODO: pass extension type
 export class Organization extends DomainResource<Organization> {
    @Default('fhir.datatypes.Organization')
    @ReadOnly()
@@ -2957,7 +2955,7 @@ export class Organization extends DomainResource<Organization> {
    public name?: string;
 
    @Validate(yup.array(yup.string()))
-   public alias? : Array<string>;
+   public alias?: Array<string>;
 
    @Validate(yup.lazy(() => yup.array(ContactPoint.schema())))
    public telecom?: Array<FlatConvectorModel<ContactPoint>>;
@@ -3034,7 +3032,6 @@ export class PatientLink extends BackboneElement {
 
 }
 
-// TODO: pass extension type
 export class Patient extends DomainResource<Patient> {
    @Default('fhir.datatypes.Patient')
    @ReadOnly()
@@ -3056,13 +3053,13 @@ export class Patient extends DomainResource<Patient> {
    public gender?: string;
 
    @Validate(yup.date())
-   public birthDate?: Date;
+   public birthDate?: date;
 
    @Validate(yup.boolean())
    public deceasedBoolean?: boolean;
 
    @Validate(yup.date())
-   public deceasedDateTime?: Date;
+   public deceasedDateTime?: date;
 
    @Validate(yup.lazy(() => yup.array(Address.schema())))
    public address?: Array<FlatConvectorModel<Address>>;
@@ -3076,7 +3073,7 @@ export class Patient extends DomainResource<Patient> {
    @Validate(yup.number())
    public multipleBirthInteger?: number;
 
-//   @Validate(yup.lazy(() => yup.array(Attachment.schema())))
+   //   @Validate(yup.lazy(() => yup.array(Attachment.schema())))
    public photo?: Array<FlatConvectorModel<Attachment>>;
 
    @Validate(yup.lazy(() => yup.array(PatientContact.schema())))
@@ -3096,7 +3093,7 @@ export class Patient extends DomainResource<Patient> {
 
 }
 
-// TODO: pass extension type
+
 export class PaymentNotice extends DomainResource<PaymentNotice> {
    @Default('fhir.datatypes.PaymentNotice')
    @ReadOnly()
@@ -3117,7 +3114,7 @@ export class PaymentNotice extends DomainResource<PaymentNotice> {
 
    @Required()
    @Validate(yup.date())
-   public created: Date;
+   public created: date;
 
    @Validate(yup.lazy(() => Reference.schema()))
    public provider?: FlatConvectorModel<Reference>; //Practitioner|PractitionerRole|Organization
@@ -3127,7 +3124,7 @@ export class PaymentNotice extends DomainResource<PaymentNotice> {
    public payment: FlatConvectorModel<Reference>; //PaymentReconciliation
 
    @Validate(yup.date())
-   public paymentDate?: Date;
+   public paymentDate?: date;
 
    @Validate(yup.lazy(() => Reference.schema()))
    public payee?: FlatConvectorModel<Reference>; //Practitioner|PractitionerRole|Organization
@@ -3171,7 +3168,7 @@ export class PaymentReconciliationDetail extends BackboneElement {
    public response?: FlatConvectorModel<Reference>; //Any
 
    @Validate(yup.date())
-   public date?: Date;
+   public date?: date;
 
    @Validate(yup.lazy(() => Reference.schema()))
    public responsible?: FlatConvectorModel<Reference>; //PractitionerRole
@@ -3214,7 +3211,7 @@ export class PaymentReconciliation extends DomainResource<PaymentReconciliation>
 
    @Required()
    @Validate(yup.date())
-   public created: Date;
+   public created: date;
 
    @Validate(yup.lazy(() => Reference.schema()))
    public paymentIssuer?: FlatConvectorModel<Reference>; //Organization
@@ -3233,7 +3230,7 @@ export class PaymentReconciliation extends DomainResource<PaymentReconciliation>
 
    @Required()
    @Validate(yup.date())
-   public paymentDate: Date;
+   public paymentDate: date;
 
    @Required()
    @Validate(yup.lazy(() => Money.schema()))
@@ -3274,7 +3271,6 @@ export class PractitionerQualification extends BackboneElement {
 
 }
 
-// TODO: pass extension type
 export class Practitioner extends DomainResource<Practitioner> {
    @Default('fhir.datatypes.Practitioner')
    @ReadOnly()
@@ -3299,9 +3295,9 @@ export class Practitioner extends DomainResource<Practitioner> {
    public gender?: string;
 
    @Validate(yup.date())
-   public birthDate?: Date;
+   public birthDate?: date;
 
-//   @Validate(yup.lazy(() => yup.array(Attachment.schema())))
+   //   @Validate(yup.lazy(() => yup.array(Attachment.schema())))
    public photo?: Array<FlatConvectorModel<Attachment>>;
 
    @Validate(yup.lazy(() => yup.array(PractitionerQualification.schema())))
@@ -3344,7 +3340,6 @@ export class ProcedureFocalDevice extends BackboneElement {
 
 }
 
-// TODO: pass extension type
 export class Procedure extends DomainResource<Procedure> {
    @Default('fhir.datatypes.Procedure')
    @ReadOnly()
@@ -3354,10 +3349,10 @@ export class Procedure extends DomainResource<Procedure> {
    public identifier?: Array<FlatConvectorModel<Identifier>>;
 
    @Validate(yup.array(yup.string()))
-   public instantiatesCanonical? : Array<string>; //PlanDefinition|ActivityDefinition|Measure|OperationDefinition|Questionnaire
+   public instantiatesCanonical?: Array<string>; //PlanDefinition|ActivityDefinition|Measure|OperationDefinition|Questionnaire
 
    @Validate(yup.array(yup.string()))
-   public instantiatesUri? : Array<string>;
+   public instantiatesUri?: Array<string>;
 
    @Validate(yup.lazy(() => yup.array(Reference.schema())))
    public basedOn?: Array<FlatConvectorModel<Reference>>; //CarePlan|ServiceRequest
@@ -3386,7 +3381,7 @@ export class Procedure extends DomainResource<Procedure> {
    public encounter?: FlatConvectorModel<Reference>; //Encounter
 
    @Validate(yup.date())
-   public performedDateTime?: Date;
+   public performedDateTime?: date;
 
    @Validate(yup.lazy(() => Period.schema()))
    public performedPeriod?: FlatConvectorModel<Period>;

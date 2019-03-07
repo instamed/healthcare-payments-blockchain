@@ -5,10 +5,9 @@ import { MockControllerAdapter } from '@worldsibu/convector-adapter-mock';
 import { OrganizationController } from '../src/organization.controller';
 import 'mocha';
 import { ClientFactory } from '@worldsibu/convector-core-adapter';
-import { PatientController, Organization, Identifier, Patient } from '../src';
+import { PatientController, Organization, Identifier, Patient, Claim } from '../src';
 import { ClaimController, PaymentController, Invoice } from '../src';
-import { ResourceTypes, buildCoding } from '../src/utils';
-
+import { ResourceTypes, buildCoding, CreateClaim } from '../src/utils';
 
 describe('Fhir Financial', () => {
     let adapter: MockControllerAdapter;
@@ -52,7 +51,7 @@ describe('Fhir Financial', () => {
         };
     });
 
-    it('Create default organization Provider', async () => {
+    it('should create default organization Provider', async () => {
         const providerId = 'XYZ_Provider';
         provider = new Organization(providerId);
         provider.resourceType = ResourceTypes.ORGANIZATION;
@@ -105,11 +104,10 @@ describe('Fhir Financial', () => {
         await ctrl.org.create(provider);
 
         let createdProvider = await adapter.getById<Organization>(providerId);
-        console.log(createdProvider);
         expect(createdProvider.id).to.equal(providerId);
     });
 
-    it('Create default organization Payer', async () => {
+    it('should create default organization Payer', async () => {
         const payerId = 'ABC_Healthcare';
         payer = new Organization(
             {
@@ -191,9 +189,10 @@ describe('Fhir Financial', () => {
     });
 
     it('should create a patient', async () => {
+        const patientId = 'Bob';
         const patient = new Patient({
             'resourceType': 'Patient',
-            'id': 'Bob',
+            'id': patientId,
             'identifier': [
                 {
                     'use': 'usual',
@@ -227,7 +226,7 @@ describe('Fhir Financial', () => {
                 }
             ],
             'gender': 'male',
-            'birthDate': new Date('1944-11-17'),
+            'birthDate': '1944-11-17',
             'deceasedBoolean': false,
             'address': [
                 {
@@ -249,16 +248,65 @@ describe('Fhir Financial', () => {
                     }
                 ],
                 'text': 'Married'
+            },
+            'managingOrganization': {
+                'identifier': {
+                    '$class': 'org.fhir.datatypes.Identifier',
+                    'use': 'usual',
+                    'system': 'Blockchain:Provider',
+                    'value': 'Provider::Provida'
+                }
             }
         });
         await ctrl.patient.create(patient);
 
-        let createdPayer = await adapter.getById<Organization>(payerId);
-        expect(createdPayer.id).to.equal(payerId);
+        let createdPayer = await adapter.getById<Patient>(patientId);
+        expect(createdPayer.id).to.equal(patientId);
     });
 
+    it('create a claim', async () => {
+        const claimId = 'Claim-1';
+        const claim = new CreateClaim({
+            // 'patientId': 'resource:org.fhir.core.Patient#Bob',
+            'patientId': 'Bob',
+            // 'providerId': 'resource:org.fhir.core.Organization#XYZ_Provider',
+            'providerId': 'XYZ_Provider',
+            'encounterUid': 'Encounter-1',
+            'claimUid': claimId,
+            // 'payerId': 'resource:org.fhir.core.Organization#ABC_Healthcare',
+            'payerId': 'ABC_Healthcare',
+            'services': [
+                {
+                    'hcpcsCode': '99230',
+                    'quantity': 1,
+                    'unitPrice': 45,
+                    'procedureUid': 'Procedure-1',
+                    'chargeItemUid': 'ChargeItem-1'
+                },
+                {
+                    'hcpcsCode': '90756',
+                    'quantity': 3,
+                    'unitPrice': 55,
+                    'procedureUid': 'Procedure-2',
+                    'chargeItemUid': 'ChargeItem-2'
 
-    it('should make a payment', async () => {
+                }
+            ]
+        });
+        debugger;
+        await ctrl.claim.create(claim);
+        const createdClaim = await adapter.getById<Claim>(claimId);
+        console.log(createdClaim);
+        expect(createdClaim.id).to.be(claimId);
+    });
+
+    it('adjudicate a claim', async () => {
+        // await ctrl.payment.make(testingID);
+        // const invoice = await adapter.getById<Invoice>(testingID);
+        // expect(invoice.status).to.be(InvoiceStatus.BALANCED);
+    });
+
+    it('make a payment', async () => {
         // await ctrl.payment.make(testingID);
         // const invoice = await adapter.getById<Invoice>(testingID);
         // expect(invoice.status).to.be(InvoiceStatus.BALANCED);

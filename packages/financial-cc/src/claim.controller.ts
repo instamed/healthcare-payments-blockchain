@@ -1,9 +1,10 @@
 import {
     Controller,
     ConvectorController,
-    Invokable
+    Invokable,
+    Param
 } from '@worldsibu/convector-core-controller';
-
+import * as fhirTypes from './utils/fhirTypes';
 import {
     Claim, ClaimResponse, CodeableConcept, ClaimResponseItem, InvoiceLineItemPriceComponent, Patient, Organization, Account, Encounter, Period, Resource
 } from './financial.model';
@@ -18,11 +19,30 @@ import {
 export class ClaimController extends ConvectorController {
 
     @Invokable()
-    public async create(data: CreateClaim) {
+    public async create(
+        @Param(CreateClaim)
+        data: CreateClaim) {
+        debugger;
         const id = data.encounterUid;
+
+        // Hydrate objects
+        data.patient = await Patient.getOne(data.patientId);
+        data.payer = await Organization.getOne(data.payerId);
+        data.provider = await Organization.getOne(data.providerId);
+
+        if (!data.patient) {
+            throw new Error(`Patient with id ${data.patientId} doesn\'t exist`);
+        }
+        if (!data.payer) {
+            throw new Error(`Payer with id ${data.payerId} doesn\'t exist`);
+        }
+        if (!data.provider) {
+            throw new Error(`Provider with id ${data.providerId} doesn\'t exist`);
+        }
+
         const encounter = new Encounter(id);
         // TODO: check this
-        data['encounter'] = encounter;
+        data.encounter = encounter;
 
         // Build the identifier for the Encounter from the id
         const identifier = buildIdentifier(id, 'usual', IdentifierTypes.ENCOUNTER);
@@ -49,15 +69,15 @@ export class ClaimController extends ConvectorController {
 
         // Set Encounter start-date to now
         encounter.period = new Period();
-        encounter.period.start = data.txDate;
+        encounter.period.start = fhirTypes.date(data.txDate);
 
+        debugger;
         // Note Encounter assets are defined in the core model file
         // Add the Encounter to the ledger
         for (let service of data.services) {
             service.encounter = encounter;
             await createService(service, data.txDate);
         }
-
         await closeEncounter(data, data.txDate);
     }
 
@@ -80,7 +100,7 @@ export class ClaimController extends ConvectorController {
 
         claimResponse.use = 'claim';
         claimResponse.patient = data.claim.patient;
-        claimResponse.created = data.claimDate;
+        claimResponse.created = fhirTypes.date(data.claimDate);
         claimResponse.insurer = data.claim.insurer;
 
         claimResponse.requestor = buildReference(data.claim.provider.identifier);
@@ -116,7 +136,7 @@ export class ClaimController extends ConvectorController {
         for (let adjudicationItem of data.adjudications) {
             // Make a new ClaimResponseItem for each item
             let claimResponseItem = new ClaimResponseItem();
-            claimResponseItem.itemSequence = adjudicationItem.sequeanceNumber;
+            claimResponseItem.itemSequence = adjudicationItem.sequenceNumber;
             claimResponseItem.adjudication = [];
 
             // Process possible adjudications
@@ -126,10 +146,10 @@ export class ClaimController extends ConvectorController {
             //TODO: Total
 
 
-            if (adjudicationItem.adjudication && adjudicationItem.adjudication.elegible) {
+            if (adjudicationItem.adjudication && adjudicationItem.adjudication.eligible) {
                 claimResponseItem.adjudication.push(
-                    buildAdjudicationItem('elegible', adjudicationItem.adjudication.elegible));
-                itemTotalCost += adjudicationItem.adjudication.elegible;
+                    buildAdjudicationItem('eligible', adjudicationItem.adjudication.eligible));
+                itemTotalCost += adjudicationItem.adjudication.eligible;
             }
 
             // Copay

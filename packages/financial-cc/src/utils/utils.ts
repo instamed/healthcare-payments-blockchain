@@ -4,6 +4,7 @@ import {
     Identifier, Patient, Organization, Account, Invoice,
     Narrative, Coding, Money, Reference
 } from '..';
+import * as fhirTypes from './fhirTypes';
 import { FlatConvectorModel } from '@worldsibu/convector-core-model';
 import {
     AccountData, InvoiceData,
@@ -15,7 +16,7 @@ import { IdentifierTypes, ResourceTypes } from './enums';
 
 /**
    * 
-   * @param type elegible|copay|eligpercent
+   * @param type eligible|copay|eligpercent
    * @param val Amount value for Adjudication
    */
 export function buildAdjudicationItem(type: string, val: number) {
@@ -154,7 +155,7 @@ export async function createInvoice(data: InvoiceData, invoiceDate: Date) {
     const recipient = this.buildReference(data.patient.identifier[0]);
     invoice.recipient = recipient;
 
-    invoice.date = invoiceDate;
+    invoice.date = fhirTypes.date(invoiceDate);
 
     // Build Reference to owner
     invoice.issuer = this.buildReference(data.owner.identifier[0]);
@@ -220,7 +221,7 @@ export function buildMoney(value: number, currency?: string) {
     return amount;
 }
 
-export async function createService(data: ServiceItem, txDate: Date) {
+export async function createService(data: FlatConvectorModel<ServiceItem>, txDate: Date) {
     const procedureId = data.procedureUid;
     const procedure = new Procedure(procedureId);
     data.procedure = procedure;
@@ -250,7 +251,7 @@ export async function createService(data: ServiceItem, txDate: Date) {
     procedure.code.coding = [buildCoding(data.hcpcsCode, null, `https://www.hl7.org/fhir/cpt.html`)];
 
     // Add the transaction date as the performed date for the PoC
-    procedure.performedDateTime = txDate;
+    procedure.performedDateTime = fhirTypes.date(txDate);
     //TODO add logic to verify/create identifiers. For now, POC will assume identifiers are created from id on asset creation
 
     await procedure.save();
@@ -286,7 +287,7 @@ export async function createService(data: ServiceItem, txDate: Date) {
     // In actual application, a Contract Management System would instead be implemented.
     chargeItem.priceOverride = buildMoney(data.unitPrice);
     chargeItem.overrideReason = `Prices will be stored here for PoC to make workflow more applicable.`;
-    chargeItem.enteredDate = txDate;
+    chargeItem.enteredDate = fhirTypes.date(txDate);
     chargeItem.enterer = data.encounter.serviceProvider;
 
     //TODO
@@ -301,7 +302,7 @@ export async function createService(data: ServiceItem, txDate: Date) {
     // Add the Encounter to the asset registry
     //await assetRegistry.add(chargeItem);
 
-    // await chargeItem.save();
+    await chargeItem.save();
 }
 
 export async function closeEncounter(data: CreateClaim, txDate: Date) {
@@ -333,7 +334,7 @@ export async function closeEncounter(data: CreateClaim, txDate: Date) {
     claim.patient = data.encounter.subject;
 
     // Set the created date to time of transaction
-    claim.created = txDate;
+    claim.created = fhirTypes.date(txDate);
 
     // Set the insurer to be the payer
     // Uses the first identifier, under the assumption it should have only one
@@ -353,11 +354,6 @@ export async function closeEncounter(data: CreateClaim, txDate: Date) {
     claim.careTeam[0].sequence = 1;
     claim.careTeam[0].provider = data.encounter.serviceProvider;
     claim.careTeam[0].responsible = true;
-
-    // Build the items
-    let assetRegistry = new ChargeItem();
-    let procedureRegistry = new Procedure();
-    let results = [];
 
     //let results = await query('selectChargeItemsByEncounter', {encounter_id: data.encounter.id});
     claim.item = [];
@@ -420,7 +416,7 @@ export async function closeEncounter(data: CreateClaim, txDate: Date) {
 
     // Add Claim to registry
     // Update the Encounter records
-    data.encounter.period.end = new Date();
+    data.encounter.period.end = fhirTypes.date(txDate);
     let statusHistory = new EncounterStatusHistory();
     statusHistory.status = data.encounter.status;
 
