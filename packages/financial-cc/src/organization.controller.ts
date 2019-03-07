@@ -1,7 +1,8 @@
 import {
     Controller,
     ConvectorController,
-    Invokable
+    Invokable,
+    Param
 } from '@worldsibu/convector-core-controller';
 import { Organization } from './financial.model';
 
@@ -9,7 +10,9 @@ import { Organization } from './financial.model';
 @Controller('organization')
 export class OrganizationController extends ConvectorController {
     @Invokable()
-    public async create(data: Organization) {
+    public async create(
+        @Param(Organization)
+        data: Organization) {
         debugger;
         await data.save();
     }
