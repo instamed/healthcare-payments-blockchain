@@ -5,9 +5,12 @@ import { MockControllerAdapter } from '@worldsibu/convector-adapter-mock';
 import { OrganizationController } from '../src/organization.controller';
 import 'mocha';
 import { ClientFactory } from '@worldsibu/convector-core-adapter';
-import { PatientController, Organization, Identifier, Patient, Claim } from '../src';
+import { PatientController, Organization, Identifier, Patient, Claim, ChargeItem, Account, Procedure } from '../src';
 import { ClaimController, PaymentController, Invoice } from '../src';
-import { ResourceTypes, buildCoding, CreateClaim } from '../src/utils';
+import { ResourceTypes, buildCoding, CreateClaim, AdjudicateClaim } from '../src/utils';
+import { Encounter } from '../dist/src';
+
+const log = console.log;
 
 describe('Fhir Financial', () => {
     let adapter: MockControllerAdapter;
@@ -20,8 +23,10 @@ describe('Fhir Financial', () => {
     let provider = new Organization;
     let payer = new Organization;
 
-
-    const testingID = 'invoice1';
+    const providerId = 'XYZ_Provider';
+    const payerId = 'ABC_Healthcare';
+    const patientId = 'Bob';
+    const claimId = 'Claim-1';
 
     before('Init controllers', async () => {
         adapter = new MockControllerAdapter();
@@ -52,63 +57,83 @@ describe('Fhir Financial', () => {
     });
 
     it('should create default organization Provider', async () => {
-        const providerId = 'XYZ_Provider';
-        provider = new Organization(providerId);
-        provider.resourceType = ResourceTypes.ORGANIZATION;
-        provider.active = true;
-        provider.name = 'XYZ Health Services';
-        provider.type_ = [
-            buildCoding('prov', 'Healthcare Provider', 'http://hl7.org/fhir/organization-type')
-        ];
-        provider.telecom = [
-            {
-                system: 'phone',
-                value: '098-765 4321'
-            }
-        ];
-        provider.address = [{ line: ['Somewhere Newport Beach'] }];
-        provider.contact = [
-            {
-                'purpose': {
+        provider = new Organization({
+            'resourceType': 'Organization',
+            'id': 'XYZ_Provider',
+            'identifier': [
+                {
+                    'use': 'usual',
+                    'system': 'Blockchain:Provider',
+                    'value': 'XYZ_Provider'
+                }
+            ],
+            'active': true,
+            'type_': [
+                {
                     'coding': [
                         {
-                            'system': 'http://terminology.hl7.org/CodeSystem/contactentity-type',
-                            'code': 'ADMIN'
+                            'system': 'http://hl7.org/fhir/organization-type',
+                            'code': 'prov',
+                            'display': 'Healthcare Provider'
                         }
                     ]
-                },
-                'name': {
-                    'text': 'Dr. Provida'
-                },
-                'telecom': [
-                    {
-                        'system': 'phone',
-                        'value': '022-655 2321'
-                    },
-                    {
-                        'system': 'email',
-                        'value': 'dr@XYZ_Provider.com'
-                    },
-                    {
-                        'system': 'fax',
-                        'value': '022-655 2322'
-                    }
-                ],
-                'address': {
+                }
+            ],
+            'name': 'XYZ Health Services',
+            'telecom': [
+                {
+                    'system': 'phone',
+                    'value': '098-765 4321'
+                }
+            ],
+            'address': [
+                {
                     'line': [
                         'Somewhere Newport Beach'
                     ]
                 }
-            }
-        ]
+            ],
+            'contact': [
+                {
+                    'purpose': {
+                        'coding': [
+                            {
+                                'system': 'http://terminology.hl7.org/CodeSystem/contactentity-type',
+                                'code': 'ADMIN'
+                            }
+                        ]
+                    },
+                    'name': {
+                        'text': 'Dr. Provida'
+                    },
+                    'telecom': [
+                        {
+                            'system': 'phone',
+                            'value': '022-655 2321'
+                        },
+                        {
+                            'system': 'email',
+                            'value': 'dr@XYZ_Provider.com'
+                        },
+                        {
+                            'system': 'fax',
+                            'value': '022-655 2322'
+                        }
+                    ],
+                    'address': {
+                        'line': [
+                            'Somewhere Newport Beach'
+                        ]
+                    }
+                }
+            ]
+        });
         await ctrl.org.create(provider);
-
         let createdProvider = await adapter.getById<Organization>(providerId);
         expect(createdProvider.id).to.equal(providerId);
     });
 
     it('should create default organization Payer', async () => {
-        const payerId = 'ABC_Healthcare';
         payer = new Organization(
             {
                 'resourceType': 'Organization',
@@ -189,7 +214,6 @@ describe('Fhir Financial', () => {
     });
 
     it('should create a patient', async () => {
-        const patientId = 'Bob';
         const patient = new Patient({
             'resourceType': 'Patient',
             'id': patientId,
@@ -260,21 +284,21 @@ describe('Fhir Financial', () => {
         });
         await ctrl.patient.create(patient);
 
-        let createdPayer = await adapter.getById<Patient>(patientId);
-        expect(createdPayer.id).to.equal(patientId);
+        let createdPatient = await adapter.getById<Patient>(patientId);
+        expect(createdPatient.id).to.equal(patientId);
     });
 
-    it('create a claim', async () => {
-        const claimId = 'Claim-1';
+    it('create a claim (encounter, chargeItems, procedures)', async () => {
         const claim = new CreateClaim({
+            txDate: new Date(),
             // 'patientId': 'resource:org.fhir.core.Patient#Bob',
-            'patientId': 'Bob',
+            'patientId': patientId,
             // 'providerId': 'resource:org.fhir.core.Organization#XYZ_Provider',
-            'providerId': 'XYZ_Provider',
+            'providerId': providerId,
             'encounterUid': 'Encounter-1',
             'claimUid': claimId,
             // 'payerId': 'resource:org.fhir.core.Organization#ABC_Healthcare',
-            'payerId': 'ABC_Healthcare',
+            'payerId': payerId,
             'services': [
                 {
                     'hcpcsCode': '99230',
@@ -289,21 +313,75 @@ describe('Fhir Financial', () => {
                     'unitPrice': 55,
                     'procedureUid': 'Procedure-2',
                     'chargeItemUid': 'ChargeItem-2'
-
                 }
             ]
         });
-        debugger;
         await ctrl.claim.create(claim);
         const createdClaim = await adapter.getById<Claim>(claimId);
-        console.log(createdClaim);
-        expect(createdClaim.id).to.be(claimId);
+        expect(createdClaim.id).to.equal(claimId);
+        log(`Claim with id '${createdClaim.id}' created successfully`);
+
+        const procedure1 = await adapter.getById<Procedure>(claim.services[0].procedureUid);
+        expect(procedure1.id, 'Procedure 1 was not created successfully').to.exist;
+        log(`Procedure with id '${procedure1.id}' created successfully`);
+
+        const procedure2 = await adapter.getById<Procedure>(claim.services[1].procedureUid);
+        expect(procedure2.id, 'Procedure 2 was not created successfully').to.exist;
+        log(`Procedure with id '${procedure2.id}' created successfully`);
+
+        const chargeItem1 = await adapter.getById<ChargeItem>(claim.services[0].chargeItemUid);
+        expect(chargeItem1.id, 'Charge item 1 was not created successfully').to.exist;
+        log(`ChargeItem with id '${chargeItem1.id}' created successfully`);
+
+        const chargeItem2 = await adapter.getById<ChargeItem>(claim.services[1].chargeItemUid);
+        expect(chargeItem2.id, 'Charge item 2 was not created successfully').to.exist;
+        log(`ChargeItem with id '${chargeItem2.id}' created successfully`);
+
+        const encounter = await adapter.getById<Encounter>(claim.encounterUid);
+        expect(encounter.id, 'Encounter was not created successfully').to.exist;
+        log(`Encounter with id '${encounter.id}' created successfully`);
     });
 
-    it('adjudicate a claim', async () => {
-        // await ctrl.payment.make(testingID);
-        // const invoice = await adapter.getById<Invoice>(testingID);
-        // expect(invoice.status).to.be(InvoiceStatus.BALANCED);
+    it('adjudicate a claim (create a claim response, invoice, account)', async () => {
+        const claim = new AdjudicateClaim({
+            txDate: new Date(),
+            'uid': 'ClaimResponse-1',
+            // 'claimUid': 'resource:org.fhir.core.Claim#Claim-1',
+            'claimUid': claimId,
+            'accountUid': 'Account-1',
+            'invoiceUid': 'Invoice-1',
+            'adjudications': [{
+                'sequenceNumber': 1,
+                'adjudication': {
+                    'eligible': 20,
+                    'copay': 10,
+                    'eligpercent': 80,
+                    'benefit': 6
+                }
+            },
+            {
+                'sequenceNumber': 2,
+                'adjudication': {
+                    'eligible': 40,
+                    'copay': 10,
+                    'eligpercent': 80,
+                    'benefit': 22
+                }
+            }
+            ]
+        });
+        await ctrl.claim.adjudicate(claim);
+        const claimResponseCreated = await adapter.getById<Account>(claim.uid);
+        expect(claimResponseCreated.id).to.equal(claim.uid);
+        log(`Claim response with id '${claim.uid}' created successfully`);
+
+        const createdAccount = await adapter.getById<Account>(claim.accountUid);
+        expect(createdAccount.id).to.equal(claim.accountUid);
+        log(`Account with id '${claim.accountUid}' created successfully`);
+
+        const createdInvoice = await adapter.getById<Account>(claim.invoiceUid);
+        expect(createdInvoice.id).to.equal(claim.invoiceUid);
+        log(`Invoice with id '${claim.invoiceUid}' created successfully`);
     });
 
     it('make a payment', async () => {

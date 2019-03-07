@@ -11,7 +11,7 @@ import {
     AccountStatus, InvoiceStatus, Currencies
 } from './';
 import { ServiceItem, CreateClaim } from './params.model';
-import { Procedure, ProcedurePerformer, Quantity, Claim, Resource, ClaimPayee, ClaimCareTeam, ClaimProcedure, SimpleQuantity, EncounterStatusHistory, Period } from '../financial.model';
+import { Procedure, ProcedurePerformer, Quantity, Claim, Resource, ClaimPayee, ClaimCareTeam, ClaimProcedure, SimpleQuantity, EncounterStatusHistory, Period, Encounter } from '../financial.model';
 import { IdentifierTypes, ResourceTypes } from './enums';
 
 /**
@@ -31,12 +31,11 @@ export function buildTotalCosts() {
     const totalCost = new ClaimResponseTotal();
     totalCost.amount = this.buildMoney(0)
     totalCost.category = new CodeableConcept();
-    totalCost.category.coding = [];
 
     const totalCostCategory = this.buildCoding('submitted', 'Submitted Amount',
         'http://terminology.hl7.org/CodeSystem/adjudication');
 
-    totalCost.category.coding.push(totalCostCategory);
+    totalCost.category.coding = [totalCostCategory];
     return { totalCost, totalCostCategory };
 }
 
@@ -44,11 +43,8 @@ export function buildTotalBenefits() {
     const totalBenefit = new ClaimResponseTotal();
     totalBenefit.amount = this.buildMoney(0)
     totalBenefit.category = new CodeableConcept();
-    totalBenefit.category.coding = [];
-
     const totalBenefitCategory = this.buildCoding('benefit', 'Benefit Amount', 'http://terminology.hl7.org/CodeSystem/adjudication');
-
-    totalBenefit.category.coding.push(totalBenefitCategory);
+    totalBenefit.category.coding = [totalBenefitCategory];
     return { totalBenefit, totalBenefitCategory };
 }
 
@@ -59,7 +55,9 @@ export async function buildInvoiceLineItems(items: FlatConvectorModel<ClaimItem>
 
         // TODO: work this out with couch
         // this.tx.stub.getQueryResultAsList();
-        let chargeItems = (await ChargeItem.getAll()).filter(chargeItem => chargeItem.context.identifier.value === encounterId);
+        let chargeItems = (await ChargeItem.getAll('fhir.datatypes.ChargeItem'))
+            .map(item => item.toJSON())
+            .filter(chargeItem => chargeItem.context.identifier.value === encounterId);
 
         let key = 0;
         for (let chargeItem of chargeItems) {
@@ -99,7 +97,7 @@ export async function createAccount(data: AccountData, invoiceDate: Date) {
 
     // Build the identifier for the Account from the id
     const identifier = buildIdentifier(id, 'usual', IdentifierTypes.ACCOUNT);
-    account.identifier.push(identifier);
+    account.identifier = [identifier];
 
     // Set the necessary DomainResource stuff
     account.resourceType = ResourceTypes.ACCOUNT;
@@ -136,7 +134,7 @@ export async function createInvoice(data: InvoiceData, invoiceDate: Date) {
 
     // Build the identifier for the Account from the id
     const identifier = buildIdentifier(id, 'usual', IdentifierTypes.INVOICE);
-    invoice.identifier.push(identifier);
+    invoice.identifier = [identifier];
 
     // Set the necessary DomainResource stuff
     invoice.resourceType = ResourceTypes.INVOICE;
@@ -432,5 +430,5 @@ export async function closeEncounter(data: CreateClaim, txDate: Date) {
     data.encounter.statusHistory.push(statusHistory);
     data.encounter.status = 'finished';
 
-    await data.encounter.save();
+    await new Encounter(data.encounter).save();
 }

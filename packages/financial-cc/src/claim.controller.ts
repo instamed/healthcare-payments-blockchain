@@ -6,9 +6,15 @@ import {
 } from '@worldsibu/convector-core-controller';
 import * as fhirTypes from './utils/fhirTypes';
 import {
-    Claim, ClaimResponse, CodeableConcept, ClaimResponseItem, InvoiceLineItemPriceComponent, Patient, Organization, Account, Encounter, Period, Resource
+    Claim, ClaimResponse, CodeableConcept, ClaimResponseItem,
+    InvoiceLineItemPriceComponent, Patient, Organization,
+    Encounter, Period
 } from './financial.model';
-import { AdjudicationItem, InvoiceData, AccountData, ServiceItem, buildIdentifier, IdentifierTypes, ResourceTypes, createService, closeEncounter, CreateClaim } from './utils/';
+import {
+    InvoiceData, AccountData,
+    buildIdentifier, IdentifierTypes, ResourceTypes, createService,
+    closeEncounter, CreateClaim, AdjudicateClaim
+} from './utils/';
 import {
     buildNarrative, buildInvoiceLineItems,
     buildReference, buildCoding, buildTotalCosts, buildTotalBenefits,
@@ -22,13 +28,12 @@ export class ClaimController extends ConvectorController {
     public async create(
         @Param(CreateClaim)
         data: CreateClaim) {
-        debugger;
         const id = data.encounterUid;
 
         // Hydrate objects
-        data.patient = await Patient.getOne(data.patientId);
-        data.payer = await Organization.getOne(data.payerId);
-        data.provider = await Organization.getOne(data.providerId);
+        data.patient = <Patient>(await Patient.getOne(data.patientId)).toJSON();
+        data.payer = <Organization>(await Organization.getOne(data.payerId)).toJSON();
+        data.provider = <Organization>(await Organization.getOne(data.providerId)).toJSON();
 
         if (!data.patient) {
             throw new Error(`Patient with id ${data.patientId} doesn\'t exist`);
@@ -42,8 +47,6 @@ export class ClaimController extends ConvectorController {
 
         const encounter = new Encounter(id);
         // TODO: check this
-        data.encounter = encounter;
-
         // Build the identifier for the Encounter from the id
         const identifier = buildIdentifier(id, 'usual', IdentifierTypes.ENCOUNTER);
         encounter.identifier = [identifier];
@@ -69,9 +72,10 @@ export class ClaimController extends ConvectorController {
 
         // Set Encounter start-date to now
         encounter.period = new Period();
+
         encounter.period.start = fhirTypes.date(data.txDate);
 
-        debugger;
+        data.encounter = encounter;
         // Note Encounter assets are defined in the core model file
         // Add the Encounter to the ledger
         for (let service of data.services) {
@@ -82,25 +86,25 @@ export class ClaimController extends ConvectorController {
     }
 
     @Invokable()
-    public async adjudicate(data: {
-        uid: string,
-        accountUid: string,
-        invoiceUid: string,
-        claim: Claim,
-        adjudications: AdjudicationItem[],
-        claimDate: Date
-    }) {
+    public async adjudicate(
+        @Param(AdjudicateClaim)
+        data: AdjudicateClaim) {
         const id = data.uid;
         const claimResponse = new ClaimResponse(id);
+
+        // Hydrate objects
+        data.claim = await Claim.getOne(data.claimUid);
+
         let invoiceLineItems = await buildInvoiceLineItems(data.claim.item);
         claimResponse.identifier = [buildIdentifier(id, 'usual', IdentifierTypes.CLAIMRESPONSE)];
         claimResponse.resourceType = ResourceTypes.CLAIMRESPONSE;
 
         claimResponse.text = buildNarrative('generated', `<div xmlns=\"http://www.w3.org/1999/xhtml\">ClaimResponse for Claim @${data.claim.id}</div>`);
-
+        claimResponse.status = 'active';
         claimResponse.use = 'claim';
         claimResponse.patient = data.claim.patient;
-        claimResponse.created = fhirTypes.date(data.claimDate);
+
+        claimResponse.created = fhirTypes.date(data.txDate);
         claimResponse.insurer = data.claim.insurer;
 
         claimResponse.requestor = buildReference(data.claim.provider.identifier);
@@ -224,8 +228,7 @@ export class ClaimController extends ConvectorController {
             accountUid: data.accountUid
         };
 
-        console.log(accountData);
-        await createAccount(accountData, data.claimDate);
+        await createAccount(accountData, data.txDate);
 
         let invoiceData: InvoiceData = {
             patient: claimResponse.patient.identifier.value,
@@ -239,7 +242,6 @@ export class ClaimController extends ConvectorController {
             invoiceTotalGross: invoiceTotalGross
         };
 
-        console.log(invoiceData);
-        await createInvoice(invoiceData, data.claimDate);
+        await createInvoice(invoiceData, data.txDate);
     }
 }

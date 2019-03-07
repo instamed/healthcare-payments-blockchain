@@ -1,19 +1,44 @@
 import { InvoiceLineItem } from '..';
-import { Patient, Organization, Claim, Encounter, Procedure, ChargeItem, Account, date } from '../financial.model';
+import { Patient, Organization, Claim, Encounter, Procedure, ChargeItem, Account, date, Invoice } from '../financial.model';
 import { FlatConvectorModel, Validate, ConvectorModel, Default, ReadOnly, Required } from '@worldsibu/convector-core-model';
 import * as yup from 'yup';
 
-export class AdjudicationItem {
-    sequenceNumber: number;
-    adjudication: Adjudication;
-}
-export class Adjudication {
+export class Adjudication extends ConvectorModel<ServiceItem>{
+    @Default('fhir.datatypes.Adjudication')
+    @ReadOnly()
+    public readonly type: string;
+
+    @Required()
+    @Validate(yup.number())
     eligible: number;
+
+    @Validate(yup.number())
     copay?: number;
+
+    @Validate(yup.number())
     eligpercent?: number;
+
+    @Validate(yup.number())
     benefit?: number;
+
+    @Validate(yup.number())
     deductible?: number;
 }
+
+export class AdjudicationItem extends ConvectorModel<ServiceItem> {
+    @Default('fhir.datatypes.AdjudicationItem')
+    @ReadOnly()
+    public readonly type: string;
+
+    @Required()
+    @Validate(yup.number())
+    sequenceNumber: number;
+
+    @Required()
+    @Validate(Adjudication.schema())
+    adjudication: FlatConvectorModel<Adjudication>;
+}
+
 export class AccountData {
     patient: string | Patient;
     owner: string | Organization;
@@ -47,11 +72,11 @@ export class ServiceItem extends ConvectorModel<ServiceItem> {
     @Required()
     @Validate(yup.string())
     hcpcsCode: string;
-    
+
     @Required()
     @Validate(yup.number())
     quantity: number;
-    
+
     @Required()
     @Validate(yup.number())
     unitPrice: number;
@@ -65,13 +90,13 @@ export class ServiceItem extends ConvectorModel<ServiceItem> {
     chargeItemUid: string;
 
     /** TODO: Composer model didnt have this */
-    @Validate(yup.lazy(() => yup.array(Encounter.schema())))
+    @Validate(Encounter.schema())
     encounter?: Encounter;
 
-    @Validate(yup.lazy(() => yup.array(Procedure.schema())))
+    @Validate(Procedure.schema())
     procedure?: Procedure;
 
-    @Validate(yup.lazy(() => yup.array(ChargeItem.schema())))
+    @Validate(ChargeItem.schema())
     chargeItem?: ChargeItem;
 }
 
@@ -91,32 +116,73 @@ export class CreateClaim extends ConvectorModel<CreateClaim> {
     @Validate(yup.string())
     claimUid: string;
 
-    @Validate(yup.lazy(() => yup.array(ServiceItem.schema())))
+    @Validate(yup.array(ServiceItem.schema()))
     public services?: Array<FlatConvectorModel<ServiceItem>>;
 
     @Validate(yup.string())
     patientId: string;
-    
-    @Validate(yup.lazy(() => yup.array(Patient.schema())))
+
+    @Validate(Patient.schema())
     patient: Patient;
 
     @Validate(yup.string())
     providerId: string;
-    
-    @Validate(yup.lazy(() => yup.array(Organization.schema())))
+
+    @Validate(Organization.schema())
     provider: Organization;
 
     @Validate(yup.string())
     payerId: string;
 
-    @Validate(yup.lazy(() => yup.array(Organization.schema())))
+    @Validate(Organization.schema())
     payer: Organization;
 
-    @Validate(yup.lazy(() => Encounter.schema()))
+    @Validate(Encounter.schema())
     encounter?: Encounter;
 
-    @Validate(yup.lazy(() => yup.array(Account.schema())))
+    @Validate(Account.schema())
     account?: Account;
+
+    /**
+     * Special date for the tx outside the chain
+     */
+    @Required()
+    @Validate(yup.date())
+    txDate: Date;
+}
+
+export class AdjudicateClaim extends ConvectorModel<AdjudicateClaim> {
+    @Default('fhir.datatypes.AdjudicateClaim')
+    @ReadOnly()
+    public readonly type: string;
+
+    @Required()
+    @Validate(yup.string())
+    uid: string;
+
+    @Required()
+    @Validate(yup.string())
+    accountUid: string;
+
+    @Validate(Account.schema())
+    account?: Account;
+
+    @Required()
+    @Validate(yup.string())
+    invoiceUid: string;
+
+    @Validate(Invoice.schema())
+    invoice?: Invoice;
+
+    @Required()
+    @Validate(yup.string())
+    claimUid: string;
+
+    @Validate(Claim.schema())
+    claim?: Claim;
+
+    @Validate(yup.array(AdjudicationItem.schema()))
+    adjudications: Array<FlatConvectorModel<AdjudicationItem>>;
 
     /**
      * Special date for the tx outside the chain
