@@ -5,9 +5,9 @@ import {
 } from '@worldsibu/convector-core-controller';
 
 import {
-    Claim, ClaimResponse, CodeableConcept, ClaimResponseItem, InvoiceLineItemPriceComponent, Patient, Organization, Account, Encounter, Period
+    Claim, ClaimResponse, CodeableConcept, ClaimResponseItem, InvoiceLineItemPriceComponent, Patient, Organization, Account, Encounter, Period, Resource
 } from './financial.model';
-import { AdjudicationItem, InvoiceData, AccountData, ServiceItem, buildIdentifier } from './utils/';
+import { AdjudicationItem, InvoiceData, AccountData, ServiceItem, buildIdentifier, IdentifierTypes, ResourceTypes, createService, closeEncounter, CreateClaim } from './utils/';
 import {
     buildNarrative, buildInvoiceLineItems,
     buildReference, buildCoding, buildTotalCosts, buildTotalBenefits,
@@ -18,23 +18,14 @@ import {
 export class ClaimController extends ConvectorController {
 
     @Invokable()
-    public async create(data: {
-        encounterUid: string,
-        claimUid: string,
-        services: ServiceItem[],
-        patient: Patient,
-        provider: Organization,
-        payer: Organization,
-        account?: Account,
-        startDate: Date
-    }) {
+    public async create(data: CreateClaim) {
         const id = data.encounterUid;
         const encounter = new Encounter(id);
         // TODO: check this
         data['encounter'] = encounter;
 
         // Build the identifier for the Encounter from the id
-        const identifier = buildIdentifier(id, 'usual', 'Blockchain:Encounter');
+        const identifier = buildIdentifier(id, 'usual', IdentifierTypes.ENCOUNTER);
         encounter.identifier = [identifier];
 
         const class_ = buildCoding('OBSENC', 'observation encounter', 'https://www.hl7.org/fhir/v3/ActCode/cs.html');
@@ -42,7 +33,7 @@ export class ClaimController extends ConvectorController {
 
         encounter.class_ = class_;
 
-        encounter.resourceType = 'Encounter';
+        encounter.resourceType = ResourceTypes.ENCOUNTER;
         encounter.text = buildNarrative('generated', `<div xmlns=\"http://www.w3.org/1999/xhtml\">Encounter with patient @${data.patient.id}</div>`);
         encounter.status = 'in-progress';
 
@@ -58,16 +49,16 @@ export class ClaimController extends ConvectorController {
 
         // Set Encounter start-date to now
         encounter.period = new Period();
-        encounter.period.start = data.startDate;
+        encounter.period.start = data.txDate;
 
         // Note Encounter assets are defined in the core model file
         // Add the Encounter to the ledger
         for (let service of data.services) {
             service.encounter = encounter;
-            await createService(service);
+            await createService(service, data.txDate);
         }
 
-        await closeEncounter(data);
+        await closeEncounter(data, data.txDate);
     }
 
     @Invokable()
@@ -82,8 +73,8 @@ export class ClaimController extends ConvectorController {
         const id = data.uid;
         const claimResponse = new ClaimResponse(id);
         let invoiceLineItems = await buildInvoiceLineItems(data.claim.item);
-        claimResponse.identifier = [buildIdentifier(id, 'usual', 'Blockchain:ClaimResponse')];
-        claimResponse.resourceType = 'ClaimResponse';
+        claimResponse.identifier = [buildIdentifier(id, 'usual', IdentifierTypes.CLAIMRESPONSE)];
+        claimResponse.resourceType = ResourceTypes.CLAIMRESPONSE;
 
         claimResponse.text = buildNarrative('generated', `<div xmlns=\"http://www.w3.org/1999/xhtml\">ClaimResponse for Claim @${data.claim.id}</div>`);
 

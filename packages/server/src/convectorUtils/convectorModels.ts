@@ -1,7 +1,7 @@
 import { BaseStorage } from '@worldsibu/convector-core-storage';
 import { CouchDBStorage } from '@worldsibu/convector-storage-couchdb';
 import { Participant } from 'participant-cc';
-import { FinancialController } from 'financial-cc';
+// import { FinancialController } from 'financial-cc';
 import { Env } from './env';
 import {
   CHAINCODE, COUCHDB_HOST,

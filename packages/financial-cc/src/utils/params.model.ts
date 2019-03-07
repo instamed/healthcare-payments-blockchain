@@ -1,5 +1,5 @@
 import { InvoiceLineItem } from '..';
-import { Patient, Organization, Claim, Encounter, Procedure } from '../financial.model';
+import { Patient, Organization, Claim, Encounter, Procedure, ChargeItem, Account } from '../financial.model';
 import { FlatConvectorModel } from '@worldsibu/convector-core-model';
 
 export class AdjudicationItem {
@@ -40,9 +40,27 @@ export class Consumer { }
  */
 export class ServiceItem {
     hcpcsCode: string;
+    quantity: number;
     unitPrice: number;
     procedureUid: string;
     chargeItemUid: string;
-    encounter: FlatConvectorModel<Encounter>;
-    procedure: FlatConvectorModel<Procedure>;
+    /** TODO: Composer model didnt have this */
+    encounter: Encounter;
+    procedure: Procedure;
+    chargeItem: ChargeItem;
+}
+
+/**
+ * This didnt exist
+ */
+export class CreateClaim {
+    encounterUid: string;
+    encounter?: Encounter;
+    claimUid: string;
+    services: ServiceItem[];
+    patient: Patient;
+    provider: Organization;
+    payer: Organization;
+    account?: Account;
+    txDate: Date;
 }

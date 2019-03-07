@@ -5,7 +5,7 @@ import {
 import {
     Identifier, Patient, Organization} from './financial.model';
 import { Consumer } from './utils/params.model';
-import { buildNarrative } from './utils';
+import { buildNarrative, IdentifierTypes, ResourceTypes } from './utils';
 
 @Controller('patient')
 export class PatientController extends ConvectorController {
@@ -22,12 +22,12 @@ export class PatientController extends ConvectorController {
 
         const identifier = new Identifier();
         identifier.value = id;
-        identifier.system = 'Blockchain:Patient';
+        identifier.system = IdentifierTypes.PATIENT;
         identifier.use = 'usual';
         patient.identifier = [identifier];
 
         // Set the necessary DomainResource stuff
-        patient.resourceType = 'Patient';
+        patient.resourceType = ResourceTypes.PATIENT;
         patient.text = buildNarrative('generated',
             `<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient record for ${data.patientName}.</div>`);
 
