@@ -175,7 +175,8 @@ export abstract class Resource<T extends Resource<any>> extends ConvectorModel<T
   public meta?: FlatConvectorModel<Meta>;
 }
 
-export abstract class DomainResource extends Resource<DomainResource> {
+// TODO: make DomainResource extendable
+export abstract class DomainResource<T extends DomainResource<any>> extends Resource<T> {
  
   @Required()
   @Validate(yup.string())
@@ -655,7 +656,8 @@ export class AccountGuarantor extends BackboneElement {
 
 }
 
-export class Account extends DomainResource {
+// TODO: pass extension type
+export class Account extends DomainResource<Account> {
    @Default('fhir.datatypes.Account')
    @ReadOnly()
    public readonly type: string;
@@ -711,7 +713,8 @@ export class ChargeItemPerformer extends BackboneElement {
 
 }
 
-export class ChargeItem extends DomainResource {
+// TODO: pass extension type
+export class ChargeItem extends DomainResource<ChargeItem> {
    @Default('fhir.datatypes.ChargeItem')
    @ReadOnly()
    public readonly type: string;
@@ -1180,7 +1183,8 @@ export class ClaimItemDetailSubDetail extends BackboneElement {
 
 }
 
-export class Claim extends DomainResource {
+// TODO: pass extension type
+export class Claim extends DomainResource<Claim> {
    @Default('fhir.datatypes.Claim')
    @ReadOnly()
    public readonly type: string;
@@ -1598,7 +1602,8 @@ export class ClaimResponseError extends BackboneElement {
 
 }
 
-export class ClaimResponse extends DomainResource {
+// TODO: pass extension type
+export class ClaimResponse extends DomainResource<ClaimResponse> {
    @Default('fhir.datatypes.ClaimResponse')
    @ReadOnly()
    public readonly type: string;
@@ -1747,7 +1752,8 @@ export class CoverageCostToBeneficiaryException extends BackboneElement {
 
 }
 
-export class Coverage extends DomainResource {
+// TODO: pass extension type
+export class Coverage extends DomainResource<Coverage> {
    @Default('fhir.datatypes.Coverage')
    @ReadOnly()
    public readonly type: string;
@@ -1925,7 +1931,8 @@ export class EncounterLocation extends BackboneElement {
 
 }
 
-export class Encounter extends DomainResource {
+// TODO: pass extension type
+export class Encounter extends DomainResource<Encounter> {
    @Default('fhir.datatypes.Encounter')
    @ReadOnly()
    public readonly type: string;
@@ -2653,7 +2660,8 @@ export class ExplanationOfBenefitBenefitBalanceFinancial extends BackboneElement
 
 }
 
-export class ExplanationOfBenefit extends DomainResource {
+// TODO: pass extension type
+export class ExplanationOfBenefit extends DomainResource<ExplanationOfBenefit> {
    @Default('fhir.datatypes.ExplanationOfBenefit')
    @ReadOnly()
    public readonly type: string;
@@ -2853,7 +2861,8 @@ export class InvoiceLineItemPriceComponent extends BackboneElement {
 
 }
 
-export class Invoice extends DomainResource {
+// TODO: pass extension type
+export class Invoice extends DomainResource<Invoice> {
    @Default('fhir.datatypes.Invoice')
    @ReadOnly()
    public readonly type: string;
@@ -2929,7 +2938,8 @@ export class OrganizationContact extends BackboneElement {
 
 }
 
-export class Organization extends DomainResource {
+// TODO: pass extension type
+export class Organization extends DomainResource<Organization> {
    @Default('fhir.datatypes.Organization')
    @ReadOnly()
    public readonly type: string;
@@ -3024,7 +3034,8 @@ export class PatientLink extends BackboneElement {
 
 }
 
-export class Patient extends DomainResource {
+// TODO: pass extension type
+export class Patient extends DomainResource<Patient> {
    @Default('fhir.datatypes.Patient')
    @ReadOnly()
    public readonly type: string;
@@ -3085,8 +3096,8 @@ export class Patient extends DomainResource {
 
 }
 
-
-export class PaymentNotice extends DomainResource {
+// TODO: pass extension type
+export class PaymentNotice extends DomainResource<PaymentNotice> {
    @Default('fhir.datatypes.PaymentNotice')
    @ReadOnly()
    public readonly type: string;
@@ -3186,7 +3197,7 @@ export class PaymentReconciliationProcessNote extends BackboneElement {
 
 }
 
-export class PaymentReconciliation extends DomainResource {
+export class PaymentReconciliation extends DomainResource<PaymentReconciliation> {
    @Default('fhir.datatypes.PaymentReconciliation')
    @ReadOnly()
    public readonly type: string;
@@ -3263,7 +3274,8 @@ export class PractitionerQualification extends BackboneElement {
 
 }
 
-export class Practitioner extends DomainResource {
+// TODO: pass extension type
+export class Practitioner extends DomainResource<Practitioner> {
    @Default('fhir.datatypes.Practitioner')
    @ReadOnly()
    public readonly type: string;
@@ -3332,7 +3344,8 @@ export class ProcedureFocalDevice extends BackboneElement {
 
 }
 
-export class Procedure extends DomainResource {
+// TODO: pass extension type
+export class Procedure extends DomainResource<Procedure> {
    @Default('fhir.datatypes.Procedure')
    @ReadOnly()
    public readonly type: string;

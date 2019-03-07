@@ -21,6 +21,7 @@ export enum IdentifierTypes {
 export enum ResourceTypes {
     ACCOUNT = 'Account',
     INVOICE = 'Invoice',
+    ORGANIZATION = 'Organization',
     PROCEDURE = 'Procedure',
     CHARGEITEM = 'ChargeItem',
     PATIENT = 'Patient',
