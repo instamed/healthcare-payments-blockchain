@@ -2,6 +2,11 @@
 
 This is a [Hyperledger Fabric](https://www.hyperledger.org/projects/fabric) project to represent the FHIR Financial module. It's built with [Convector](https://github.com/worldsibu/convector) and follows the [FHIR spec](https://www.hl7.org/fhir/).
 
+## Prerequisites
+
+* [Node](https://nodejs.org/en/download/) 8.11.0
+* [Docker Community Edition](https://www.docker.com/community-edition)
+
 ## How to run the project
 
 ### Start from scratch
