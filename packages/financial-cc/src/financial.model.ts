@@ -28,8 +28,6 @@ export type unsignedInt = number;
 export type positiveInt = number;
 export type xhtml = string;
 //export type timestamp = string;
-yup.xhtml = yup.string;
-yup.date = yup.string;
 
 export class Financial extends ConvectorModel<Financial>{
 
@@ -204,10 +202,10 @@ export class Period extends Element<Period> {
    @ReadOnly()
    public readonly type: string;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public start?: date;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public end?: date;
 
 }
@@ -290,7 +288,7 @@ export class Annotation extends Element<Annotation> {
    @Validate(yup.string())
    public authorString?: string;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public time?: date;
 
    @Required()
@@ -384,7 +382,7 @@ export class Narrative extends Element<Narrative> {
    public status: string;
 
    @Required()
-   @Validate(yup.xhtml())
+   @Validate(yup.string())
    public div: xhtml;
 
 }
@@ -495,7 +493,7 @@ export class Attachment extends Element<Attachment> {
    @Validate(yup.string())
    public title?: string;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public creation?: date;
 
 }
@@ -746,7 +744,7 @@ export class ChargeItem extends DomainResource<ChargeItem> {
    @Validate(yup.lazy(() => Reference.schema()))
    public context?: FlatConvectorModel<Reference>; //Encounter|EpisodeOfCare
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public occurrenceDateTime?: date;
 
    @Validate(yup.lazy(() => Period.schema()))
@@ -785,7 +783,7 @@ export class ChargeItem extends DomainResource<ChargeItem> {
    @Validate(yup.lazy(() => Reference.schema()))
    public enterer?: FlatConvectorModel<Reference>; //Practitioner|PractitionerRole|Organization|Patient|Device|RelatedPerson
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public enteredDate?: date;
 
    @Validate(yup.lazy(() => yup.array(CodeableConcept.schema())))
@@ -882,7 +880,7 @@ export class ClaimSupportingInfo extends BackboneElement {
    @Validate(yup.lazy(() => CodeableConcept.schema()))
    public code?: FlatConvectorModel<CodeableConcept>;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public timingDate?: date;
 
    @Validate(yup.lazy(() => Period.schema()))
@@ -948,7 +946,7 @@ export class ClaimProcedure extends BackboneElement {
    @Validate(yup.lazy(() => yup.array(CodeableConcept.schema())))
    public type_?: Array<FlatConvectorModel<CodeableConcept>>;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public date?: date;
 
    @Required()
@@ -1001,7 +999,7 @@ export class ClaimAccident extends BackboneElement {
    public readonly type: string;
 
    @Required()
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public date: date;
 
    @Validate(yup.lazy(() => CodeableConcept.schema()))
@@ -1052,7 +1050,7 @@ export class ClaimItem extends BackboneElement {
    @Validate(yup.lazy(() => yup.array(CodeableConcept.schema())))
    public programCode?: Array<FlatConvectorModel<CodeableConcept>>;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public servicedDate?: date;
 
    @Validate(yup.lazy(() => Period.schema()))
@@ -1219,7 +1217,7 @@ export class Claim extends DomainResource<Claim> {
    public billablePeriod?: FlatConvectorModel<Period>;
 
    @Required()
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public created: date;
 
    @Validate(yup.lazy(() => Reference.schema()))
@@ -1388,7 +1386,7 @@ export class ClaimResponseAddItem extends BackboneElement {
    @Validate(yup.lazy(() => yup.array(CodeableConcept.schema())))
    public programCode?: Array<FlatConvectorModel<CodeableConcept>>;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public servicedDate?: date;
 
    @Validate(yup.lazy(() => Period.schema()))
@@ -1529,7 +1527,7 @@ export class ClaimResponsePayment extends BackboneElement {
    @Validate(yup.lazy(() => CodeableConcept.schema()))
    public adjustmentReason?: FlatConvectorModel<CodeableConcept>;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public date?: date;
 
    @Required()
@@ -1634,7 +1632,7 @@ export class ClaimResponse extends DomainResource<ClaimResponse> {
    public patient: FlatConvectorModel<Reference>; //Patient
 
    @Required()
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public created: date;
 
    @Required()
@@ -2081,7 +2079,7 @@ export class ExplanationOfBenefitSupportingInfo extends BackboneElement {
    @Validate(yup.lazy(() => CodeableConcept.schema()))
    public code?: FlatConvectorModel<CodeableConcept>;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public timingDate?: date;
 
    @Validate(yup.lazy(() => Period.schema()))
@@ -2147,7 +2145,7 @@ export class ExplanationOfBenefitProcedure extends BackboneElement {
    @Validate(yup.lazy(() => yup.array(CodeableConcept.schema())))
    public type_?: Array<FlatConvectorModel<CodeableConcept>>;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public date?: date;
 
    @Required()
@@ -2186,7 +2184,7 @@ export class ExplanationOfBenefitAccident extends BackboneElement {
    @ReadOnly()
    public readonly type: string;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public date?: date;
 
    @Validate(yup.lazy(() => CodeableConcept.schema()))
@@ -2237,7 +2235,7 @@ export class ExplanationOfBenefitItem extends BackboneElement {
    @Validate(yup.lazy(() => yup.array(CodeableConcept.schema())))
    public programCode?: Array<FlatConvectorModel<CodeableConcept>>;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public servicedDate?: date;
 
    @Validate(yup.lazy(() => Period.schema()))
@@ -2433,7 +2431,7 @@ export class ExplanationOfBenefitAddItem extends BackboneElement {
    @Validate(yup.lazy(() => yup.array(CodeableConcept.schema())))
    public programCode?: Array<FlatConvectorModel<CodeableConcept>>;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public servicedDate?: date;
 
    @Validate(yup.lazy(() => Period.schema()))
@@ -2573,7 +2571,7 @@ export class ExplanationOfBenefitPayment extends BackboneElement {
    @Validate(yup.lazy(() => CodeableConcept.schema()))
    public adjustmentReason?: FlatConvectorModel<CodeableConcept>;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public date?: date;
 
    @Validate(yup.lazy(() => Money.schema()))
@@ -2692,7 +2690,7 @@ export class ExplanationOfBenefit extends DomainResource<ExplanationOfBenefit> {
    public billablePeriod?: FlatConvectorModel<Period>;
 
    @Required()
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public created: date;
 
    @Validate(yup.lazy(() => Reference.schema()))
@@ -2885,7 +2883,7 @@ export class Invoice extends DomainResource<Invoice> {
    @Validate(yup.lazy(() => Reference.schema()))
    public recipient?: FlatConvectorModel<Reference>; //Organization|Patient|RelatedPerson
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public date?: date;
 
    @Validate(yup.lazy(() => yup.array(InvoiceParticipant.schema())))
@@ -3052,13 +3050,13 @@ export class Patient extends DomainResource<Patient> {
    @Validate(yup.string())
    public gender?: string;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public birthDate?: date;
 
    @Validate(yup.boolean())
    public deceasedBoolean?: boolean;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public deceasedDateTime?: date;
 
    @Validate(yup.lazy(() => yup.array(Address.schema())))
@@ -3113,7 +3111,7 @@ export class PaymentNotice extends DomainResource<PaymentNotice> {
    public response?: FlatConvectorModel<Reference>; //Any
 
    @Required()
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public created: date;
 
    @Validate(yup.lazy(() => Reference.schema()))
@@ -3123,7 +3121,7 @@ export class PaymentNotice extends DomainResource<PaymentNotice> {
    @Validate(yup.lazy(() => Reference.schema()))
    public payment: FlatConvectorModel<Reference>; //PaymentReconciliation
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public paymentDate?: date;
 
    @Validate(yup.lazy(() => Reference.schema()))
@@ -3167,7 +3165,7 @@ export class PaymentReconciliationDetail extends BackboneElement {
    @Validate(yup.lazy(() => Reference.schema()))
    public response?: FlatConvectorModel<Reference>; //Any
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public date?: date;
 
    @Validate(yup.lazy(() => Reference.schema()))
@@ -3210,7 +3208,7 @@ export class PaymentReconciliation extends DomainResource<PaymentReconciliation>
    public period?: FlatConvectorModel<Period>;
 
    @Required()
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public created: date;
 
    @Validate(yup.lazy(() => Reference.schema()))
@@ -3229,7 +3227,7 @@ export class PaymentReconciliation extends DomainResource<PaymentReconciliation>
    public disposition?: string;
 
    @Required()
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public paymentDate: date;
 
    @Required()
@@ -3294,7 +3292,7 @@ export class Practitioner extends DomainResource<Practitioner> {
    @Validate(yup.string())
    public gender?: string;
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public birthDate?: date;
 
    //   @Validate(yup.lazy(() => yup.array(Attachment.schema())))
@@ -3380,7 +3378,7 @@ export class Procedure extends DomainResource<Procedure> {
    @Validate(yup.lazy(() => Reference.schema()))
    public encounter?: FlatConvectorModel<Reference>; //Encounter
 
-   @Validate(yup.date())
+   @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public performedDateTime?: date;
 
    @Validate(yup.lazy(() => Period.schema()))

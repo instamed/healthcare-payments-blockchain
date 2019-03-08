@@ -12,13 +12,13 @@
     "build": "npm run clean && npm run client:generate && tsc", 
     "prepare": "npm run build", 
     "test": "npm run build && mocha -r ts-node/register tests/*.spec.ts --reporter spec", 
-    "client:generate": "generate-controller-interface -c ParticipantController"
+    "client:generate": "echo 'Client is not required anymore'"
   },
   "dependencies": { 
     "yup": "^0.26.6", 
     "reflect-metadata": "^0.1.12", 
-    "@worldsibu/convector-core-model": "^1.2.0", 
-    "@worldsibu/convector-core-controller": "^1.2.0"
+    "@worldsibu/convector-core-model": "1.2.1-0-alpha.57ce2bb4", 
+    "@worldsibu/convector-core-controller": "1.2.1-0-alpha.57ce2bb4"
   },
   "devDependencies": {  
     "@types/node": "^10.12.5",  
