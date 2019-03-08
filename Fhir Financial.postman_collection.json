@@ -7,6 +7,242 @@
 	},
 	"item": [
 		{
+			"name": "Gets",
+			"item": [
+				{
+					"name": "Organizations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Claims",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Payer Participant",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/participant/payer",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"participant",
+								"payer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Consumer Participant",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/participant/consumer",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"participant",
+								"consumer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Provider Participant",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/participant/provider",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"participant",
+								"provider"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/patient",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"patient"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invoices",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/invoice",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"invoice"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Accounts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/account",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"account"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Procedures",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/procedure",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"procedure"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Charge Items",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Claim Response",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Encounters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/encounter",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"encounter"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "1. Create Provider Organization",
 			"request": {
 				"method": "POST",
@@ -23,12 +259,11 @@
 					"raw": "{\n            \"resourceType\": \"Organization\",\n            \"id\": \"resource:org.fhir.core.Organization#XYZ_Provider\",\n            \"identifier\": [\n                {\n                    \"use\": \"usual\",\n                    \"system\": \"Blockchain:Provider\",\n                    \"value\": \"resource:org.fhir.core.Organization#XYZ_Provider\"\n                }\n            ],\n            \"active\": true,\n            \"type_\": [\n                {\n                    \"coding\": [\n                        {\n                            \"system\": \"http://hl7.org/fhir/organization-type\",\n                            \"code\": \"prov\",\n                            \"display\": \"Healthcare Provider\"\n                        }\n                    ]\n                }\n            ],\n            \"name\": \"XYZ Health Services\",\n            \"telecom\": [\n                {\n                    \"system\": \"phone\",\n                    \"value\": \"098-765 4321\"\n                }\n            ],\n            \"address\": [\n                {\n                    \"line\": [\n                        \"Somewhere Newport Beach\"\n                    ]\n                }\n            ],\n            \"contact\": [\n                {\n                    \"purpose\": {\n                        \"coding\": [\n                            {\n                                \"system\": \"http://terminology.hl7.org/CodeSystem/contactentity-type\",\n                                \"code\": \"ADMIN\"\n                            }\n                        ]\n                    },\n                    \"name\": {\n                        \"text\": \"Dr. Provida\"\n                    },\n                    \"telecom\": [\n                        {\n                            \"system\": \"phone\",\n                            \"value\": \"022-655 2321\"\n                        },\n                        {\n                            \"system\": \"email\",\n                            \"value\": \"dr@XYZ_Provider.com\"\n                        },\n                        {\n                            \"system\": \"fax\",\n                            \"value\": \"022-655 2322\"\n                        }\n                    ],\n                    \"address\": {\n                        \"line\": [\n                            \"Somewhere Newport Beach\"\n                        ]\n                    }\n                }\n            ]\n        }"
 				},
 				"url": {
-					"raw": "{{server}}/admin/organization",
+					"raw": "{{server}}/organization",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
-						"admin",
 						"organization"
 					]
 				}
@@ -52,12 +287,11 @@
 					"raw": "{\n    \"resourceType\": \"Organization\",\n    \"id\": \"resource:org.fhir.core.Organization#ABC_Healthcare\",\n    \"identifier\": [\n        {\n            \"use\": \"usual\",\n            \"system\": \"Blockchain:Payer\",\n            \"value\": \"resource:org.fhir.core.Organization#ABC_Healthcare\"\n        }\n    ],\n    \"active\": true,\n    \"type_\": [\n        {\n            \"coding\": [\n                {\n                    \"system\": \"http://hl7.org/fhir/organization-type\",\n                    \"code\": \"ins\",\n                    \"display\": \"Insurance Company\"\n                }\n            ]\n        }\n    ],\n    \"name\": \"ABC Healthcare Insurance\",\n    \"telecom\": [\n        {\n            \"system\": \"phone\",\n            \"value\": \"098-765 4321\"\n        }\n    ],\n    \"address\": [\n        {\n            \"line\": [\n                \"Somewhere Newport Beach\"\n            ]\n        }\n    ],\n    \"contact\": [\n        {\n            \"purpose\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://terminology.hl7.org/CodeSystem/contactentity-type\",\n                        \"code\": \"ADMIN\"\n                    }\n                ]\n            },\n            \"name\": {\n                \"text\": \"Insurance Management Guy\"\n            },\n            \"telecom\": [\n                {\n                    \"system\": \"phone\",\n                    \"value\": \"1-234-567-8910\"\n                },\n                {\n                    \"system\": \"email\",\n                    \"value\": \"cool_guy@insura.com\"\n                },\n                {\n                    \"system\": \"fax\",\n                    \"value\": \"022-655 2322\"\n                }\n            ],\n            \"address\": {\n                \"line\": [\n                    \"Somewhere Newport Beach\"\n                ]\n            }\n        }\n    ]\n}"
 				},
 				"url": {
-					"raw": "{{server}}/admin/organization",
+					"raw": "{{server}}/organization",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
-						"admin",
 						"organization"
 					]
 				}
@@ -81,12 +315,11 @@
 					"raw": "{\n    \"id\": \"Consumer::Bob\"\n}"
 				},
 				"url": {
-					"raw": "{{server}}/admin/participant/consumer",
+					"raw": "{{server}}/participant/consumer",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
-						"admin",
 						"participant",
 						"consumer"
 					]
@@ -111,12 +344,11 @@
 					"raw": "{\n    \"id\": \"Payer::Insura\",\n    \"payerUid\": \"resource:org.fhir.core.Organization#ABC_Healthcare\"\n}"
 				},
 				"url": {
-					"raw": "{{server}}/admin/participant/payer",
+					"raw": "{{server}}/participant/payer",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
-						"admin",
 						"participant",
 						"payer"
 					]
@@ -141,12 +373,11 @@
 					"raw": "{\n    \"id\": \"Provider::Provida\",\n    \"providerUid\": \"resource:org.fhir.core.Organization#XYZ_Provider\"\n}"
 				},
 				"url": {
-					"raw": "{{server}}/admin/participant/provider",
+					"raw": "{{server}}/participant/provider",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
-						"admin",
 						"participant",
 						"provider"
 					]
@@ -171,14 +402,13 @@
 					"raw": "{\n            \"resourceType\": \"Patient\",\n            \"id\": \"resource:org.fhir.core.Patient#Bob\",\n            \"identifier\": [\n                {\n                    \"use\": \"usual\",\n                    \"system\": \"Blockchain:Patient\",\n                    \"value\": \"resource:org.fhir.core.Patient#Bob\"\n                }\n            ],\n            \"active\": true,\n            \"name\": [\n                {\n                    \"use\": \"usual\",\n                    \"family\": \"Testington\",\n                    \"given\": [\n                        \"Bob\"\n                    ],\n                    \"suffix\": [\n                        \"Mr\"\n                    ]\n                }\n            ],\n            \"telecom\": [\n                {\n                    \"system\": \"phone\",\n                    \"value\": \"1234567890\",\n                    \"use\": \"mobile\"\n                },\n                {\n                    \"system\": \"email\",\n                    \"value\": \"bob_test@instamed.com\",\n                    \"use\": \"home\"\n                }\n            ],\n            \"gender\": \"male\",\n            \"birthDate\": \"1944-11-17\",\n            \"deceasedBoolean\": false,\n            \"address\": [\n                {\n                    \"use\": \"home\",\n                    \"line\": [\n                        \"123 Test Way\"\n                    ],\n                    \"city\": \"Newport Beach\",\n                    \"postalCode\": \"12345\",\n                    \"country\": \"USA\"\n                }\n            ],\n            \"maritalStatus\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://hl7.org/fhir/v3/MaritalStatus\",\n                        \"code\": \"M\",\n                        \"display\": \"Married\"\n                    }\n                ],\n                \"text\": \"Married\"\n            },\n            \"managingOrganization\": {\n                \"identifier\": {\n                    \"$class\": \"org.fhir.datatypes.Identifier\",\n                    \"use\": \"usual\",\n                    \"system\": \"Blockchain:Provider\",\n                    \"value\": \"Provider::Provida\"\n                }\n            }\n        }"
 				},
 				"url": {
-					"raw": "{{server}}/provider/patient/create",
+					"raw": "{{server}}/patient/",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
-						"provider",
 						"patient",
-						"create"
+						""
 					]
 				}
 			},
@@ -201,14 +431,12 @@
 					"raw": "{\n    \"txDate\": \"Fri Mar 08 2019 09:28:27 GMT-0600 (CST)\",\n    \"patientId\": \"resource:org.fhir.core.Patient#Bob\",\n    \"providerId\": \"resource:org.fhir.core.Organization#XYZ_Provider\",\n    \"encounterUid\": \"resource:org.fhir.core.Encounter#Encounter-1\",\n    \"claimUid\": \"resource:org.fhir.core.Claim#Claim-1\",\n    \"payerId\": \"resource:org.fhir.core.Organization#ABC_Healthcare\",\n    \"services\": [\n        {\n            \"hcpcsCode\": \"99230\",\n            \"quantity\": 1,\n            \"unitPrice\": 45,\n            \"procedureUid\": \"resource:org.fhir.core.Procedure#Procedure-1\",\n            \"chargeItemUid\": \"resource:org.fhir.core.ChargeItem#ChargeItem-1\"\n        },\n        {\n            \"hcpcsCode\": \"90756\",\n            \"quantity\": 3,\n            \"unitPrice\": 55,\n            \"procedureUid\": \"resource:org.fhir.core.Procedure#Procedure-2\",\n            \"chargeItemUid\": \"resource:org.fhir.core.ChargeItem#ChargeItem-2\"\n        }\n    ]\n}"
 				},
 				"url": {
-					"raw": "{{server}}/provider/claim/create",
+					"raw": "{{server}}/claim",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
-						"provider",
-						"claim",
-						"create"
+						"claim"
 					]
 				}
 			},
@@ -231,12 +459,11 @@
 					"raw": "{\n    \"txDate\": \"Fri Mar 08 2019 09:28:27 GMT-0600 (CST)\",\n    \"uid\": \"resource:org.fhir.core.ClaimResponse#ClaimResponse-1\",\n    \"claimUid\": \"resource:org.fhir.core.Claim#Claim-1\",\n    \"accountUid\": \"resource:org.fhir.core.Account#Account-1\",\n    \"invoiceUid\": \"resource:org.fhir.core.Invoice#Invoice-1\",\n    \"adjudications\": [\n        {\n            \"sequenceNumber\": 1,\n            \"adjudication\": {\n                \"eligible\": 20,\n                \"copay\": 10,\n                \"eligpercent\": 80,\n                \"benefit\": 6\n            }\n        },\n        {\n            \"sequenceNumber\": 2,\n            \"adjudication\": {\n                \"eligible\": 40,\n                \"copay\": 10,\n                \"eligpercent\": 80,\n                \"benefit\": 22\n            }\n        }\n    ]\n}"
 				},
 				"url": {
-					"raw": "{{server}}/payer/claim/adjudicate",
+					"raw": "{{server}}/claim/adjudicate",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
-						"payer",
 						"claim",
 						"adjudicate"
 					]
@@ -261,12 +488,11 @@
 					"raw": "{\n\t\"payment\":\"resource:org.fhir.core.Invoice#Invoice-1\"\n}"
 				},
 				"url": {
-					"raw": "{{server}}/patient/payment/make",
+					"raw": "{{server}}/payment/make",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
-						"patient",
 						"payment",
 						"make"
 					]
@@ -299,7 +525,7 @@
 	],
 	"variable": [
 		{
-			"id": "bb36bd86-34ab-48d8-9e4f-9f7953070aa9",
+			"id": "45667458-6038-405c-9fa7-4e5176bcff58",
 			"key": "server",
 			"value": "http://localhost:10100/",
 			"type": "string"

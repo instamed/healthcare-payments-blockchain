@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { create, getAll } from '../services/patient.service';
+import { create, getAll } from '../services/organization.service';
+
 const router: Router = Router();
 
 router.get('/', async (req: Request, res: Response) => {
@@ -14,13 +15,13 @@ router.get('/', async (req: Request, res: Response) => {
 
 router.post('/', async (req: Request, res: Response) => {
     try {
-        const patient = req.body;
-        await create(patient);
-        res.send(201);
+        const organization = req.body;
+        await create(organization);
+        res.status(201).send();
     } catch (ex) {
         console.log(ex);
         res.status(500).send(ex);
     }
 });
 
-export const PatientCtrl: Router = router;
+export const OrganizationCtrl: Router = router;

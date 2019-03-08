@@ -16,7 +16,7 @@ import { Encounter } from '../src';
 
 const log = console.log;
 
-describe('Fhir Financial', () => {
+describe.only('Fhir Financial', () => {
     let adapter: MockControllerAdapter;
     let ctrl: {
         org: OrganizationController,

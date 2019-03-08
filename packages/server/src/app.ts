@@ -4,16 +4,20 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 import * as express from 'express';
-import {
-  PatientCtrl, PayerCtrl,
-  ProviderCtrl, AdminCtrl
-} from './controllers';
+
 import * as bodyParser from 'body-parser';
 import {
   PORT, USER, ORG, KEYSTORE,
   NETWORKPROFILE, CHANNEL, CHAINCODE,
   COUCHDB_PROTOCOL, COUCHDB_HOST, COUCHDB_PORT
 } from './utils';
+import {
+  OrganizationCtrl, PaymentCtrl, ClaimCtrl, PatientCtrl, ProcedureCtrl,
+  ParticipantCtrl, InvoiceCtrl, AccountCtrl
+} from './controllers';
+import { ChargeItemCtrl } from './controllers/chargeItem.controller';
+import { ClaimResponseCtrl } from './controllers/claimResponse.controller';
+import { EncounterCtrl } from './controllers/encounter.controller';
 
 const app: express.Application = express();
 const port = process.env.PORT || 10100;
@@ -32,10 +36,17 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/admin', AdminCtrl);
+app.use('/organization', OrganizationCtrl);
+app.use('/payment', PaymentCtrl);
+app.use('/claim', ClaimCtrl);
 app.use('/patient', PatientCtrl);
-app.use('/payer', PayerCtrl);
-app.use('/provider', ProviderCtrl);
+app.use('/participant', ParticipantCtrl);
+app.use('/invoice', InvoiceCtrl);
+app.use('/account', AccountCtrl);
+app.use('/procedure', ProcedureCtrl);
+app.use('/chargeItem', ChargeItemCtrl);
+app.use('/claimResponse', ClaimResponseCtrl);
+app.use('/encounter', EncounterCtrl);
 
 app.listen(port, () =>
   console.log(`Running as ${ORG}:${USER} in port ${port}`));

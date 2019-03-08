@@ -6,7 +6,7 @@
     "dist/*"
   ],
   "scripts": {
-    "start": "npm run env:restart && npm run cc:start && npm run server:start",
+    "start": "npm run build && npm run env:restart && npm run cc:start && views:install && npm run server:start",
     "install": "npm-run-all -s lerna:install",
     "build": "node ./update-paths.js && npx lerna run build",
     "env:restart": "hurl new",
@@ -20,7 +20,8 @@
     "lerna:build": "lerna run build",
     "cc:package": "f() { npm run lerna:build; chaincode-manager --config ./chaincode.config.json --output ./chaincode-financial package; }; f",
     "cc:install": "f() { hurl install financial node -P ./chaincode-financial; }; f",
-    "lerna:test": "lerna exec npm run test"
+    "lerna:test": "lerna exec npm run test",
+    "views:install": "./dev-env/installer.sh"
   },
   "devDependencies": {
     "lerna": "^3.13.0",
