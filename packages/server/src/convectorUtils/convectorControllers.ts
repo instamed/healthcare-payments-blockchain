@@ -15,8 +15,8 @@ import {
   USER, CHANNEL,
   CHAINCODE, KEYSTORE, NETWORKPROFILE, ORG
 } from '../utils';
-import { PatientController, OrganizationController, ClaimController } from '../../../financial-cc/dist/src';
-import { PaymentController } from '../../../financial-cc/src';
+import { PatientController, OrganizationController, ClaimController } from 'financial-cc';
+import { PaymentController } from 'financial-cc';
 
 async function InitFabricAdapter() {
   await SelfGenContext.getClient();

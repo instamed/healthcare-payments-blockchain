@@ -4,7 +4,7 @@ const router: Router = Router();
 
 router.post('/patient/create', async (req: Request, res: Response) => {
     try {
-        const patient = req.data;
+        const patient = req.body.data;
         await createPatient(patient);
     } catch (ex) {
         console.log(ex);
