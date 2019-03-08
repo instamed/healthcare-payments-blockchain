@@ -43,6 +43,7 @@ async function InitFabricAdapter() {
 export async function Init() {
   const adapter = await InitFabricAdapter();
   return {
+    adapter,
     patient: ClientFactory(PatientController, adapter),
     payment: ClientFactory(PaymentController, adapter),
     claim: ClientFactory(ClaimController, adapter),
