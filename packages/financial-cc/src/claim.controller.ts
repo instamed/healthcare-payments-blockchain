@@ -8,11 +8,14 @@ import * as fhirTypes from './utils/fhirTypes';
 import {
     Claim, ClaimResponse, CodeableConcept, ClaimResponseItem,
     InvoiceLineItemPriceComponent, Patient, Organization,
-    Encounter, Period, Quantity, Procedure, ProcedurePerformer, ChargeItem, ClaimPayee, ClaimCareTeam, ClaimItem, ClaimProcedure, SimpleQuantity, EncounterStatusHistory, Account, Invoice, Identifier
+    Encounter, Period, Quantity, Procedure, ProcedurePerformer, 
+    ChargeItem, ClaimPayee, ClaimCareTeam, ClaimItem, ClaimProcedure, 
+    SimpleQuantity, EncounterStatusHistory, Account, Invoice, Identifier
 } from './financial.model';
 import {
     InvoiceData, AccountData,
-    buildIdentifier, IdentifierTypes, ResourceTypes, CreateClaim, AdjudicateClaim, ServiceItem, AccountStatus, InvoiceStatus
+    buildIdentifier, IdentifierTypes, ResourceTypes, CreateClaim, 
+    AdjudicateClaim, ServiceItem, AccountStatus, InvoiceStatus
 } from './utils/';
 import {
     buildNarrative, buildInvoiceLineItems,
@@ -216,7 +219,7 @@ export class ClaimController extends ConvectorController {
         // TODO: Do some payment data here maybe
 
         // Save to the blockchain
-        claimResponse.save();
+        await claimResponse.save();
         // Calculate amount
         let amountOwed = totalBenefit.amount.value - totalCost.amount.value;
 
@@ -444,7 +447,6 @@ export class ClaimController extends ConvectorController {
 
         await new Encounter(data.encounter).save();
     }
-
 
     async createAccount(data: AccountData, invoiceDate: Date) {
         const id = data.accountUid;
