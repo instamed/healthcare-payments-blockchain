@@ -88,3 +88,4 @@ export namespace ModelHelpers {
 }
 
 export { Participant } from 'participant-cc';
+export { Patient } from 'financial-cc';
