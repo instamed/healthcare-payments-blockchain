@@ -30,9 +30,10 @@ export type xhtml = string;
 //export type timestamp = string;
 
 export class Financial extends ConvectorModel<Financial>{
-
+   // TODO: fix this
+   @Default('fhir.datatypes.Financial')
    @ReadOnly()
-   public readonly type = 'fhir.datatypes.Financial';
+   public readonly type: string;
 }
 
 export abstract class Element<T extends Element<any>> extends ConvectorModel<T> {

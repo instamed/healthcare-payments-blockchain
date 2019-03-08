@@ -1,29 +1,26 @@
 // tslint:disable:no-unused-expression
 import { join } from 'path';
 import { expect } from 'chai';
+import * as chai from 'chai';
 import { MockControllerAdapter } from '@worldsibu/convector-adapter-mock';
 import { OrganizationController } from '../src/organization.controller';
 import 'mocha';
+import * as chaiAsPromised from 'chai-as-promised';
 import { ClientFactory } from '@worldsibu/convector-core-adapter';
 import {
-    PatientController, Organization, Patient, Claim,
-    ChargeItem, Account, Procedure, Invoice, Participant, ParticipantController,
+    PatientController, Organization, Patient, ParticipantController,
     ConsumerParticipant, ProviderParticipant, PayerParticipant
 } from '../src';
-import { ClaimController, PaymentController } from '../src';
-import { CreateClaim, AdjudicateClaim, InvoiceStatus } from '../src/utils';
-import { Encounter } from '../src';
 
 const log = console.log;
 
-describe('Fhir Financial', () => {
+describe('Fhir Financial - Participants', () => {
+    chai.use(chaiAsPromised);
     let adapter: MockControllerAdapter;
     let ctrl: {
         org: OrganizationController,
         participant: ParticipantController,
-        patient: PatientController,
-        claim: ClaimController,
-        payment: PaymentController
+        patient: PatientController
     };
     let provider = new Organization;
     let payer = new Organization;
@@ -31,9 +28,7 @@ describe('Fhir Financial', () => {
     const providerId = 'resource:org.fhir.core.Organization#XYZ_Provider';
     const payerId = 'resource:org.fhir.core.Organization#ABC_Healthcare';
     const patientId = 'resource:org.fhir.core.Patient#Bob';
-    const claimId = 'resource:org.fhir.core.Claim#Claim-1';
-    const accountId = 'resource:org.fhir.core.Account#Account-1';
-    const invoiceId = 'resource:org.fhir.core.Invoice#Invoice-1';
+    const consumerParticipantId2 = 'Consumer::Bob2';
 
     before('Init controllers', async () => {
         adapter = new MockControllerAdapter();
@@ -49,26 +44,16 @@ describe('Fhir Financial', () => {
             version: '*',
             controller: 'PatientController',
             name: join(__dirname, '..')
-        }, {
-            version: '*',
-            controller: 'PaymentController',
-            name: join(__dirname, '..')
-        }, {
-            version: '*',
-            controller: 'ClaimController',
-            name: join(__dirname, '..')
         }]);
 
         ctrl = {
             org: ClientFactory(OrganizationController, adapter),
             participant: ClientFactory(ParticipantController, adapter),
-            patient: ClientFactory(PatientController, adapter),
-            payment: ClientFactory(PaymentController, adapter),
-            claim: ClientFactory(ClaimController, adapter)
+            patient: ClientFactory(PatientController, adapter)
         };
     });
 
-    it('should create a Provider organization', async () => {
+    before('Mock previous organizations', async () => {
         provider = new Organization({
             'resourceType': 'Organization',
             'id': providerId,
@@ -145,7 +130,7 @@ describe('Fhir Financial', () => {
         expect(createdProvider.id).to.equal(providerId);
     });
 
-    it('should create a Payer organization', async () => {
+    before('Mock previous organizations', async () => {
         payer = new Organization(
             {
                 'resourceType': 'Organization',
@@ -313,133 +298,39 @@ describe('Fhir Financial', () => {
         expect(createdParticipant.id).to.equal(consumerParticipantId);
     });
 
-    it('should create a Provider participant', async () => {
+    it('should create a second Consumer participant associated to a Patient', async () => {
+        const consumerParticipantId = 'Consumer::Bob2';
+        const participant = new ConsumerParticipant({
+            id: consumerParticipantId2,
+            patientUid: patientId
+        });
+
+        await ctrl.participant.createConsumer(participant);
+
+        let createdParticipant = await adapter.getById<ConsumerParticipant>(consumerParticipantId);
+        expect(createdParticipant).to.exist;
+        expect(createdParticipant.patientUid).to.equal(patientId);
+    });
+
+    it('should fail to create a Provider participant', async () => {
         const participantId = 'Provider::Provida';
         const participant = new ProviderParticipant({
             id: participantId,
-            providerUid: providerId
+            providerUid: providerId + 'failme'
         });
 
-        await ctrl.participant.createProvider(participant);
-
-        let createdParticipant = await adapter.getById<ProviderParticipant>(participantId);
-        expect(createdParticipant).to.exist;
-        expect(createdParticipant.id).to.equal(participantId);
+        await expect(ctrl.participant.createProvider(participant)).to.be.eventually.rejected;
     });
-    
-    it('should create a Payer participant', async () => {
+
+    it('should fail to create a Payer participant', async () => {
         const participantId = 'Payer::Insura';
         const participant = new PayerParticipant({
             id: participantId,
-            payerUid: payerId
+            payerUid: payerId + 'failme'
         });
 
-        await ctrl.participant.createPayer(participant);
-
-        let createdParticipant = await adapter.getById<PayerParticipant>(participantId);
-        expect(createdParticipant).to.exist;
-        expect(createdParticipant.id).to.equal(participantId);
+        await expect(ctrl.participant.createPayer(participant)).to.be.eventually.rejected;
     });
 
-    it('create a claim (encounter, chargeItems, procedures)', async () => {
-        const claim = new CreateClaim({
-            txDate: new Date(),
-            'patientId': patientId,
-            'providerId': providerId,
-            'encounterUid': 'resource:org.fhir.core.Encounter#Encounter-1',
-            'claimUid': claimId,
-            'payerId': payerId,
-            'services': [
-                {
-                    'hcpcsCode': '99230',
-                    'quantity': 1,
-                    'unitPrice': 45,
-                    'procedureUid': 'resource:org.fhir.core.Procedure#Procedure-1',
-                    'chargeItemUid': 'resource:org.fhir.core.ChargeItem#ChargeItem-1'
-                },
-                {
-                    'hcpcsCode': '90756',
-                    'quantity': 3,
-                    'unitPrice': 55,
-                    'procedureUid': 'resource:org.fhir.core.Procedure#Procedure-2',
-                    'chargeItemUid': 'resource:org.fhir.core.ChargeItem#ChargeItem-2'
-                }
-            ]
-        });
-        await ctrl.claim.create(claim);
-        const createdClaim = await adapter.getById<Claim>(claimId);
-        expect(createdClaim.id).to.equal(claimId);
-        log(`Claim with id '${createdClaim.id}' created successfully`);
 
-        const procedure1 = await adapter.getById<Procedure>(claim.services[0].procedureUid);
-        expect(procedure1.id, 'Procedure 1 was not created successfully').to.exist;
-        log(`Procedure with id '${procedure1.id}' created successfully`);
-
-        const procedure2 = await adapter.getById<Procedure>(claim.services[1].procedureUid);
-        expect(procedure2.id, 'Procedure 2 was not created successfully').to.exist;
-        log(`Procedure with id '${procedure2.id}' created successfully`);
-
-        const chargeItem1 = await adapter.getById<ChargeItem>(claim.services[0].chargeItemUid);
-        expect(chargeItem1.id, 'Charge item 1 was not created successfully').to.exist;
-        log(`ChargeItem with id '${chargeItem1.id}' created successfully`);
-
-        const chargeItem2 = await adapter.getById<ChargeItem>(claim.services[1].chargeItemUid);
-        expect(chargeItem2.id, 'Charge item 2 was not created successfully').to.exist;
-        log(`ChargeItem with id '${chargeItem2.id}' created successfully`);
-
-        const encounter = await adapter.getById<Encounter>(claim.encounterUid);
-        expect(encounter.id, 'Encounter was not created successfully').to.exist;
-        log(`Encounter with id '${encounter.id}' created successfully`);
-    });
-
-    it('adjudicate a claim (create a claim response, invoice, account)', async () => {
-        const claim = new AdjudicateClaim({
-            txDate: new Date(),
-            'uid': 'resource:org.fhir.core.ClaimResponse#ClaimResponse-1',
-            'claimUid': claimId,
-            'accountUid': accountId,
-            'invoiceUid': invoiceId,
-            'adjudications': [{
-                'sequenceNumber': 1,
-                'adjudication': {
-                    'eligible': 20,
-                    'copay': 10,
-                    'eligpercent': 80,
-                    'benefit': 6
-                }
-            },
-            {
-                'sequenceNumber': 2,
-                'adjudication': {
-                    'eligible': 40,
-                    'copay': 10,
-                    'eligpercent': 80,
-                    'benefit': 22
-                }
-            }
-            ]
-        });
-        await ctrl.claim.adjudicate(claim);
-        const claimResponseCreated = await adapter.getById<Account>(claim.uid);
-        expect(claimResponseCreated.id).to.equal(claim.uid);
-        log(`Claim response with id '${claim.uid}' created successfully`);
-
-        const createdAccount = await adapter.getById<Account>(claim.accountUid);
-        expect(createdAccount.id).to.equal(claim.accountUid);
-        log(`Account with id '${claim.accountUid}' created successfully`);
-
-        const createdInvoice = await adapter.getById<Account>(claim.invoiceUid);
-        expect(createdInvoice.id).to.equal(claim.invoiceUid);
-        log(`Invoice with id '${claim.invoiceUid}' created successfully`);
-    });
-
-    it('make a payment', async () => {
-        log('Checking that payment was not made before');
-        let invoice = await adapter.getById<Invoice>(invoiceId);
-        expect(invoice.status).to.not.equal(InvoiceStatus.BALANCED);
-        await ctrl.payment.make(invoiceId);
-        invoice = await adapter.getById<Invoice>(invoiceId);
-        expect(invoice.status).to.equal(InvoiceStatus.BALANCED);
-        log('Payment successfully applied');
-    });
 });

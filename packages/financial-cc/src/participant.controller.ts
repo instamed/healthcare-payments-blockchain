@@ -6,8 +6,7 @@ import {
 } from '@worldsibu/convector-core-controller';
 import * as yup from 'yup';
 import { ConsumerParticipant, ProviderParticipant, PayerParticipant } from './participant.model';
-import { Patient } from './financial.model';
-import { Organization } from '../../../chaincode-financial/packages/financial-cc/dist/src';
+import { Patient, Organization } from './financial.model';
 
 @Controller('participant')
 export class ParticipantController extends ConvectorController {

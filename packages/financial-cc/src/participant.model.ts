@@ -13,9 +13,10 @@ export abstract class Participant<T extends Participant<any>> extends ConvectorM
 }
 
 export class ConsumerParticipant extends Participant<ConsumerParticipant>{
+  @Default('org.fhir.users.Consumer')
   @ReadOnly()
   @Required()
-  public readonly type = 'org.fhir.users.Consumer';
+  public readonly type: string;
 
   @Validate(yup.string())
   public patientUid?: string;
@@ -25,9 +26,10 @@ export class ConsumerParticipant extends Participant<ConsumerParticipant>{
 }
 
 export class ProviderParticipant extends Participant<ProviderParticipant>{
+  @Default('org.fhir.users.Provider')
   @ReadOnly()
   @Required()
-  public readonly type = 'org.fhir.users.Provider';
+  public readonly type: string;
 
   @Required()
   @Validate(yup.string())
@@ -38,9 +40,10 @@ export class ProviderParticipant extends Participant<ProviderParticipant>{
 }
 
 export class PayerParticipant extends Participant<PayerParticipant>{
+  @Default('org.fhir.users.Payer')
   @ReadOnly()
   @Required()
-  public readonly type = 'org.fhir.users.Payer';
+  public readonly type: string;
 
   @Required()
   @Validate(yup.string())
