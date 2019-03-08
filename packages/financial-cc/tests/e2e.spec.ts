@@ -7,7 +7,7 @@ import 'mocha';
 import { ClientFactory } from '@worldsibu/convector-core-adapter';
 import {
     PatientController, Organization, Patient, Claim,
-    ChargeItem, Account, Procedure, Invoice
+    ChargeItem, Account, Procedure, Invoice, Participant, ParticipantController, ParticipantType
 } from '../src';
 import { ClaimController, PaymentController } from '../src';
 import { CreateClaim, AdjudicateClaim, InvoiceStatus } from '../src/utils';
@@ -19,6 +19,7 @@ describe('Fhir Financial', () => {
     let adapter: MockControllerAdapter;
     let ctrl: {
         org: OrganizationController,
+        participant: ParticipantController,
         patient: PatientController,
         claim: ClaimController,
         payment: PaymentController
@@ -41,6 +42,10 @@ describe('Fhir Financial', () => {
             name: join(__dirname, '..')
         }, {
             version: '*',
+            controller: 'ParticipantController',
+            name: join(__dirname, '..')
+        }, {
+            version: '*',
             controller: 'PatientController',
             name: join(__dirname, '..')
         }, {
@@ -55,13 +60,14 @@ describe('Fhir Financial', () => {
 
         ctrl = {
             org: ClientFactory(OrganizationController, adapter),
+            participant: ClientFactory(ParticipantController, adapter),
             patient: ClientFactory(PatientController, adapter),
             payment: ClientFactory(PaymentController, adapter),
             claim: ClientFactory(ClaimController, adapter)
         };
     });
 
-    it('should create default organization Provider', async () => {
+    it('should create a Provider organization', async () => {
         provider = new Organization({
             'resourceType': 'Organization',
             'id': providerId,
@@ -138,7 +144,7 @@ describe('Fhir Financial', () => {
         expect(createdProvider.id).to.equal(providerId);
     });
 
-    it('should create default organization Payer', async () => {
+    it('should create a Payer organization', async () => {
         payer = new Organization(
             {
                 'resourceType': 'Organization',
@@ -217,6 +223,20 @@ describe('Fhir Financial', () => {
         let createdPayer = await adapter.getById<Organization>(payerId);
         expect(createdPayer.id).to.equal(payerId);
     });
+
+    // it('should create a Consumer participant', async () => {
+    //     const consumerParticipantId = 'resource:org.fhir.core.Organization#Bob';
+    //     const participant = new Participant({
+    //         'id': consumerParticipantId,
+    //         'name': 'Consumer::Bob',
+    //     });
+
+    //     await ctrl.participant.create(participant, ParticipantType.CONSUMER);
+
+    //     let createdParticipant = await adapter.getById<Participant>(consumerParticipantId);
+    //     expect(createdParticipant).to.exist;
+    //     expect(createdParticipant.id).to.equal(consumerParticipantId);
+    // });
 
     it('should create a patient', async () => {
         const patient = new Patient({

@@ -10,18 +10,19 @@ import {
 export class Participant extends ConvectorModel<Participant> {
   @ReadOnly()
   @Required()
-  public readonly type = 'io.worldsibu.participant';
+  public type = 'org.fhir.users.';
 
   @Required()
   @Validate(yup.string())
   public name: string;
 
-  @ReadOnly()
   @Required()
-  @Validate(yup.number())
-  public created: number;
+  @Validate(yup.string())
+  public organization: string;
+}
 
-  @Required()
-  @Validate(yup.number())
-  public modified: number;
+export enum ParticipantType {
+  CONSUMER = 'Consumer',
+  PAYER = 'Payer',
+  PROVIDER = 'Provider'
 }

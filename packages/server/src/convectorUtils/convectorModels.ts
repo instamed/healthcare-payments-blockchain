@@ -88,4 +88,7 @@ export namespace ModelHelpers {
 }
 
 export { Participant } from 'participant-cc';
-export { Patient, CreateClaim, AdjudicateClaim } from 'financial-cc';
+export {
+  Patient, CreateClaim, AdjudicateClaim,
+  Organization
+} from 'financial-cc';

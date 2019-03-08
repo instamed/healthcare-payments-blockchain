@@ -93,9 +93,7 @@ export class ClaimController extends ConvectorController {
         const claimResponse = new ClaimResponse(id);
 
         // Hydrate objects
-        debugger;
         data.claim = await Claim.getOne(data.claimUid);
-        debugger;
 
         let invoiceLineItems = await buildInvoiceLineItems(data.claim.item);
         claimResponse.identifier = [buildIdentifier(id, 'usual', IdentifierTypes.CLAIMRESPONSE)];
@@ -451,10 +449,8 @@ export class ClaimController extends ConvectorController {
     async createAccount(data: AccountData, invoiceDate: Date) {
         const id = data.accountUid;
 
-        debugger;
         data.patient = await Patient.getOne(data.patientUid);
         data.owner = await Organization.getOne(data.ownerUid);
-        debugger;
 
         const account = new Account(id);
 
