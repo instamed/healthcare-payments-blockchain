@@ -4,16 +4,14 @@
  * with your own for NodeJS. We inject here the `convector-adapter-fabric` which calls
  * the blockchain based on your own configuration.
  */
-import { resolve } from 'path';
 import { FabricControllerAdapter } from '@worldsibu/convector-adapter-fabric';
 import { ClientFactory } from '@worldsibu/convector-core-adapter';
 import { SelfGenContext } from './selfGenContext';
-import { ModelHelpers } from './convectorModels';
 import {
   USER, CHANNEL,
   CHAINCODE, KEYSTORE, NETWORKPROFILE, ORG
 } from '../utils';
-import { PatientController, OrganizationController, ClaimController } from 'financial-cc';
+import { PatientController, OrganizationController, ClaimController, ParticipantController } from 'financial-cc';
 import { PaymentController } from 'financial-cc';
 
 async function InitFabricAdapter() {
@@ -46,6 +44,7 @@ export async function Init() {
     payment: ClientFactory(PaymentController, adapter),
     claim: ClientFactory(ClaimController, adapter),
     organization: ClientFactory(OrganizationController, adapter),
+    participant: ClientFactory(ParticipantController, adapter),
   };
 }
 
