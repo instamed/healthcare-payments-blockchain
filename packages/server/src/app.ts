@@ -4,7 +4,10 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 import * as express from 'express';
-import { PatientCtrl, PayerCtrl, ProviderCtrl } from './controllers';
+import {
+  PatientCtrl, PayerCtrl,
+  ProviderCtrl, AdminCtrl
+} from './controllers';
 import * as bodyParser from 'body-parser';
 import {
   PORT, USER, ORG, KEYSTORE,
@@ -29,6 +32,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/admin', AdminCtrl);
 app.use('/patient', PatientCtrl);
 app.use('/payer', PayerCtrl);
 app.use('/provider', ProviderCtrl);

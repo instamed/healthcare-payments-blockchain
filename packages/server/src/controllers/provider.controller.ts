@@ -6,21 +6,23 @@ const router: Router = Router();
 
 router.post('/patient/create', async (req: Request, res: Response) => {
     try {
-        const patient = req.body.data;
+        const patient = req.body;
         await createPatient(patient);
+        res.send(201);
     } catch (ex) {
         console.log(ex);
-        res.send();
+        res.status(500).send(ex);
     }
 });
 
 router.post('/claim/create', async (req: Request, res: Response) => {
     try {
-        const newClaim = req.body.data;
+        const newClaim = req.body;
         await createClaim(newClaim);
+        res.send(201);
     } catch (ex) {
         console.log(ex);
-        res.send();
+        res.status(500).send(ex);
     }
 });
 

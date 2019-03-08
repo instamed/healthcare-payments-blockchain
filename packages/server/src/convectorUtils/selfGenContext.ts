@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { join } from 'path';
 import * as Client from 'fabric-client';
 import { IEnrollmentRequest, IRegisterRequest } from 'fabric-ca-client';
+import { KEYSTORE, USER, ORG } from '../utils';
 
 export type UserParams = IRegisterRequest;
 export type AdminParams = IEnrollmentRequest;
@@ -16,7 +17,7 @@ export namespace SelfGenContext {
 
   export async function getClient() {
     // Check if needed
-    const contextPath = join(process.env.KEYSTORE + '/' + process.env.USERCERT);
+    const contextPath = join(KEYSTORE+ '/' + USER);
 
     fs.readFile(contextPath, 'utf8', async function (err, data) {
       if (err) {
@@ -28,7 +29,7 @@ export namespace SelfGenContext {
         // ## Setup the cryptosuite (we are using the built in default s/w based implementation)
         const cryptoSuite = Client.newCryptoSuite();
         cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({
-          path: process.env.KEYSTORE
+          path: KEYSTORE
         }));
 
         client.setCryptoSuite(cryptoSuite);
@@ -37,24 +38,24 @@ export namespace SelfGenContext {
 
         // ## Setup the default keyvalue store where the state will be stored
         const store = await Client.newDefaultKeyValueStore({
-          path: process.env.KEYSTORE
+          path: KEYSTORE
         });
 
         client.setStateStore(store);
 
         console.log('Creating the admin user context ..');
 
-        const privateKeyFile = fs.readdirSync(process.env.KEYSTORE + '/keystore')[0];
+        const privateKeyFile = fs.readdirSync(KEYSTORE + '/keystore')[0];
 
         // ###  GET THE NECESSRY KEY MATERIAL FOR THE ADMIN OF THE SPECIFIED ORG  ##
         const cryptoContentOrgAdmin: IdentityFiles = {
-          privateKey: process.env.KEYSTORE + '/keystore/' + privateKeyFile,
-          signedCert: process.env.KEYSTORE + '/signcerts/cert.pem'
+          privateKey: KEYSTORE + '/keystore/' + privateKeyFile,
+          signedCert: KEYSTORE + '/signcerts/cert.pem'
         };
 
         await client.createUser({
-          username: process.env.USERCERT,
-          mspid: `${process.env.ORGCERT}MSP`,
+          username: USER,
+          mspid: `${ORG}MSP`,
           cryptoContent: cryptoContentOrgAdmin,
           skipPersistence: false
         });

@@ -4,11 +4,12 @@ const router: Router = Router();
 
 router.post('/payment/make', async (req: Request, res: Response) => {
     try {
-        const payment = req.body.data;
+        const payment = req.body.payment;
         await paymentMake(payment);
+        res.send(200);
     } catch (ex) {
         console.log(ex);
-        res.send();
+        res.status(500).send(ex);
     }
 });
 
