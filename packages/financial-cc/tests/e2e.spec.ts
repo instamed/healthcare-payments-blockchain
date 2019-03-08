@@ -11,7 +11,7 @@ import {
 } from '../src';
 import { ClaimController, PaymentController } from '../src';
 import { CreateClaim, AdjudicateClaim, InvoiceStatus } from '../src/utils';
-import { Encounter } from '../dist/src';
+import { Encounter } from '../src';
 
 const log = console.log;
 
@@ -26,12 +26,12 @@ describe('Fhir Financial', () => {
     let provider = new Organization;
     let payer = new Organization;
 
-    const providerId = 'XYZ_Provider';
-    const payerId = 'ABC_Healthcare';
-    const patientId = 'Bob';
-    const claimId = 'Claim-1';
-    const accountId = 'Account-1';
-    const invoiceId = 'Invoice-1';
+    const providerId = 'resource:org.fhir.core.Organization#XYZ_Provider';
+    const payerId = 'resource:org.fhir.core.Organization#ABC_Healthcare';
+    const patientId = 'resource:org.fhir.core.Patient#Bob';
+    const claimId = 'resource:org.fhir.core.Claim#Claim-1';
+    const accountId = 'resource:org.fhir.core.Account#Account-1';
+    const invoiceId = 'resource:org.fhir.core.Invoice#Invoice-1';
 
     before('Init controllers', async () => {
         adapter = new MockControllerAdapter();
@@ -64,12 +64,12 @@ describe('Fhir Financial', () => {
     it('should create default organization Provider', async () => {
         provider = new Organization({
             'resourceType': 'Organization',
-            'id': 'XYZ_Provider',
+            'id': providerId,
             'identifier': [
                 {
                     'use': 'usual',
                     'system': 'Blockchain:Provider',
-                    'value': 'XYZ_Provider'
+                    'value': providerId
                 }
             ],
             'active': true,
@@ -226,7 +226,7 @@ describe('Fhir Financial', () => {
                 {
                     'use': 'usual',
                     'system': 'Blockchain:Patient',
-                    'value': 'Bob'
+                    'value': patientId
                 }
             ],
             'active': true,
@@ -291,14 +291,13 @@ describe('Fhir Financial', () => {
 
         let createdPatient = await adapter.getById<Patient>(patientId);
         expect(createdPatient.id).to.equal(patientId);
+        log('Patient fully qualified name set');
     });
 
     it('create a claim (encounter, chargeItems, procedures)', async () => {
         const claim = new CreateClaim({
             txDate: new Date(),
-            // 'patientId': 'resource:org.fhir.core.Patient#Bob',
             'patientId': patientId,
-            // 'providerId': 'resource:org.fhir.core.Organization#XYZ_Provider',
             'providerId': providerId,
             'encounterUid': 'Encounter-1',
             'claimUid': claimId,
@@ -351,7 +350,6 @@ describe('Fhir Financial', () => {
         const claim = new AdjudicateClaim({
             txDate: new Date(),
             'uid': 'ClaimResponse-1',
-            // 'claimUid': 'resource:org.fhir.core.Claim#Claim-1',
             'claimUid': claimId,
             'accountUid': accountId,
             'invoiceUid': invoiceId,

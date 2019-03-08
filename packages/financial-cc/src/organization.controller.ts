@@ -13,6 +13,8 @@ export class OrganizationController extends ConvectorController {
     public async create(
         @Param(Organization)
         data: Organization) {
+        data.id = data.id.includes('resource:org.fhir.core.Organization#') ? data.id :
+            `resource:org.fhir.core.Organization#${data.id}`;
         await data.save();
     }
 }

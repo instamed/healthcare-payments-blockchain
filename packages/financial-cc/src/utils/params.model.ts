@@ -40,16 +40,21 @@ export class AdjudicationItem extends ConvectorModel<ServiceItem> {
 }
 
 export class AccountData {
-    patient: string | Patient;
-    owner: string | Organization;
+    patientUid: string;
+    patient?: Patient;
+    ownerUid: string;
+    owner?: Organization;
     amount: number;
     accountUid: string;
 }
 export class InvoiceData {
-    patient: string | Patient;
-    owner: string | Organization;
+    patientUid: string;
+    patient?: Patient;
+    ownerUid: string;
+    owner?: Organization;
     amount: number;
-    claimUid: string | Claim;
+    claimUid: string;
+    claim?: Claim;
     invoiceUid: string;
     accountUid: string;
     invoiceLineItems: InvoiceLineItem[];
