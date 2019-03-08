@@ -12,11 +12,14 @@ This will:
 
 ```bash
 npm install
-
-npm run start
 ```
 
 ## Tests
+
+```bash
+# Include npx if you use NPX for package management
+[npx] lerna run test --scope financial-cc --stream
+```
 
 --
 

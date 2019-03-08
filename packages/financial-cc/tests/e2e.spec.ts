@@ -5,9 +5,12 @@ import { MockControllerAdapter } from '@worldsibu/convector-adapter-mock';
 import { OrganizationController } from '../src/organization.controller';
 import 'mocha';
 import { ClientFactory } from '@worldsibu/convector-core-adapter';
-import { PatientController, Organization, Identifier, Patient, Claim, ChargeItem, Account, Procedure } from '../src';
-import { ClaimController, PaymentController, Invoice } from '../src';
-import { ResourceTypes, buildCoding, CreateClaim, AdjudicateClaim } from '../src/utils';
+import {
+    PatientController, Organization, Patient, Claim,
+    ChargeItem, Account, Procedure, Invoice
+} from '../src';
+import { ClaimController, PaymentController } from '../src';
+import { CreateClaim, AdjudicateClaim, InvoiceStatus } from '../src/utils';
 import { Encounter } from '../dist/src';
 
 const log = console.log;
@@ -27,6 +30,8 @@ describe('Fhir Financial', () => {
     const payerId = 'ABC_Healthcare';
     const patientId = 'Bob';
     const claimId = 'Claim-1';
+    const accountId = 'Account-1';
+    const invoiceId = 'Invoice-1';
 
     before('Init controllers', async () => {
         adapter = new MockControllerAdapter();
@@ -348,8 +353,8 @@ describe('Fhir Financial', () => {
             'uid': 'ClaimResponse-1',
             // 'claimUid': 'resource:org.fhir.core.Claim#Claim-1',
             'claimUid': claimId,
-            'accountUid': 'Account-1',
-            'invoiceUid': 'Invoice-1',
+            'accountUid': accountId,
+            'invoiceUid': invoiceId,
             'adjudications': [{
                 'sequenceNumber': 1,
                 'adjudication': {
@@ -385,8 +390,12 @@ describe('Fhir Financial', () => {
     });
 
     it('make a payment', async () => {
-        // await ctrl.payment.make(testingID);
-        // const invoice = await adapter.getById<Invoice>(testingID);
-        // expect(invoice.status).to.be(InvoiceStatus.BALANCED);
+        log('Checking that payment was not made before');
+        let invoice = await adapter.getById<Invoice>(invoiceId);
+        expect(invoice.status).to.not.equal(InvoiceStatus.BALANCED);
+        await ctrl.payment.make(invoiceId);
+        invoice = await adapter.getById<Invoice>(invoiceId);
+        expect(invoice.status).to.equal(InvoiceStatus.BALANCED);
+        log('Payment successfully applied');
     });
 });
