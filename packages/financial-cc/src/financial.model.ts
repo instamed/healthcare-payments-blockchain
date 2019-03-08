@@ -1190,11 +1190,6 @@ export class Claim extends DomainResource<Claim> {
    @Validate(yup.lazy(() => yup.array(Identifier.schema())))
    public identifier?: Array<FlatConvectorModel<Identifier>>;
 
-   // // TODO: this is new
-   // @Required()
-   // @Validate(yup.string())
-   // public encounterUid: string;
-
    @Required()
    @Validate(yup.string())
    public status: string;
