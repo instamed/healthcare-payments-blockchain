@@ -6,7 +6,7 @@
     "dist/*"
   ],
   "scripts": {
-    "start": "npm run build && npm run env:restart && npm run cc:start && views:install && npm run server:start",
+    "start": "npm run build && npm run env:restart && npm run cc:start && npm run server:start",
     "install": "npm-run-all -s lerna:install",
     "build": "node ./update-paths.js && npx lerna run build",
     "env:restart": "hurl new",

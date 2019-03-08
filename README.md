@@ -6,29 +6,38 @@ This is a [Hyperledger Fabric](https://www.hyperledger.org/projects/fabric) proj
 
 ### Start from scratch
 
-This will:
-
-* Install a development *Hyperledger Fabric Network* (and remove any previous one).
-* Install the chaincode with the name `financial` in the network.
-* Start the server and self-enroll a organization.
-
 ```bash
 npm install
 
 npm start
+
+# Open the `Fhir Financial.postman_collection.json` with Postman and run a initial request.
+# The first transaction in the server to the blockchain will take some seconds to start the containers for the very first time.
+
+# Install views - this has to happen after making the first request since no database exists yet in CouchDB
+npm run views:install
 ```
 
-### Some individual tasks
+This will:
 
-* Just start the server in dev mode `npm run server:start`
+* Install a development *Hyperledger Fabric Network* (and remove any previous one) with [Hurley](https://github.com/worldsibu/hurley).
+* Install the chaincode with the name `financial` in the network.
+* Start the NodeJS server.
+* Install CouchDB views.
+
+### Individual tasks
+
+* Just start the server in dev mode `npm run server:start`. Run this in case after the `npm start` you close the terminal. This won't install the network again, just the NodeJS server.
 
 ## Explore the project
 
 ### Code structure
 
-* `packages/financial-cc`: contains the whole smart contract with all its models and controllers
-* `packages/server`: contains the server calling the blockchain
-* `chaincode.config.json`: links the controllers and packages the config for the smart contract
+* `packages/financial-cc`: contains the whole smart contract with all its models and controllers.
+* `packages/server`: contains the server calling the blockchain.
+* `chaincode.config.json`: links the controllers and packages the config for the smart contract.
+* `dev-env` a folder containing development environment needed files like the CouchDB views and the installation script.
+* `Fhir Financial.postman_collection.json`: import that into Postman to see the queries to the database, follow the numbers in the tasks to create a full flow.
 
 ### Running environment
 
