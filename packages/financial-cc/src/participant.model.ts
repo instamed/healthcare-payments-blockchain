@@ -6,23 +6,46 @@ import {
   Required,
   Validate
 } from '@worldsibu/convector-core-model';
+import { Patient, Organization } from './financial.model';
 
-export class Participant extends ConvectorModel<Participant> {
-  @ReadOnly()
-  @Required()
-  public type = 'org.fhir.users.';
+export abstract class Participant<T extends Participant<any>> extends ConvectorModel<T> {
 
-  @Required()
-  @Validate(yup.string())
-  public name: string;
-
-  @Required()
-  @Validate(yup.string())
-  public organization: string;
 }
 
-export enum ParticipantType {
-  CONSUMER = 'Consumer',
-  PAYER = 'Payer',
-  PROVIDER = 'Provider'
+export class ConsumerParticipant extends Participant<ConsumerParticipant>{
+  @ReadOnly()
+  @Required()
+  public readonly type = 'org.fhir.users.Consumer';
+
+  @Validate(yup.string())
+  public patientUid?: string;
+
+  @Validate(Patient.schema())
+  public patient?: Patient;
+}
+
+export class ProviderParticipant extends Participant<ProviderParticipant>{
+  @ReadOnly()
+  @Required()
+  public readonly type = 'org.fhir.users.Provider';
+
+  @Required()
+  @Validate(yup.string())
+  public providerUid: string;
+
+  @Validate(Organization.schema())
+  public provider?: Organization;
+}
+
+export class PayerParticipant extends Participant<PayerParticipant>{
+  @ReadOnly()
+  @Required()
+  public readonly type = 'org.fhir.users.Payer';
+
+  @Required()
+  @Validate(yup.string())
+  public payerUid: string;
+
+  @Validate(Organization.schema())
+  public payer?: Organization;
 }

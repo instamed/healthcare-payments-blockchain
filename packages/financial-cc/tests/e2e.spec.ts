@@ -7,7 +7,8 @@ import 'mocha';
 import { ClientFactory } from '@worldsibu/convector-core-adapter';
 import {
     PatientController, Organization, Patient, Claim,
-    ChargeItem, Account, Procedure, Invoice, Participant, ParticipantController, ParticipantType
+    ChargeItem, Account, Procedure, Invoice, Participant, ParticipantController,
+    ConsumerParticipant, ProviderParticipant, PayerParticipant
 } from '../src';
 import { ClaimController, PaymentController } from '../src';
 import { CreateClaim, AdjudicateClaim, InvoiceStatus } from '../src/utils';
@@ -153,7 +154,7 @@ describe('Fhir Financial', () => {
                     {
                         'use': 'usual',
                         'system': 'Blockchain:Payer',
-                        'value': 'ABC_Healthcare'
+                        'value': payerId
                     }
                 ],
                 'active': true,
@@ -224,19 +225,44 @@ describe('Fhir Financial', () => {
         expect(createdPayer.id).to.equal(payerId);
     });
 
-    // it('should create a Consumer participant', async () => {
-    //     const consumerParticipantId = 'resource:org.fhir.core.Organization#Bob';
-    //     const participant = new Participant({
-    //         'id': consumerParticipantId,
-    //         'name': 'Consumer::Bob',
-    //     });
+    it('should create a Consumer participant', async () => {
+        const consumerParticipantId = 'Consumer::Bob';
+        const participant = new ConsumerParticipant({
+            id: consumerParticipantId
+        });
 
-    //     await ctrl.participant.create(participant, ParticipantType.CONSUMER);
+        await ctrl.participant.createConsumer(participant);
 
-    //     let createdParticipant = await adapter.getById<Participant>(consumerParticipantId);
-    //     expect(createdParticipant).to.exist;
-    //     expect(createdParticipant.id).to.equal(consumerParticipantId);
-    // });
+        let createdParticipant = await adapter.getById<ConsumerParticipant>(consumerParticipantId);
+        expect(createdParticipant).to.exist;
+        expect(createdParticipant.id).to.equal(consumerParticipantId);
+    });
+    it('should create a Provider participant', async () => {
+        const participantId = 'Provider::Provida';
+        const participant = new ProviderParticipant({
+            id: participantId,
+            providerUid: providerId
+        });
+
+        await ctrl.participant.createProvider(participant);
+
+        let createdParticipant = await adapter.getById<ProviderParticipant>(participantId);
+        expect(createdParticipant).to.exist;
+        expect(createdParticipant.id).to.equal(participantId);
+    });
+    it('should create a Payer participant', async () => {
+        const participantId = 'Payer::Insura';
+        const participant = new PayerParticipant({
+            id: participantId,
+            payerUid: payerId
+        });
+
+        await ctrl.participant.createPayer(participant);
+
+        let createdParticipant = await adapter.getById<PayerParticipant>(participantId);
+        expect(createdParticipant).to.exist;
+        expect(createdParticipant.id).to.equal(participantId);
+    });
 
     it('should create a patient', async () => {
         const patient = new Patient({
@@ -300,7 +326,6 @@ describe('Fhir Financial', () => {
             },
             'managingOrganization': {
                 'identifier': {
-                    '$class': 'org.fhir.datatypes.Identifier',
                     'use': 'usual',
                     'system': 'Blockchain:Provider',
                     'value': 'Provider::Provida'
@@ -319,24 +344,23 @@ describe('Fhir Financial', () => {
             txDate: new Date(),
             'patientId': patientId,
             'providerId': providerId,
-            'encounterUid': 'Encounter-1',
+            'encounterUid': 'resource:org.fhir.core.Encounter#Encounter-1',
             'claimUid': claimId,
-            // 'payerId': 'resource:org.fhir.core.Organization#ABC_Healthcare',
             'payerId': payerId,
             'services': [
                 {
                     'hcpcsCode': '99230',
                     'quantity': 1,
                     'unitPrice': 45,
-                    'procedureUid': 'Procedure-1',
-                    'chargeItemUid': 'ChargeItem-1'
+                    'procedureUid': 'resource:org.fhir.core.Procedure#Procedure-1',
+                    'chargeItemUid': 'resource:org.fhir.core.ChargeItem#ChargeItem-1'
                 },
                 {
                     'hcpcsCode': '90756',
                     'quantity': 3,
                     'unitPrice': 55,
-                    'procedureUid': 'Procedure-2',
-                    'chargeItemUid': 'ChargeItem-2'
+                    'procedureUid': 'resource:org.fhir.core.Procedure#Procedure-2',
+                    'chargeItemUid': 'resource:org.fhir.core.ChargeItem#ChargeItem-2'
                 }
             ]
         });
@@ -369,7 +393,7 @@ describe('Fhir Financial', () => {
     it('adjudicate a claim (create a claim response, invoice, account)', async () => {
         const claim = new AdjudicateClaim({
             txDate: new Date(),
-            'uid': 'ClaimResponse-1',
+            'uid': 'resource:org.fhir.core.ClaimResponse#ClaimResponse-1',
             'claimUid': claimId,
             'accountUid': accountId,
             'invoiceUid': invoiceId,
