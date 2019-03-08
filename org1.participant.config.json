@@ -1,0 +1,26 @@
+{
+  "user": "admin",
+  "txTimeout": 300000,
+  "skipInit": true,
+  "channel": "ch1",
+  "keyStore": "/Users/walter/hyperledger-fabric-network/.hfc-org1",
+  "//**INSIDE-DOCKER**//keyStore": "/config/.hfc-org1",
+  "networkProfile": "/Users/walter/hyperledger-fabric-network/network-profiles/org1.network-profile.yaml",
+  "//**INSIDE-DOCKER**//networkProfile": "/config/network-profiles/org1.network-profile.inside-docker.yaml",
+  "controllers": [
+    {
+      "name": "participant-cc",
+      "version": "file:./packages/participant-cc",
+      "controller": "ParticipantController"
+    }
+  ],
+  "policy": {
+    "identities": [
+      { "role": { "name": "member", "mspId": "Org1MSP" }},
+      { "role": { "name": "member", "mspId": "Org2MSP" }}
+    ],
+    "policy": {
+      "1-of": [{ "signed-by": 0 }, { "signed-by": 1 }]
+    }
+  }
+}
