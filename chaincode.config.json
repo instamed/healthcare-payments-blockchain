@@ -9,24 +9,29 @@
   "//**INSIDE-DOCKER**//networkProfile": "/config/network-profiles/org1.network-profile.inside-docker.yaml",
   "controllers": [
     {
-      "name": "payment-cc",
+      "name": "financial-cc",
       "version": "file:./packages/financial-cc",
       "controller": "PaymentController"
     },
     {
-      "name": "claim-cc",
+      "name": "financial-cc",
       "version": "file:./packages/financial-cc",
       "controller": "ClaimController"
     },
     {
-      "name": "patient-cc",
+      "name": "financial-cc",
       "version": "file:./packages/financial-cc",
       "controller": "PatientController"
     },
     {
-      "name": "participant-cc",
-      "version": "file:./packages/participant-cc",
+      "name": "financial-cc",
+      "version": "file:./packages/financial-cc",
       "controller": "ParticipantController"
+    },
+    {
+      "name": "financial-cc",
+      "version": "file:./packages/financial-cc",
+      "controller": "OrganizationController"
     }
   ],
   "policy": {

@@ -7,8 +7,6 @@
 import { resolve } from 'path';
 import { FabricControllerAdapter } from '@worldsibu/convector-adapter-fabric';
 import { ClientFactory } from '@worldsibu/convector-core-adapter';
-// import { FinancialController } from 'financial-cc';
-import { ParticipantController } from 'participant-cc';
 import { SelfGenContext } from './selfGenContext';
 import { ModelHelpers } from './convectorModels';
 import {
@@ -52,12 +50,12 @@ export async function Init() {
 }
 
 export async function InitServerIdentity() {
-  const users = await ModelHelpers.getAllParticipants();
-  if (!users.find(u => u.id === USER && u.msp === `${ORG}MSP`)) {
+  // const users = await ModelHelpers.getAllParticipants();
+  // if (!users.find(u => u.id === USER && u.msp === `${ORG}MSP`)) {
     console.log('Need to register server identity');
     // (await InitParticipantController()).register(USER);
     console.log('Server identity registered');
-  } else {
+  // } else {
     console.log('Server identity found');
-  }
+  // }
 }

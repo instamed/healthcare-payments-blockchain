@@ -2,7 +2,7 @@
   "apps" : [
     {
       "name": "FHIR Server",
-      "script": "./dist/app.js",
+      "script": "./dist/src/app.js",
       "node_args": "--inspect=0.0.0.0:9222",
       "env": {
         "DEBUG": "fhir"

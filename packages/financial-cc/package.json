@@ -19,7 +19,6 @@
     "@worldsibu/convector-core-chaincode": "1.2.1-0-alpha.57ce2bb4",
     "@worldsibu/convector-core-controller": "1.2.1-0-alpha.57ce2bb4",
     "@worldsibu/convector-core-model": "1.2.1-0-alpha.57ce2bb4",
-    "participant-cc": "^0.1.0",
     "reflect-metadata": "^0.1.12",
     "yup": "^0.26.6"
   },

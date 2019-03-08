@@ -1,6 +1,5 @@
 import { BaseStorage } from '@worldsibu/convector-core-storage';
 import { CouchDBStorage } from '@worldsibu/convector-storage-couchdb';
-import { Participant } from 'participant-cc';
 // import { FinancialController } from 'financial-cc';
 import { Env } from './env';
 import {
@@ -18,10 +17,10 @@ BaseStorage.current = new CouchDBStorage({
 }, `${CHANNEL}_${CHAINCODE}`);
 
 export namespace ModelHelpers {
-  export async function formatParticipant(participant: Participant): Promise<any> {
-    const participantObj = participant.toJSON();
-    return participantObj;
-  }
+  // export async function formatParticipant(participant: Participant): Promise<any> {
+  //   const participantObj = participant.toJSON();
+  //   return participantObj;
+  // }
 
   // export async function getAllDrugs() {
   //   const channel = Env.channel;
@@ -65,29 +64,29 @@ export namespace ModelHelpers {
   //   }
   // }
 
-  export async function getAllParticipants() {
-    const channel = Env.channel;
-    const cc = Env.drugCC;
-    const dbName = `${channel}_${cc}`;
-    const viewUrl = '_design/participants/_view/all';
+  // export async function getAllParticipants() {
+  //   const channel = Env.channel;
+  //   const cc = Env.drugCC;
+  //   const dbName = `${channel}_${cc}`;
+  //   const viewUrl = '_design/participants/_view/all';
 
-    const queryOptions = { startKey: [''], endKey: [''] };
+  //   const queryOptions = { startKey: [''], endKey: [''] };
 
-    try {
-      const result = <Participant[]>(await Participant.query(Participant, dbName, viewUrl, queryOptions));
-      return await Promise.all(result.map(formatParticipant));
-    } catch (err) {
-      console.log(err);
-      if (err.code === 'EDOCMISSING') {
-        return [];
-      } else {
-        throw err;
-      }
-    }
-  }
+  //   try {
+  //     const result = <Participant[]>(await Participant.query(Participant, dbName, viewUrl, queryOptions));
+  //     return await Promise.all(result.map(formatParticipant));
+  //   } catch (err) {
+  //     console.log(err);
+  //     if (err.code === 'EDOCMISSING') {
+  //       return [];
+  //     } else {
+  //       throw err;
+  //     }
+  //   }
+  // }
 }
 
-export { Participant } from 'participant-cc';
+// export { Participant } from 'participant-cc';
 export {
   Patient, CreateClaim, AdjudicateClaim,
   Organization

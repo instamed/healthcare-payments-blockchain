@@ -4,8 +4,8 @@ const router: Router = Router();
 
 router.post('/', async (req: Request, res: Response) => {
     try {
-        const payment = req.body.data;
-        await createOrganization(payment);
+        const organization = req.body.data;
+        await createOrganization(organization);
     } catch (ex) {
         console.log(ex);
         res.send();

@@ -11,6 +11,7 @@ export const COUCHDB_PORT = process.env.COUCHDB_PORT || '5084';
 
 const homedir = os.homedir();
 
+console.log(ORG_USER);
 if(ORG_USER.indexOf(':') > -1){
     throw new Error(`Incorrect .env variable ORG_USER. A valid example is org1:user1`);
 }
