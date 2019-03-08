@@ -15,6 +15,8 @@ import {
   USER, CHANNEL,
   CHAINCODE, KEYSTORE, NETWORKPROFILE, ORG
 } from '../utils';
+import { PatientController, OrganizationController, ClaimController } from '../../../financial-cc/dist/src';
+import { PaymentController } from '../../../financial-cc/src';
 
 async function InitFabricAdapter() {
   await SelfGenContext.getClient();
@@ -37,13 +39,17 @@ async function InitFabricAdapter() {
  * Building this adapter allows you to communicate with the
  * test env created by `hurley`.
  */
-export async function InitFinancialController() { 
-// : Promise<FinancialController> {
-//   return ClientFactory(FinancialController, await InitFabricAdapter());
+
+export async function Init() {
+  const adapter = await InitFabricAdapter();
+  const convectorControllers = {
+    patient: ClientFactory(PatientController, adapter),
+    payment: ClientFactory(PaymentController, adapter),
+    claim: ClientFactory(ClaimController, adapter),
+    organization: ClientFactory(OrganizationController, adapter),
+  };
 }
-export async function InitParticipantController(): Promise<ParticipantController> {
-  return ClientFactory(ParticipantController, await InitFabricAdapter());
-}
+
 export async function InitServerIdentity() {
   const users = await ModelHelpers.getAllParticipants();
   if (!users.find(u => u.id === USER && u.msp === `${ORG}MSP`)) {
