@@ -241,7 +241,7 @@ export class Timing extends Element<Timing> {
    @ReadOnly()
    public readonly type: string;
 
-   @Validate(yup.array(yup.date()))
+   @Validate(yup.array(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date')))
    public event?: Array<date>;
 
    @Validate(yup.lazy(() => TimingRepeat.schema()))
