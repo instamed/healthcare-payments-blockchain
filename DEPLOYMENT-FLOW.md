@@ -105,7 +105,7 @@ Import the file `Fhir Financial.postman_collection.json` in Postman and execute 
 
 CouchDB views are used for some queries to the ledger. This project uses it to list all items of each type.
 
-* Go to `./packages/administration/prod-env/installed.sh` and replace the values `SERVER` (the same IP you changed before), `CHAINCODE` (the name you gave to the chaincode i.e.: `fhirfinancial`), `DB` (the name of your Ledger, by default it's `public`).
+* Go to `./packages/administration/prod-env/installer.sh` and replace the values `SERVER` (the same IP you changed before), `CHAINCODE` (the name you gave to the chaincode i.e.: `fhirfinancial`), `DB` (the name of your Ledger, by default it's `public`).
 * Run `npm run views:install:prod` to install the views on each CouchDB server. If you want to install it in other CouchDB servers, run the script again pointing to them.
 
 ## 2. Steps - With an existing Network
