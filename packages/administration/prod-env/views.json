@@ -1,0 +1,41 @@
+{
+    "views": {
+        "accounts_all": {
+            "map": "function (doc) {if (doc.type === 'fhir.datatypes.Account') emit(doc._id, doc);}"
+        },
+        "chargeItems_all": {
+            "map": "function (doc) {if (doc.type === 'fhir.datatypes.ChargeItem') emit(doc._id, doc);}"
+        },
+        "claims_all": {
+            "map": "function (doc) {if (doc.type === 'fhir.datatypes.Claim') emit(doc._id, doc);}"
+        },
+        "claimResponses_all": {
+            "map": "function (doc) {if (doc.type === 'fhir.datatypes.ClaimResponse') emit(doc._id, doc);}"
+        },
+        "encounters_all": {
+            "map": "function (doc) {if (doc.type === 'fhir.datatypes.Encounter') emit(doc._id, doc);}"
+        },
+        "invoices_all": {
+            "map": "function (doc) {if (doc.type === 'fhir.datatypes.Invoice') emit(doc._id, doc);}"
+        },
+        "procedures_all": {
+            "map": "function (doc) {if (doc.type === 'fhir.datatypes.Procedure') emit(doc._id, doc);}"
+        },
+        "patients_all": {
+            "map": "function (doc) {if (doc.type === 'fhir.datatypes.Patient') emit(doc._id, doc);}"
+        },
+        "organizations_all": {
+            "map": "function (doc) {if (doc.type === 'fhir.datatypes.Organization') emit(doc._id, doc);}"
+        },
+        "participantConsumers_all": {
+            "map": "function (doc) {if (doc.type === 'org.fhir.users.Consumer') emit(doc._id, doc);}"
+        },
+        "participantProviders_all": {
+            "map": "function (doc) {if (doc.type === 'org.fhir.users.Provider') emit(doc._id, doc);}"
+        },
+        "participantPayers_all": {
+            "map": "function (doc) {if (doc.type === 'org.fhir.users.Payer') emit(doc._id, doc);}"
+        }
+    }
+  }
+  

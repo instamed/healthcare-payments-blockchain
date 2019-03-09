@@ -1,0 +1,8 @@
+[
+    {
+        "user": "instamed",
+        "org": "worldsibutrm-instamednetworkmes",
+        "networkProfile": "../../../config/instamed.networkprofile.yaml",
+        "keyStore": "../../../config/" 
+    }
+]

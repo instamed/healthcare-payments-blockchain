@@ -6,6 +6,7 @@ This is a [Hyperledger Fabric](https://www.hyperledger.org/projects/fabric) proj
 
 * [Node](https://nodejs.org/en/download/) 8.11.0
 * [Docker Community Edition](https://www.docker.com/community-edition)
+* [npx](https://www.npmjs.com/package/npx)
 
 ## How to run the project
 

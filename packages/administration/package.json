@@ -1,0 +1,21 @@
+{
+  "name": "administration",
+  "version": "1.0.0",
+  "description": "Forma Network Administration",
+  "main": "index.js",
+  "scripts": {
+    "start": "f() { DEBUG=forma:helper node enroll $1 $2 $3;}; f"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {},
+  "dependencies": {
+    "@worldsibu/convector-adapter-fabric": "^1.2.0",
+    "debug": "^4.1.1",
+    "dotenv": "^6.2.0",
+    "fabric-ca-client": "^1.4.0",
+    "fabric-client": "^1.4.0",
+    "os": "^0.1.1",
+    "path": "^0.12.7"
+  }
+}

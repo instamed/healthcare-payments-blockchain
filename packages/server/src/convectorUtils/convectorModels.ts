@@ -20,7 +20,7 @@ export async function couchQueryAll(view: string, type: any, queryOptions?: {}) 
   const channel = CHANNEL;
   const cc = CHAINCODE;
   const dbName = `${channel}_${cc}`;
-  const viewUrl = `_design/financial/_view/${view}`;
+  const viewUrl = `_design/${cc}/_view/${view}`;
   const options = queryOptions || { startKey: [''], endKey: [''] };
 
   try {

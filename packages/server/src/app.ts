@@ -1,14 +1,12 @@
 // @ts-check
-
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-import * as express from 'express';
+import express from 'express';
 
 import * as bodyParser from 'body-parser';
 import {
-  PORT, USER, ORG, KEYSTORE,
-  NETWORKPROFILE, CHANNEL, CHAINCODE,
+  PORT, CHANNEL, CHAINCODE,
   COUCHDB_PROTOCOL, COUCHDB_HOST, COUCHDB_PORT
 } from './utils';
 import {
@@ -18,6 +16,7 @@ import {
 import { ChargeItemCtrl } from './controllers/chargeItem.controller';
 import { ClaimResponseCtrl } from './controllers/claimResponse.controller';
 import { EncounterCtrl } from './controllers/encounter.controller';
+import { identity } from './utils/identity';
 
 const app: express.Application = express();
 const port = process.env.PORT || 10100;
@@ -48,16 +47,18 @@ app.use('/chargeItem', ChargeItemCtrl);
 app.use('/claimResponse', ClaimResponseCtrl);
 app.use('/encounter', EncounterCtrl);
 
+const serverIdentity = identity();
+
 app.listen(port, () =>
-  console.log(`Running as ${ORG}:${USER} in port ${port}`));
+  console.log(`Running as ${serverIdentity.org}:${serverIdentity.user} in port ${port}`));
 
 module.exports = app;
 
 console.log(`PORT=${PORT}`);
-console.log(`USERCERT=${USER}`);
-console.log(`ORGCERT=${ORG}`);
-console.log(`KEYSTORE=${KEYSTORE}`);
-console.log(`NETWORKPROFILE=${NETWORKPROFILE}`);
+console.log(`USERCERT=${serverIdentity.user}`);
+console.log(`ORGCERT=${serverIdentity.org}`);
+console.log(`KEYSTORE=${serverIdentity.keyStore}`);
+console.log(`NETWORKPROFILE=${serverIdentity.networkProfile}`);
 console.log(`CHANNEL=${CHANNEL}`);
 console.log(`CHAINCODE=${CHAINCODE}`);
 console.log(`COUCHDB_PROTOCOL=${COUCHDB_PROTOCOL}`);

@@ -6,3 +6,7 @@
 **/client/**
 
 chaincode-financial/**
+
+./config
+**/server/config
+**/server/.env
