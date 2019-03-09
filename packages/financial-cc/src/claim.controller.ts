@@ -49,7 +49,7 @@ export class ClaimController extends ConvectorController {
         }
 
         const encounter = new Encounter(id);
-        // TODO: check this
+
         // Build the identifier for the Encounter from the id
         const identifier = buildIdentifier(id, 'usual', IdentifierTypes.ENCOUNTER);
         encounter.identifier = [identifier];
@@ -65,13 +65,16 @@ export class ClaimController extends ConvectorController {
 
         // Use the first identifier in patient for the subject identifier
         // For this POC, patient should only ever HAVE one identifier
-        //TODO add blockchain identifier verification, IE check coding
+        
+        let patient = await Patient.getOne(data.patient.identifier[0].value);
+        if(!patient || !patient.id){
+            throw new Error(`Patient with ID ${data.patient.identifier[0].value} not found`);
+        }
+
         encounter.subject = buildReference(data.patient.identifier[0]);
 
         // Same goes here
         encounter.serviceProvider = buildReference(data.provider.identifier[0]);
-
-        //TODO add logic to verify/create identifiers. For now, POC will assume identifiers are created from id on asset creation
 
         // Set Encounter start-date to now
         encounter.period = new Period();
@@ -150,8 +153,6 @@ export class ClaimController extends ConvectorController {
             let itemTotalCost = 0;
             let itemTotalBenefit = 0;
 
-            //TODO: Total
-
             if (adjudicationItem.adjudication && adjudicationItem.adjudication.eligible) {
                 claimResponseItem.adjudication.push(
                     buildAdjudicationItem('eligible', adjudicationItem.adjudication.eligible));
@@ -216,10 +217,9 @@ export class ClaimController extends ConvectorController {
         claimResponse.total.push(totalCost);
         claimResponse.total.push(totalBenefit);
 
-        // TODO: Do some payment data here maybe
-
         // Save to the blockchain
         await claimResponse.save();
+
         // Calculate amount
         let amountOwed = totalBenefit.amount.value - totalCost.amount.value;
 
@@ -274,12 +274,10 @@ export class ClaimController extends ConvectorController {
 
         // Set HCPCS code
         procedure.code = new CodeableConcept();
-        //!TODO ADD CODING LOGIC
         procedure.code.coding = [buildCoding(data.hcpcsCode, null, `https://www.hl7.org/fhir/cpt.html`)];
 
         // Add the transaction date as the performed date for the PoC
         procedure.performedDateTime = fhirTypes.date(txDate);
-        //TODO add logic to verify/create identifiers. For now, POC will assume identifiers are created from id on asset creation
 
         await procedure.save();
 
@@ -301,23 +299,18 @@ export class ClaimController extends ConvectorController {
 
         chargeItem.code = new CodeableConcept();
 
-        // TODO: check this message
-        chargeItem.code.text = 'Some kind of billing code goes here. I don\'t really know, the FHIR example is in German';
+        chargeItem.code.text = 'TBD code';
         chargeItem.subject = data.encounter.subject;
         chargeItem.context = buildReference(data.encounter.identifier[0]);
         chargeItem.performingOrganization = data.encounter.serviceProvider;
         chargeItem.quantity = new Quantity();
         chargeItem.quantity.value = data.quantity;
 
-        // Naughty according to FHIR, but I'm going to do it for the PoC
         // In actual application, a Contract Management System would instead be implemented.
         chargeItem.priceOverride = buildMoney(data.unitPrice);
         chargeItem.overrideReason = `Prices will be stored here for PoC to make workflow more applicable.`;
         chargeItem.enteredDate = fhirTypes.date(txDate);
         chargeItem.enterer = data.encounter.serviceProvider;
-
-        //TODO
-        //Account??
 
         const service = buildReference(procedure.identifier[0]);
         chargeItem.service = [service];
@@ -396,9 +389,6 @@ export class ClaimController extends ConvectorController {
             claim.procedure.push(new ClaimProcedure());
             claim.procedure[counter].sequence = counter + 1;
 
-            // TODO: doesnt exist `performedDateTime`
-            // claim.procedure[counter].date = chargeItem.service[0].performedDateTime;
-
             claim.procedure[counter].procedureReference = chargeItem.service[0];
             let procedureEntity = data.services[counter].procedure;
             claim.procedure[counter].procedureCodeableConcept = procedureEntity.code;
@@ -409,8 +399,7 @@ export class ClaimController extends ConvectorController {
             item.quantity.value = chargeItem.quantity.value;
             item.unitPrice = buildMoney(chargeItem.priceOverride.value);
 
-            // TODO: `code` prop doesnt exist
-            // item.unitPrice.currency = chargeItem.priceOverride.code;
+            item.unitPrice.currency = chargeItem.priceOverride.currency;
             item.net = buildMoney(chargeItem.priceOverride.value * chargeItem.quantity.value);
             claim.item.push(item);
 
@@ -438,8 +427,7 @@ export class ClaimController extends ConvectorController {
             statusHistory.period = data.encounter.period;
         } else {
             statusHistory.period = new Period();
-            // TODO: end doesnt exist
-            //   statusHistory.period.start = data.encounter.statusHistory[data.encounter.statusHistory.length-1].end;
+            statusHistory.period.start = data.encounter.statusHistory[data.encounter.statusHistory.length-1].period.end;
             statusHistory.period.end = data.encounter.period.end;
         }
         data.encounter.statusHistory.push(statusHistory);

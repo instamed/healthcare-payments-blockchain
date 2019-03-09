@@ -62,13 +62,6 @@ export class InvoiceData {
     invoiceTotalGross: number;
 }
 
-/**
- * TODO: look for actual structure
- */
-export class Consumer { }
-/**
- * TODO: Check for this
- */
 export class ServiceItem extends ConvectorModel<ServiceItem> {
     @Default('fhir.datatypes.ServiceItem')
     @ReadOnly()
@@ -94,7 +87,6 @@ export class ServiceItem extends ConvectorModel<ServiceItem> {
     @Validate(yup.string())
     chargeItemUid: string;
 
-    /** TODO: Composer model didnt have this */
     @Validate(Encounter.schema())
     encounter?: Encounter;
 
@@ -105,9 +97,6 @@ export class ServiceItem extends ConvectorModel<ServiceItem> {
     chargeItem?: ChargeItem;
 }
 
-/**
- * TODO: This didnt exist
- */
 export class CreateClaim extends ConvectorModel<CreateClaim> {
     @Default('fhir.datatypes.CreateClaim')
     @ReadOnly()

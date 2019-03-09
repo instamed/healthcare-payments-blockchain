@@ -53,8 +53,6 @@ export async function buildInvoiceLineItems(items: FlatConvectorModel<ClaimItem>
     for (let item of items) {
         let encounterId = item.encounter[0].identifier.value;
 
-        // TODO: work this out with couch
-        // this.tx.stub.getQueryResultAsList();
         let chargeItems = (await ChargeItem.getAll('fhir.datatypes.ChargeItem'))
             .map(item => item.toJSON())
             .filter(chargeItem => chargeItem.context.identifier.value === encounterId);

@@ -30,7 +30,6 @@ export type xhtml = string;
 //export type timestamp = string;
 
 export class Financial extends ConvectorModel<Financial>{
-   // TODO: fix this
    @Default('fhir.datatypes.Financial')
    @ReadOnly()
    public readonly type: string;
@@ -90,8 +89,6 @@ export class Extension extends Element<Extension> {
    public valueDecimal?: number;
 
    // Primitives
-   // @Validate(yup.string())
-   // TODO
    @Validate(yup.string().matches(fhirTypes.dateRegex, 'Invalid Date'))
    public valueDateTime?: date;
 
