@@ -1,18 +1,12 @@
 import {
     ClaimResponseItemAdjudication, CodeableConcept,
     ClaimResponseTotal, ClaimItem, InvoiceLineItem, ChargeItem,
-    Identifier, Patient, Organization, Account, Invoice,
-    Narrative, Coding, Money, Reference
+    Identifier, Narrative, Coding, Money, Reference
 } from '..';
-import * as fhirTypes from './fhirTypes';
 import { FlatConvectorModel } from '@worldsibu/convector-core-model';
 import {
-    AccountData, InvoiceData,
-    AccountStatus, InvoiceStatus, Currencies
+    Currencies, CodingTypes
 } from './';
-import { ServiceItem, CreateClaim } from './params.model';
-import { Procedure, ProcedurePerformer, Quantity, Claim, Resource, ClaimPayee, ClaimCareTeam, ClaimProcedure, SimpleQuantity, EncounterStatusHistory, Period, Encounter } from '../financial.model';
-import { IdentifierTypes, ResourceTypes } from './enums';
 
 /**
    * 
@@ -22,17 +16,17 @@ import { IdentifierTypes, ResourceTypes } from './enums';
 export function buildAdjudicationItem(type: string, val: number) {
     let adjudication = new ClaimResponseItemAdjudication();
     adjudication.category = new CodeableConcept();
-    adjudication.category.coding = [this.buildCoding(type)];
-    adjudication.amount = this.buildMoney(val);
+    adjudication.category.coding = [buildCoding(type)];
+    adjudication.amount = buildMoney(val);
     return adjudication;
 }
 
 export function buildTotalCosts() {
     const totalCost = new ClaimResponseTotal();
-    totalCost.amount = this.buildMoney(0)
+    totalCost.amount = buildMoney(0)
     totalCost.category = new CodeableConcept();
 
-    const totalCostCategory = this.buildCoding('submitted', 'Submitted Amount',
+    const totalCostCategory = buildCoding(CodingTypes.SUBMITTED, 'Submitted Amount',
         'http://terminology.hl7.org/CodeSystem/adjudication');
 
     totalCost.category.coding = [totalCostCategory];
@@ -41,9 +35,9 @@ export function buildTotalCosts() {
 
 export function buildTotalBenefits() {
     const totalBenefit = new ClaimResponseTotal();
-    totalBenefit.amount = this.buildMoney(0)
+    totalBenefit.amount = buildMoney(0)
     totalBenefit.category = new CodeableConcept();
-    const totalBenefitCategory = this.buildCoding('benefit', 'Benefit Amount', 'http://terminology.hl7.org/CodeSystem/adjudication');
+    const totalBenefitCategory = buildCoding(CodingTypes.BENEFIT, 'Benefit Amount', 'http://terminology.hl7.org/CodeSystem/adjudication');
     totalBenefit.category.coding = [totalBenefitCategory];
     return { totalBenefit, totalBenefitCategory };
 }
@@ -62,7 +56,7 @@ export async function buildInvoiceLineItems(items: FlatConvectorModel<ClaimItem>
             key++;
             let newInvoiceLine = new InvoiceLineItem();
             newInvoiceLine.sequence = key;
-            let reference = this.buildReference(chargeItem.identifier[0]);
+            let reference = buildReference(chargeItem.identifier[0]);
             newInvoiceLine.chargeItemReference = reference;
             newInvoiceLine.chargeItemCodeableConcept = chargeItem.code;
             invoiceLineItems.push(newInvoiceLine);
@@ -77,9 +71,9 @@ export async function buildInvoiceLineItems(items: FlatConvectorModel<ClaimItem>
  * @param use 
  * @param system 
  */
-export function buildIdentifier(value: string, use?: string, system?: IdentifierTypes) {
+export function buildIdentifier(value: string, use?: string, system?: string) {
     let identifier = new Identifier();
-    identifier.use = use || 'usual';
+    identifier.use = use;
     identifier.system = system;
     identifier.value = value;
     return identifier;
@@ -103,9 +97,9 @@ export function buildNarrative(status?: string, div?: string) {
  * @param display 
  * @param system 
  */
-export function buildCoding(code?: string, display?: string, system?: string) {
+export function buildCoding(code: string, display?: string, system?: string) {
     const coding = new Coding();
-    coding.code = code || '';
+    coding.code = code;
     coding.display = display || '';
     coding.system = system || '';
     return coding;

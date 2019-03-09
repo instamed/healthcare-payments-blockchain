@@ -4,9 +4,9 @@ import {
     Invokable,
     Param
 } from '@worldsibu/convector-core-controller';
-import * as yup from 'yup';
 import { ConsumerParticipant, ProviderParticipant, PayerParticipant } from './participant.model';
 import { Patient, Organization } from './financial.model';
+import { FQDNObjects } from './utils';
 
 @Controller('participant')
 export class ParticipantController extends ConvectorController {
@@ -14,8 +14,8 @@ export class ParticipantController extends ConvectorController {
     public async createConsumer(
         @Param(ConsumerParticipant)
         participant: ConsumerParticipant) {
-        participant.id = participant.id.includes('Consumer::') ? participant.id :
-            `Consumer::${participant.id}`;
+        participant.id = participant.id.includes(FQDNObjects.CONSUMERPARTICIPANT.toString()) ? participant.id :
+            `${FQDNObjects.CONSUMERPARTICIPANT}${participant.id}`;
 
         if (participant.patientUid) {
             // Check if patient exists
@@ -30,8 +30,8 @@ export class ParticipantController extends ConvectorController {
     public async createProvider(
         @Param(ProviderParticipant)
         participant: ProviderParticipant) {
-        participant.id = participant.id.includes('Provider::') ? participant.id :
-            `Provider::${participant.id}`;
+        participant.id = participant.id.includes(FQDNObjects.PROVIDERPARTICIPANT.toString()) ? participant.id :
+            `${FQDNObjects.PROVIDERPARTICIPANT}${participant.id}`;
 
         let provider = await Organization.getOne(participant.providerUid);
         if (!provider || !provider.id) {
@@ -44,14 +44,14 @@ export class ParticipantController extends ConvectorController {
     public async createPayer(
         @Param(PayerParticipant)
         participant: PayerParticipant) {
-        participant.id = participant.id.includes('Payer::') ? participant.id :
-            `Payer::${participant.id}`;
+        participant.id = participant.id.includes(FQDNObjects.PAYERPARTICIPANT.toString()) ? participant.id :
+            `${FQDNObjects.PAYERPARTICIPANT}${participant.id}`;
 
         let provider = await Organization.getOne(participant.payerUid);
         if (!provider || !provider.id) {
             throw new Error(`Associated Payer Organization with ID ${participant.payerUid} does not exist`);
         }
-        
+
         await participant.save();
     }
 }

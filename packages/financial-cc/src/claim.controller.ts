@@ -8,14 +8,17 @@ import * as fhirTypes from './utils/fhirTypes';
 import {
     Claim, ClaimResponse, CodeableConcept, ClaimResponseItem,
     InvoiceLineItemPriceComponent, Patient, Organization,
-    Encounter, Period, Quantity, Procedure, ProcedurePerformer, 
-    ChargeItem, ClaimPayee, ClaimCareTeam, ClaimItem, ClaimProcedure, 
+    Encounter, Period, Quantity, Procedure, ProcedurePerformer,
+    ChargeItem, ClaimPayee, ClaimCareTeam, ClaimItem, ClaimProcedure,
     SimpleQuantity, EncounterStatusHistory, Account, Invoice, Identifier
 } from './financial.model';
 import {
     InvoiceData, AccountData,
-    buildIdentifier, IdentifierTypes, ResourceTypes, CreateClaim, 
-    AdjudicateClaim, ServiceItem, AccountStatus, InvoiceStatus
+    buildIdentifier, IdentifierTypes, ResourceTypes, CreateClaim,
+    AdjudicateClaim, ServiceItem, AccountStatus, InvoiceStatus, EncounterStatus,
+    NarrativeStatus, IdentifierUses, ClaimResponseStatus, ClaimStatus, ClaimUses,
+    FQDNObjects, ChargeItemStatus, ProcedureStatus, InvoiceLineItemPriceComponentTypes,
+    CodingTypes, ClaimResponseOutcomes, ClaimResponseUses
 } from './utils/';
 import {
     buildNarrative, buildInvoiceLineItems,
@@ -51,23 +54,23 @@ export class ClaimController extends ConvectorController {
         const encounter = new Encounter(id);
 
         // Build the identifier for the Encounter from the id
-        const identifier = buildIdentifier(id, 'usual', IdentifierTypes.ENCOUNTER);
+        const identifier = buildIdentifier(id, IdentifierUses.USUAL, IdentifierTypes.ENCOUNTER);
         encounter.identifier = [identifier];
 
-        const class_ = buildCoding('OBSENC', 'observation encounter', 'https://www.hl7.org/fhir/v3/ActCode/cs.html');
+        const class_ = buildCoding(CodingTypes.OBSENC, 'observation encounter', 'https://www.hl7.org/fhir/v3/ActCode/cs.html');
         class_.userSelected = false;
 
         encounter.class_ = class_;
 
         encounter.resourceType = ResourceTypes.ENCOUNTER;
-        encounter.text = buildNarrative('generated', `<div xmlns=\"http://www.w3.org/1999/xhtml\">Encounter with patient @${data.patient.id}</div>`);
-        encounter.status = 'in-progress';
+        encounter.text = buildNarrative(NarrativeStatus.GENERATED, `<div xmlns=\"http://www.w3.org/1999/xhtml\">Encounter with patient @${data.patient.id}</div>`);
+        encounter.status = EncounterStatus.INPROGRESS;
 
         // Use the first identifier in patient for the subject identifier
         // For this POC, patient should only ever HAVE one identifier
-        
+
         let patient = await Patient.getOne(data.patient.identifier[0].value);
-        if(!patient || !patient.id){
+        if (!patient || !patient.id) {
             throw new Error(`Patient with ID ${data.patient.identifier[0].value} not found`);
         }
 
@@ -102,12 +105,12 @@ export class ClaimController extends ConvectorController {
         data.claim = await Claim.getOne(data.claimUid);
 
         let invoiceLineItems = await buildInvoiceLineItems(data.claim.item);
-        claimResponse.identifier = [buildIdentifier(id, 'usual', IdentifierTypes.CLAIMRESPONSE)];
+        claimResponse.identifier = [buildIdentifier(id, IdentifierUses.USUAL, IdentifierTypes.CLAIMRESPONSE)];
         claimResponse.resourceType = ResourceTypes.CLAIMRESPONSE;
 
-        claimResponse.text = buildNarrative('generated', `<div xmlns=\"http://www.w3.org/1999/xhtml\">ClaimResponse for Claim @${data.claim.id}</div>`);
-        claimResponse.status = 'active';
-        claimResponse.use = 'claim';
+        claimResponse.text = buildNarrative(NarrativeStatus.GENERATED, `<div xmlns=\"http://www.w3.org/1999/xhtml\">ClaimResponse for Claim @${data.claim.id}</div>`);
+        claimResponse.status = ClaimResponseStatus.ACTIVE;
+        claimResponse.use = ClaimResponseUses.CLAIM;
         claimResponse.patient = data.claim.patient;
 
         claimResponse.created = fhirTypes.date(data.txDate);
@@ -116,12 +119,12 @@ export class ClaimController extends ConvectorController {
         claimResponse.requestor = buildReference(data.claim.provider.identifier);
         claimResponse.request = buildReference(data.claim.identifier[0]);
 
-        claimResponse.outcome = 'complete';
+        claimResponse.outcome = ClaimResponseOutcomes.COMPLETE;
 
         claimResponse.type_ = new CodeableConcept();
         claimResponse.type_.coding = [];
 
-        const claimType = buildCoding('professional', 'Professional', 'http://hl7.org/fhir/ValueSet/claim-type');
+        const claimType = buildCoding(CodingTypes.PROFESSIONAL, 'Professional', 'http://hl7.org/fhir/ValueSet/claim-type');
 
         claimResponse.type_.coding.push(claimType);
         claimResponse.type_.text = 'Professional';
@@ -155,45 +158,45 @@ export class ClaimController extends ConvectorController {
 
             if (adjudicationItem.adjudication && adjudicationItem.adjudication.eligible) {
                 claimResponseItem.adjudication.push(
-                    buildAdjudicationItem('eligible', adjudicationItem.adjudication.eligible));
+                    buildAdjudicationItem(CodingTypes.ELEGIBLE, adjudicationItem.adjudication.eligible));
                 itemTotalCost += adjudicationItem.adjudication.eligible;
             }
 
             // Copay
             if (adjudicationItem.adjudication && adjudicationItem.adjudication.copay) {
                 claimResponseItem.adjudication.push(
-                    buildAdjudicationItem('copay', adjudicationItem.adjudication.copay));
+                    buildAdjudicationItem(CodingTypes.COPAY, adjudicationItem.adjudication.copay));
             }
 
             // Eligible Percent
             if (adjudicationItem.adjudication && adjudicationItem.adjudication.eligpercent) {
                 claimResponseItem.adjudication.push(
-                    buildAdjudicationItem('eligpercent', adjudicationItem.adjudication.eligpercent));
+                    buildAdjudicationItem(CodingTypes.ELIGPERCENT, adjudicationItem.adjudication.eligpercent));
             }
 
             // Benefit
             if (adjudicationItem.adjudication && adjudicationItem.adjudication.eligpercent) {
                 claimResponseItem.adjudication.push(
-                    buildAdjudicationItem('benefit', adjudicationItem.adjudication.benefit));
+                    buildAdjudicationItem(CodingTypes.BENEFIT, adjudicationItem.adjudication.benefit));
                 itemTotalBenefit += adjudicationItem.adjudication.benefit;
             }
 
             // Deductible
             if (adjudicationItem.adjudication && adjudicationItem.adjudication.eligpercent) {
                 claimResponseItem.adjudication.push(
-                    buildAdjudicationItem('deductible', adjudicationItem.adjudication.deductible));
+                    buildAdjudicationItem(CodingTypes.DEDUCTIBLE, adjudicationItem.adjudication.deductible));
                 itemTotalBenefit += adjudicationItem.adjudication.benefit;
             }
 
             let lineItemPriceComponents = [];
             let lineItemPriceComponent = new InvoiceLineItemPriceComponent();
-            lineItemPriceComponent.type_ = 'base';
+            lineItemPriceComponent.type_ = InvoiceLineItemPriceComponentTypes.BASE;
             lineItemPriceComponent.amount = buildMoney(itemTotalCost);
 
             lineItemPriceComponents.push(lineItemPriceComponent);
 
             let lineItemPriceComponent2 = new InvoiceLineItemPriceComponent();
-            lineItemPriceComponent2.type_ = 'deduction';
+            lineItemPriceComponent2.type_ = InvoiceLineItemPriceComponentTypes.DEDUCTION;
             lineItemPriceComponent2.amount = buildMoney(itemTotalBenefit)
 
             lineItemPriceComponents.push(lineItemPriceComponent2);
@@ -230,7 +233,7 @@ export class ClaimController extends ConvectorController {
             accountUid: data.accountUid
         };
 
-        await this.createAccount(accountData, data.txDate);
+        await this.createAccount(accountData);
 
         let invoiceData: InvoiceData = {
             patientUid: claimResponse.patient.identifier.value,
@@ -253,12 +256,12 @@ export class ClaimController extends ConvectorController {
         const procedure = new Procedure(procedureId);
         data.procedure = procedure;
         // Build the identifier for the Procedure from the id
-        const identifier = buildIdentifier(procedureId, 'usual', IdentifierTypes.PROCEDURE);
+        const identifier = buildIdentifier(procedureId, IdentifierUses.USUAL, IdentifierTypes.PROCEDURE);
         procedure.identifier = [identifier];
 
         procedure.resourceType = ResourceTypes.PROCEDURE;
-        procedure.text = buildNarrative('generated', `<div xmlns=\"http://www.w3.org/1999/xhtml\">Procedure for encounter @${data.encounter.id}</div>`)
-        procedure.status = 'completed';
+        procedure.text = buildNarrative(NarrativeStatus.GENERATED, `<div xmlns=\"http://www.w3.org/1999/xhtml\">Procedure for encounter @${data.encounter.id}</div>`)
+        procedure.status = ProcedureStatus.COMPLETED;
 
         // Use same subject as the Encounter's patient
         procedure.subject = data.encounter.subject;
@@ -289,13 +292,13 @@ export class ClaimController extends ConvectorController {
         data.chargeItem = chargeItem;
 
         // Build the identifier for the ChargeItem from the id
-        const chargeItemIdentifier = buildIdentifier(data.chargeItemUid, 'usual', IdentifierTypes.CHARGEITEM);
+        const chargeItemIdentifier = buildIdentifier(data.chargeItemUid, IdentifierUses.USUAL, IdentifierTypes.CHARGEITEM);
 
         // Unlike procedures, ChargeItems have only one Identifier in data spec
         chargeItem.identifier = [chargeItemIdentifier];
         chargeItem.resourceType = ResourceTypes.CHARGEITEM;
-        chargeItem.text = buildNarrative('generated', `<div xmlns=\"http://www.w3.org/1999/xhtml\">ChargeItem for encounter @${data.encounter.id}</div>`);
-        chargeItem.status = 'billable';
+        chargeItem.text = buildNarrative(NarrativeStatus.GENERATED, `<div xmlns=\"http://www.w3.org/1999/xhtml\">ChargeItem for encounter @${data.encounter.id}</div>`);
+        chargeItem.status = ChargeItemStatus.BILLABLE;
 
         chargeItem.code = new CodeableConcept();
 
@@ -322,25 +325,25 @@ export class ClaimController extends ConvectorController {
         //--------------------------------------------
         // First, attempt to create a new Claim object
         //--------------------------------------------
-        const id = data.claimUid.includes('resource:org.fhir.core.Claim#') ? data.claimUid :
-            `resource:org.fhir.core.Claim#${data.claimUid}`;
+        const id = data.claimUid.includes(FQDNObjects.CLAIM.toString()) ? data.claimUid :
+            `${FQDNObjects.CLAIM}#${data.claimUid}`;
 
         const claim = new Claim(id);
-        const identifier = buildIdentifier(id, 'usual', IdentifierTypes.CLAIM);
+        const identifier = buildIdentifier(id, IdentifierUses.USUAL, IdentifierTypes.CLAIM);
         claim.identifier = [identifier];
         claim.resourceType = ResourceTypes.CLAIM;
-        claim.text = buildNarrative('generated', `<div xmlns=\"http://www.w3.org/1999/xhtml\">Claim for Encounter @${data.encounter.id}</div>`)
-        claim.status = 'active';
-        claim.use = 'complete';
+        claim.text = buildNarrative(NarrativeStatus.GENERATED, `<div xmlns=\"http://www.w3.org/1999/xhtml\">Claim for Encounter @${data.encounter.id}</div>`)
+        claim.status = ClaimStatus.ACTIVE;
+        claim.use = ClaimUses.COMPLETE;
 
         // Maybe add some type coding here in the future
         claim.type_ = new CodeableConcept();
-        const claimType = buildCoding('professional', 'Professional', 'http://hl7.org/fhir/ValueSet/claim-type');
+        const claimType = buildCoding(CodingTypes.PROFESSIONAL, 'Professional', 'http://hl7.org/fhir/ValueSet/claim-type');
 
         claim.type_.coding = [claimType];
 
         claim.priority = new CodeableConcept();
-        const priorityType = buildCoding('normal', 'Normal', 'http://terminology.hl7.org/CodeSystem/processpriority');
+        const priorityType = buildCoding(CodingTypes.NORMAL, 'Normal', 'http://terminology.hl7.org/CodeSystem/processpriority');
         claim.priority.coding = [priorityType];
         claim.priority.text = 'Normal';
 
@@ -359,7 +362,7 @@ export class ClaimController extends ConvectorController {
         // Set the payee to be the provider
         claim.payee = new ClaimPayee();
         claim.payee.type_ = new CodeableConcept();
-        claim.payee.type_.coding = [buildCoding('provider', 'http://hl7.org/fhir/remittance-outcome')];
+        claim.payee.type_.coding = [buildCoding(CodingTypes.PROVIDER, 'http://hl7.org/fhir/remittance-outcome')];
 
         claim.payee.party = data.encounter.serviceProvider;
 
@@ -374,12 +377,12 @@ export class ClaimController extends ConvectorController {
         claim.procedure = [];
 
         let counter = 0;
-        for (let service of data.services) {
+        for (let serviceProvider of data.services) {
             let item = new ClaimItem();
             let chargeItem = data.services[counter].chargeItem;
 
             // Skip ChargeItems not properly labeled as billable status
-            if (chargeItem.status != 'billable') {
+            if (chargeItem.status != ChargeItemStatus.BILLABLE) {
                 continue;
             }
 
@@ -404,7 +407,7 @@ export class ClaimController extends ConvectorController {
             claim.item.push(item);
 
             // Update the ChargeItems
-            chargeItem.status = 'billed';
+            chargeItem.status = ChargeItemStatus.BILLED;
             await chargeItem.save();
             counter++;
         }
@@ -427,16 +430,16 @@ export class ClaimController extends ConvectorController {
             statusHistory.period = data.encounter.period;
         } else {
             statusHistory.period = new Period();
-            statusHistory.period.start = data.encounter.statusHistory[data.encounter.statusHistory.length-1].period.end;
+            statusHistory.period.start = data.encounter.statusHistory[data.encounter.statusHistory.length - 1].period.end;
             statusHistory.period.end = data.encounter.period.end;
         }
         data.encounter.statusHistory.push(statusHistory);
-        data.encounter.status = 'finished';
+        data.encounter.status = EncounterStatus.FINISHED;
 
         await new Encounter(data.encounter).save();
     }
 
-    async createAccount(data: AccountData, invoiceDate: Date) {
+    async createAccount(data: AccountData) {
         const id = data.accountUid;
 
         data.patient = await Patient.getOne(data.patientUid);
@@ -445,17 +448,17 @@ export class ClaimController extends ConvectorController {
         const account = new Account(id);
 
         // Build the identifier for the Account from the id
-        const identifier = buildIdentifier(id, 'usual', IdentifierTypes.ACCOUNT);
+        const identifier = buildIdentifier(id, IdentifierUses.USUAL, IdentifierTypes.ACCOUNT);
         account.identifier = [identifier];
 
         // Set the necessary DomainResource stuff
         account.resourceType = ResourceTypes.ACCOUNT;
-        account.text = buildNarrative('generated', `<div xmlns=\"http://www.w3.org/1999/xhtml\">Account record for ${data.patient.id}.</div>`);
+        account.text = buildNarrative(NarrativeStatus.GENERATED, `<div xmlns=\"http://www.w3.org/1999/xhtml\">Account record for ${data.patient.id}.</div>`);
         account.status = AccountStatus.ACTIVE;
 
         // Set account type to a patient billing invoice
         account.type_ = new CodeableConcept();
-        account.type_.coding = [buildCoding('PBILLACCT', 'patient billing account', 'http://hl7.org/fhir/v3/ActCode')];
+        account.type_.coding = [buildCoding(CodingTypes.PBILLACCT, 'patient billing account', 'http://hl7.org/fhir/v3/ActCode')];
         account.type_.text = 'patient';
         account.name = `Patient billing account for ${data.patient.id}`;
 
@@ -480,17 +483,17 @@ export class ClaimController extends ConvectorController {
         const invoice = new Invoice(id);
 
         // Build the identifier for the Account from the id
-        const identifier = buildIdentifier(id, 'usual', IdentifierTypes.INVOICE);
+        const identifier = buildIdentifier(id, IdentifierUses.USUAL, IdentifierTypes.INVOICE);
         invoice.identifier = [identifier];
 
         // Set the necessary DomainResource stuff
         invoice.resourceType = ResourceTypes.INVOICE;
-        invoice.text = buildNarrative('generated', `<div xmlns=\"http://www.w3.org/1999/xhtml\">Invoice record for ${data.patient.id}.</div>`);
+        invoice.text = buildNarrative(NarrativeStatus.GENERATED, `<div xmlns=\"http://www.w3.org/1999/xhtml\">Invoice record for ${data.patient.id}.</div>`);
         invoice.status = InvoiceStatus.ISSUED;
 
         // Set account type to a patient billing invoice
         invoice.type_ = new CodeableConcept();
-        invoice.type_.coding = [buildCoding('PATIENT', 'patient invoice')]
+        invoice.type_.coding = [buildCoding(CodingTypes.PATIENT, 'patient invoice')]
         invoice.type_.text = 'patient';
 
         // Build Reference to patient

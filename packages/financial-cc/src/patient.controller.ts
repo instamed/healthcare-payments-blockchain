@@ -6,6 +6,7 @@ import {
 } from '@worldsibu/convector-core-controller';
 import { Patient } from './financial.model';
 import * as yup from 'yup';
+import { FQDNObjects } from './utils';
 
 @Controller('patient')
 export class PatientController extends ConvectorController {
@@ -17,8 +18,8 @@ export class PatientController extends ConvectorController {
     public async create(
         @Param(Patient)
         patient: Patient) {
-        patient.id = patient.id.includes(`resource:org.fhir.core.Patient#`) ? patient.id :
-            `resource:org.fhir.core.Patient#${patient.id}`;
+        patient.id = patient.id.includes(FQDNObjects.PATIENT.toString()) ? patient.id :
+            `${FQDNObjects.PATIENT}#${patient.id}`;
             
         await patient.save();
     }

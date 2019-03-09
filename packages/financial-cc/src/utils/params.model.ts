@@ -1,6 +1,12 @@
 import { InvoiceLineItem } from '..';
-import { Patient, Organization, Claim, Encounter, Procedure, ChargeItem, Account, date, Invoice } from '../financial.model';
-import { FlatConvectorModel, Validate, ConvectorModel, Default, ReadOnly, Required } from '@worldsibu/convector-core-model';
+import {
+    Patient, Organization, Claim, Encounter, Procedure,
+    ChargeItem, Account, Invoice
+} from '../financial.model';
+import {
+    FlatConvectorModel, Validate, ConvectorModel,
+    Default, ReadOnly, Required
+} from '@worldsibu/convector-core-model';
 import * as yup from 'yup';
 
 export class Adjudication extends ConvectorModel<ServiceItem>{
