@@ -2,6 +2,12 @@
 
 This is a [Hyperledger Fabric](https://www.hyperledger.org/projects/fabric) project to represent the FHIR Financial module. It's built with [Convector](https://github.com/worldsibu/convector) and follows the [FHIR spec](https://www.hl7.org/fhir/).
 
+## Prerequisites
+
+* [Node](https://nodejs.org/en/download/) 8.11.0
+* [Docker Community Edition](https://www.docker.com/community-edition)
+* [npx](https://www.npmjs.com/package/npx)
+
 ## How to run the project
 
 ### Start from scratch
@@ -41,7 +47,15 @@ This will:
 
 ### Running environment
 
+* Call the server located in `http://localhost:10100`
 * Check the CouchDB server provisioned at http://localhost:5084/_utils/#/database/ch1_financial/_all_docs
+
+
+## Architecture
+
+![Development Environment](images/devenv.png?raw=true "Development Environment")
+
+![Production Environment](images/prodenv.png?raw=true "Production Environment")
 
 ## Tests
 

@@ -34,7 +34,13 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": ""
+							"raw": "{{server}}/claim",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"claim"
+							]
 						}
 					},
 					"response": []
@@ -525,7 +531,7 @@
 	],
 	"variable": [
 		{
-			"id": "45667458-6038-405c-9fa7-4e5176bcff58",
+			"id": "82ab15ac-e8fe-4de4-9aed-8cee02080eb0",
 			"key": "server",
 			"value": "http://localhost:10100/",
 			"type": "string"

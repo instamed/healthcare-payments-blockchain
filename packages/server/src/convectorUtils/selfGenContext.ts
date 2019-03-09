@@ -1,12 +1,13 @@
 /** Referenced from: https://github.com/ksachdeva/hyperledger-fabric-example/blob/c41fcaa352e78cbf3c7cfb210338ac0f20b8357e/src/client.ts */
 import * as fs from 'fs';
 import { join } from 'path';
-import * as Client from 'fabric-client';
+import Client from 'fabric-client';
 import { IEnrollmentRequest, IRegisterRequest } from 'fabric-ca-client';
-import { KEYSTORE, USER, ORG } from '../utils';
+import { identity } from '../utils/identity';
 
 export type UserParams = IRegisterRequest;
 export type AdminParams = IEnrollmentRequest;
+const l = console.log;
 
 export namespace SelfGenContext {
 
@@ -16,53 +17,57 @@ export namespace SelfGenContext {
   }
 
   export async function getClient() {
+    debugger;
+    const keyStore = identity().keyStore;
+    const user = identity().user;
+    const org = identity().org;
     // Check if needed
-    const contextPath = join(KEYSTORE+ '/' + USER);
+    const contextPath = join(keyStore + '/' + user);
 
     fs.readFile(contextPath, 'utf8', async function (err, data) {
       if (err) {
         // doesnt exist! Create it.
         const client = new Client();
 
-        console.log('Setting up the cryptoSuite ..');
+        l('Setting up the cryptoSuite ..');
 
         // ## Setup the cryptosuite (we are using the built in default s/w based implementation)
         const cryptoSuite = Client.newCryptoSuite();
         cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({
-          path: KEYSTORE
+          path: keyStore
         }));
 
         client.setCryptoSuite(cryptoSuite);
 
-        console.log('Setting up the keyvalue store ..');
+        l('Setting up the keyvalue store ..');
 
         // ## Setup the default keyvalue store where the state will be stored
         const store = await Client.newDefaultKeyValueStore({
-          path: KEYSTORE
+          path: keyStore
         });
 
         client.setStateStore(store);
 
-        console.log('Creating the admin user context ..');
+        l('Creating the admin user context ..');
 
-        const privateKeyFile = fs.readdirSync(KEYSTORE + '/keystore')[0];
+        const privateKeyFile = fs.readdirSync(keyStore + '/keystore')[0];
 
         // ###  GET THE NECESSRY KEY MATERIAL FOR THE ADMIN OF THE SPECIFIED ORG  ##
         const cryptoContentOrgAdmin: IdentityFiles = {
-          privateKey: KEYSTORE + '/keystore/' + privateKeyFile,
-          signedCert: KEYSTORE + '/signcerts/cert.pem'
+          privateKey: keyStore + '/keystore/' + privateKeyFile,
+          signedCert: keyStore + '/signcerts/cert.pem'
         };
 
         await client.createUser({
-          username: USER,
-          mspid: `${ORG}MSP`,
+          username: user,
+          mspid: `${org}MSP`,
           cryptoContent: cryptoContentOrgAdmin,
           skipPersistence: false
         });
 
         return client;
       } else {
-        console.log('Context exists');
+        l(`Context exists in ${contextPath}`);
       }
     });
 

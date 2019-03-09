@@ -8,24 +8,24 @@ import { FabricControllerAdapter } from '@worldsibu/convector-adapter-fabric';
 import { ClientFactory } from '@worldsibu/convector-core-adapter';
 import { SelfGenContext } from './selfGenContext';
 import {
-  USER, CHANNEL,
-  CHAINCODE, KEYSTORE, NETWORKPROFILE, ORG
+  CHANNEL, CHAINCODE
 } from '../utils';
 import { PatientController, OrganizationController, ClaimController, ParticipantController } from 'financial-cc';
 import { PaymentController } from 'financial-cc';
+import { identity } from '../utils/identity';
 
 async function InitFabricAdapter() {
   await SelfGenContext.getClient();
-
+  debugger;
   const adapter = new FabricControllerAdapter({
     txTimeout: 300000,
-    user: USER,
+    user: identity().user,
     // set it later to enable Mutual TLS
     channel: CHANNEL,
     chaincode: CHAINCODE,
-    keyStore: KEYSTORE,
-    networkProfile: NETWORKPROFILE,
-    userMspPath: KEYSTORE
+    keyStore: identity().keyStore,
+    networkProfile: identity().networkProfile,
+    userMspPath: identity().keyStore
   });
 
   await adapter.init();
@@ -51,10 +51,10 @@ export async function Init() {
 export async function InitServerIdentity() {
   // const users = await ModelHelpers.getAllParticipants();
   // if (!users.find(u => u.id === USER && u.msp === `${ORG}MSP`)) {
-    console.log('Need to register server identity');
-    // (await InitParticipantController()).register(USER);
-    console.log('Server identity registered');
+  console.log('Need to register server identity');
+  // (await InitParticipantController()).register(USER);
+  console.log('Server identity registered');
   // } else {
-    console.log('Server identity found');
+  console.log('Server identity found');
   // }
 }

@@ -21,7 +21,9 @@
     "cc:package": "f() { npm run lerna:build; chaincode-manager --config ./chaincode.config.json --output ./chaincode-financial package; }; f",
     "cc:install": "f() { hurl install financial node -P ./chaincode-financial; }; f",
     "lerna:test": "lerna exec npm run test",
-    "views:install": "./dev-env/installer.sh"
+    "views:install": "./packages/administration/dev-env/installer.sh",
+    "===================FORMA===================": "===================",
+    "views:install:prod": "./packages/administration/prod-env/installer.sh"
   },
   "devDependencies": {
     "lerna": "^3.13.0",
