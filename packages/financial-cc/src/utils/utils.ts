@@ -1,12 +1,11 @@
+import { FlatConvectorModel } from '@worldsibu/convector-core-model';
+
+import { Currencies, CodingTypes } from './enums';
 import {
     ClaimResponseItemAdjudication, CodeableConcept,
     ClaimResponseTotal, ClaimItem, InvoiceLineItem, ChargeItem,
     Identifier, Narrative, Coding, Money, Reference
-} from '..';
-import { FlatConvectorModel } from '@worldsibu/convector-core-model';
-import {
-    Currencies, CodingTypes
-} from './';
+} from '../financial.model';
 
 /**
    * 

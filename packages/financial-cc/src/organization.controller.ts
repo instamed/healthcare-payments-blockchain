@@ -4,9 +4,9 @@ import {
     Invokable,
     Param
 } from '@worldsibu/convector-core-controller';
-import { Organization } from './financial.model';
-import { FQDNObjects } from './utils';
 
+import { FQDNObjects } from './utils/enums';
+import { Organization } from './financial.model';
 
 @Controller('organization')
 export class OrganizationController extends ConvectorController {

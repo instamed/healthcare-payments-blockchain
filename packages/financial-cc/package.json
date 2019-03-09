@@ -12,7 +12,7 @@
     "tsc": "tsc",
     "build": "npm run clean && npm run client:generate && tsc",
     "prepare": "npm run build",
-    "test": "npm run build && mocha --inspect -r ts-node/register tests/*.spec.ts --reporter spec",
+    "test": "npm run build && mocha -r ts-node/register tests/*.spec.ts --reporter spec",
     "client:generate": "echo 'Client is not required anymore'"
   },
   "dependencies": {

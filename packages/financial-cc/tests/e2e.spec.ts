@@ -6,13 +6,13 @@ import { OrganizationController } from '../src/organization.controller';
 import 'mocha';
 import { ClientFactory } from '@worldsibu/convector-core-adapter';
 import {
-    PatientController, Organization, Patient, Claim,
-    ChargeItem, Account, Procedure, Invoice, Participant, ParticipantController,
-    ConsumerParticipant, ProviderParticipant, PayerParticipant
+    PatientController, Organization, Patient, Claim, Encounter,
+    ChargeItem, Account, Procedure, Invoice, ParticipantController,
+    ConsumerParticipant, ProviderParticipant, PayerParticipant,
+    ClaimController, PaymentController
 } from '../src';
-import { ClaimController, PaymentController } from '../src';
-import { CreateClaim, AdjudicateClaim, InvoiceStatus } from '../src/utils';
-import { Encounter } from '../src';
+import { CreateClaim, AdjudicateClaim } from '../src/utils/params.model';
+import { InvoiceStatus } from '../src/utils/enums';
 
 const log = console.log;
 

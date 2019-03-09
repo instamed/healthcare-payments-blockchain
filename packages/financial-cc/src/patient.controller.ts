@@ -4,9 +4,9 @@ import {
     Invokable,
     Param
 } from '@worldsibu/convector-core-controller';
+
 import { Patient } from './financial.model';
-import * as yup from 'yup';
-import { FQDNObjects } from './utils';
+import { FQDNObjects } from './utils/enums';
 
 @Controller('patient')
 export class PatientController extends ConvectorController {

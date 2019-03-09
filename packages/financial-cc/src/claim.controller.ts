@@ -1,9 +1,11 @@
+import { FlatConvectorModel } from '@worldsibu/convector-core-model';
 import {
     Controller,
     ConvectorController,
     Invokable,
     Param
 } from '@worldsibu/convector-core-controller';
+
 import * as fhirTypes from './utils/fhirTypes';
 import {
     Claim, ClaimResponse, CodeableConcept, ClaimResponseItem,
@@ -14,18 +16,21 @@ import {
 } from './financial.model';
 import {
     InvoiceData, AccountData,
-    buildIdentifier, IdentifierTypes, ResourceTypes, CreateClaim,
-    AdjudicateClaim, ServiceItem, AccountStatus, InvoiceStatus, EncounterStatus,
-    NarrativeStatus, IdentifierUses, ClaimResponseStatus, ClaimStatus, ClaimUses,
-    FQDNObjects, ChargeItemStatus, ProcedureStatus, InvoiceLineItemPriceComponentTypes,
-    CodingTypes, ClaimResponseOutcomes, ClaimResponseUses
-} from './utils/';
+    CreateClaim, AdjudicateClaim, ServiceItem
+} from './utils/params.model';
 import {
-    buildNarrative, buildInvoiceLineItems,
-    buildReference, buildCoding, buildTotalCosts, buildTotalBenefits,
-    buildAdjudicationItem, buildMoney
-} from './utils';
-import { FlatConvectorModel } from '@worldsibu/convector-core-model';
+    buildIdentifier, buildNarrative, buildInvoiceLineItems, buildReference,
+    buildCoding, buildTotalCosts, buildTotalBenefits, buildAdjudicationItem,
+    buildMoney
+} from './utils/utils';
+import {
+    IdentifierTypes, ResourceTypes, AccountStatus, InvoiceStatus,
+    EncounterStatus, NarrativeStatus, IdentifierUses, ClaimResponseStatus,
+    ClaimStatus, ClaimUses, FQDNObjects, ChargeItemStatus, ProcedureStatus,
+    InvoiceLineItemPriceComponentTypes, CodingTypes, ClaimResponseOutcomes,
+    ClaimResponseUses
+} from './utils/enums';
+
 
 @Controller('claim')
 export class ClaimController extends ConvectorController {

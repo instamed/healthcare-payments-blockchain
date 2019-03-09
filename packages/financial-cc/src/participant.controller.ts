@@ -4,9 +4,14 @@ import {
     Invokable,
     Param
 } from '@worldsibu/convector-core-controller';
-import { ConsumerParticipant, ProviderParticipant, PayerParticipant } from './participant.model';
+
+import { FQDNObjects } from './utils/enums';
 import { Patient, Organization } from './financial.model';
-import { FQDNObjects } from './utils';
+import {
+    ConsumerParticipant,
+    ProviderParticipant,
+    PayerParticipant
+} from './participant.model';
 
 @Controller('participant')
 export class ParticipantController extends ConvectorController {
