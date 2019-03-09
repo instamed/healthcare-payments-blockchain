@@ -50,7 +50,6 @@ This will:
 * Call the server located in `http://localhost:10100`
 * Check the CouchDB server provisioned at http://localhost:5084/_utils/#/database/ch1_financial/_all_docs
 
-
 ## Architecture
 
 ![Development Environment](images/devenv.png?raw=true "Development Environment")
