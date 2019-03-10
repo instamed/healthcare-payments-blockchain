@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
-import { createConsumer, createProvider, createPayer, 
-    getAllConsumer, getAllProvider, getAllPayer } from '../services/participant.service';
+import {
+    createConsumer, createProvider, createPayer,
+    getAllConsumer, getAllProvider, getAllPayer
+} from '../services/participant.service';
 const router: Router = Router();
 
 router.get('/consumer', async (req: Request, res: Response) => {
@@ -33,8 +35,8 @@ router.get('/payer', async (req: Request, res: Response) => {
 
 router.post('/consumer', async (req: Request, res: Response) => {
     try {
-        const participant = req.body;
-        await createConsumer(participant);
+        const { participant, fingerprint } = req.body;
+        await createConsumer(participant, fingerprint);
         res.status(201).send();
     } catch (ex) {
         console.log(ex);

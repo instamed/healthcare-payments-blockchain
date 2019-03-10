@@ -7,6 +7,7 @@ import {
   Validate
 } from '@worldsibu/convector-core-model';
 import { Patient, Organization } from './financial.model';
+import { x509Identities } from './utils/identities.model';
 
 export abstract class Participant<T extends Participant<any>> extends ConvectorModel<T> {
 
@@ -23,6 +24,9 @@ export class ConsumerParticipant extends Participant<ConsumerParticipant>{
 
   @Validate(Patient.schema())
   public patient?: Patient;
+
+  @Validate(yup.array(x509Identities))
+  public identities: x509Identities[];
 }
 
 export class ProviderParticipant extends Participant<ProviderParticipant>{

@@ -15,6 +15,7 @@
     "env:clean": "hurl clean",
     "cc:start": "f() { npm run cc:package; npm run cc:install; }; f",
     "cc:upgrade": "f() { npm run cc:package -- financial org1; hurl upgrade financial node $1  -P ./chaincode-financial; }; f",
+    "user:fingerprint": "f () { node -e \"console.log(JSON.parse(require('fs').readFileSync('$1', 'utf8')).enrollment.identity.certificate)\" | openssl x509 -fingerprint -noout | cut -d '=' -f2 ; }; f",
     "===================INTERNALS===================": "===================NO NEED TO CALL THEM DIRECTLY===================",
     "lerna:install": "lerna bootstrap",
     "lerna:build": "lerna run build",

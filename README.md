@@ -43,7 +43,49 @@ This will:
 * `packages/server`: contains the server calling the blockchain.
 * `chaincode.config.json`: links the controllers and packages the config for the smart contract.
 * `dev-env` a folder containing development environment needed files like the CouchDB views and the installation script.
-* `Fhir Financial.postman_collection.json`: import that into Postman to see the queries to the database, follow the numbers in the tasks to create a full flow.
+* `Fhir Financial.postman_collection.json`: import this file into Postman to see the queries to the database, follow the numbers in the tasks to create a full flow.
+
+### Identities on the project
+
+`Payer Organizations`, `Provider Organizations`, and `Consumer Participants` are identified in the blockchain through a **fingerprint** of a certificate generated from the Certificate authority.
+
+The logic goes as follows:
+
+* A identity (user) is created in the Certificate Authority.
+* That user is enrolled in the blockchain network (in the case of the development environment the identity is registered and then enrolled by default).
+* Extract the fingerprint from the cert by calling:
+
+```bash
+# I.e.: npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org1/user1
+npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-<org>/<user>
+```
+
+* The result fingerprint looks like `A5:EB:E4:1E:8E:86:03:72:00:3F:EA:CA:D2:9D:98:08:CA:70:24:F6`.
+* That same fingerprint will be validated when a transaction is signed by a identity from the blockchain.
+* Be sure to pass it throught Postman when registering a new `Payer Organization`, `Provider Organization`, or `Consumer Participant` as a param called `fingerprint`. Transactions will validate that the right identity is trying to perform requests.
+* For example, to create a Consumer Participant, the following JSON is valid:
+
+```json
+{
+    "participant": {
+        "id": "Consumer::Bob"
+    },
+    "fingerprint": "A5:EB:E4:1E:8E:86:03:72:00:3F:EA:CA:D2:9D:98:08:CA:70:24:F6"
+}
+```
+
+#### A practical example
+
+Get the fingerprint of the user1 in the org1
+
+```bash
+$ npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org1/user1
+A5:EB:E4:1E:8E:86:03:72:00:3F:EA:CA:D2:9D:98:08:CA:70:24:F6
+```
+
+Be sure that your server is using the identity of user1 in org1, defined in `./packages/server/src/config/identities.json`
+
+Every transaction sent from the server will be signed with the user1 in org1 identity, so the chaincode can safely check for the fingerprint throught the `this.sender`
 
 ### Running environment
 

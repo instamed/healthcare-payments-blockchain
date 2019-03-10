@@ -1,9 +1,9 @@
 import { Init, couchQueryAll } from '../convectorUtils';
 import { ConsumerParticipant, PayerParticipant, ProviderParticipant } from 'financial-cc';
 
-export async function createConsumer(participant: ConsumerParticipant) {
+export async function createConsumer(participant: ConsumerParticipant, fingerprint: string) {
     const ctrls = await Init();
-    await ctrls.participant.createConsumer(participant);
+    await ctrls.participant.createConsumer(participant, fingerprint);
 }
 export async function createProvider(participant: ProviderParticipant) {
     const ctrls = await Init();

@@ -15,8 +15,8 @@ router.get('/', async (req: Request, res: Response) => {
 
 router.post('/', async (req: Request, res: Response) => {
     try {
-        const organization = req.body;
-        await create(organization);
+        const { organization, fingerprint } = req.body;
+        await create(organization, fingerprint);
         res.status(201).send();
     } catch (ex) {
         console.log(ex);

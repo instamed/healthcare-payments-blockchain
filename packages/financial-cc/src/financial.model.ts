@@ -8,6 +8,7 @@ import {
    Validate,
    Default
 } from '@worldsibu/convector-core-model';
+import { x509Identities } from './utils/identities.model';
 
 export type date = string;
 export type instant = string;
@@ -2963,6 +2964,8 @@ export class Organization extends DomainResource<Organization> {
    @Validate(yup.lazy(() => yup.array(Reference.schema())))
    public endpoint?: Array<FlatConvectorModel<Reference>>; //Endpoint
 
+   @Validate(yup.array(x509Identities))
+   public identities: x509Identities[];
 }
 
 

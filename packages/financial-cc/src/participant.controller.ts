@@ -12,13 +12,16 @@ import {
     ProviderParticipant,
     PayerParticipant
 } from './participant.model';
+import * as yup from 'yup';
 
 @Controller('participant')
 export class ParticipantController extends ConvectorController {
     @Invokable()
     public async createConsumer(
         @Param(ConsumerParticipant)
-        participant: ConsumerParticipant) {
+        participant: ConsumerParticipant,
+        @Param(yup.string())
+        fingerprint: string) {
         participant.id = participant.id.includes(FQDNObjects.CONSUMERPARTICIPANT.toString()) ? participant.id :
             `${FQDNObjects.CONSUMERPARTICIPANT}${participant.id}`;
 
@@ -29,6 +32,10 @@ export class ParticipantController extends ConvectorController {
                 throw new Error(`Associated Patient with ID ${participant.patientUid} does not exist`);
             }
         }
+        participant.identities = [{
+            status: true,
+            fingerprint
+        }];
         await participant.save();
     }
     @Invokable()
