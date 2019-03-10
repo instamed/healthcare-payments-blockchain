@@ -4,9 +4,10 @@ import {
   Invokable
 } from '@worldsibu/convector-core-controller';
 import {
-  Invoice
+  Invoice, Patient, Organization
 } from './financial.model';
 import { InvoiceStatus } from './utils/enums';
+import { ConsumerParticipant } from './participant.model';
 
 @Controller('payment')
 export class PaymentController extends ConvectorController {
@@ -17,7 +18,14 @@ export class PaymentController extends ConvectorController {
   @Invokable()
   public async make(id: string) {
     let invoice = await Invoice.getOne(id);
-    // TODO: Check user based on this.sender;
+
+    let provider = await Organization.getOne(invoice.issuer.identifier.value);
+    let fingerprint = provider.identities.find(identity => identity.status).fingerprint;
+
+    if (fingerprint != this.sender) {
+      throw new Error(`Current identity is not authorized to set invoice ${invoice.id} status to balanced`);
+    }
+
     invoice.status = InvoiceStatus.BALANCED;
     await invoice.save();
   }

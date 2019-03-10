@@ -30,6 +30,8 @@ describe('Fhir Financial - Participants', () => {
     const patientId = 'resource:org.fhir.core.Patient#Bob';
     const consumerParticipantId2 = 'Consumer::Bob2';
 
+    const mockIdentity = 'B6:0B:37:7C:DF:D2:7A:08:0B:98:BF:52:A4:2C:DC:4E:CC:70:91:E1';
+
     before('Init controllers', async () => {
         adapter = new MockControllerAdapter();
         await adapter.init([{
@@ -125,7 +127,7 @@ describe('Fhir Financial - Participants', () => {
                 }
             ]
         });
-        await ctrl.org.create(provider);
+        await ctrl.org.create(provider, mockIdentity);
         let createdProvider = await adapter.getById<Organization>(providerId);
         expect(createdProvider.id).to.equal(providerId);
     });
@@ -204,7 +206,7 @@ describe('Fhir Financial - Participants', () => {
                 ]
             });
 
-        await ctrl.org.create(payer);
+        await ctrl.org.create(payer, mockIdentity);
 
         let createdPayer = await adapter.getById<Organization>(payerId);
         expect(createdPayer.id).to.equal(payerId);
@@ -291,7 +293,7 @@ describe('Fhir Financial - Participants', () => {
             id: consumerParticipantId
         });
 
-        await ctrl.participant.createConsumer(participant);
+        await ctrl.participant.createConsumer(participant, mockIdentity);
 
         let createdParticipant = await adapter.getById<ConsumerParticipant>(consumerParticipantId);
         expect(createdParticipant).to.exist;
@@ -305,7 +307,7 @@ describe('Fhir Financial - Participants', () => {
             patientUid: patientId
         });
 
-        await ctrl.participant.createConsumer(participant);
+        await ctrl.participant.createConsumer(participant, mockIdentity);
 
         let createdParticipant = await adapter.getById<ConsumerParticipant>(consumerParticipantId);
         expect(createdParticipant).to.exist;

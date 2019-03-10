@@ -35,6 +35,8 @@ describe.only('Fhir Financial', () => {
     const accountId = 'resource:org.fhir.core.Account#Account-1';
     const invoiceId = 'resource:org.fhir.core.Invoice#Invoice-1';
 
+    const mockIdentity = 'B6:0B:37:7C:DF:D2:7A:08:0B:98:BF:52:A4:2C:DC:4E:CC:70:91:E1';
+
     before('Init controllers', async () => {
         adapter = new MockControllerAdapter();
         await adapter.init([{
@@ -140,7 +142,7 @@ describe.only('Fhir Financial', () => {
                 }
             ]
         });
-        await ctrl.org.create(provider);
+        await ctrl.org.create(provider, mockIdentity);
         let createdProvider = await adapter.getById<Organization>(providerId);
         expect(createdProvider.id).to.equal(providerId);
     });
@@ -219,7 +221,7 @@ describe.only('Fhir Financial', () => {
                 ]
             });
 
-        await ctrl.org.create(payer);
+        await ctrl.org.create(payer, mockIdentity);
 
         let createdPayer = await adapter.getById<Organization>(payerId);
         expect(createdPayer.id).to.equal(payerId);
@@ -306,7 +308,7 @@ describe.only('Fhir Financial', () => {
             id: consumerParticipantId
         });
 
-        await ctrl.participant.createConsumer(participant);
+        await ctrl.participant.createConsumer(participant, mockIdentity);
 
         let createdParticipant = await adapter.getById<ConsumerParticipant>(consumerParticipantId);
         expect(createdParticipant).to.exist;
