@@ -23,6 +23,7 @@
     "cc:install": "f() { hurl install financial node -P ./chaincode-financial; }; f",
     "lerna:test": "lerna exec npm run test",
     "views:install": "./packages/administration/dev-env/installer.sh",
+    "mockData": "./packages/administration/dev-env/setup-mockdata.sh",
     "===================FORMA===================": "===================",
     "views:install:prod": "./packages/administration/prod-env/installer.sh"
   },

@@ -13,15 +13,17 @@ This is a [Hyperledger Fabric](https://www.hyperledger.org/projects/fabric) proj
 ### Start from scratch
 
 ```bash
+# Install dependencies
 npm install
 
+# Start the blockchain and the server
 npm start
 
-# Open the `Fhir Financial.postman_collection.json` with Postman and run a initial request.
-# The first transaction in the server to the blockchain will take some seconds to start the containers for the very first time.
+# Create some mock data automatically
+npm run mockData
 
-# Install views - this has to happen after making the first request since no database exists yet in CouchDB
-npm run views:install
+# Start the server again?
+npm run server:start
 ```
 
 This will:
@@ -30,6 +32,8 @@ This will:
 * Install the chaincode with the name `financial` in the network.
 * Start the NodeJS server.
 * Install CouchDB views.
+* Instantiate the chaincode servers.
+* Create some mock data for you.
 
 ### Individual tasks
 
