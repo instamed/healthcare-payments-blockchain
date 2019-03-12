@@ -1,7 +1,7 @@
 [
     {
         "user": "instamed",
-        "org": "worldsibutrm-instamednetworkmes",
+        "org": "instamedycb-financialfhirtqj",
         "networkProfile": "../../../config/instamed.networkprofile.yaml",
         "keyStore": "../../../config/" 
     }
