@@ -1,7 +1,7 @@
 // @ts-check
 import * as dotenv from 'dotenv';
 dotenv.config();
-
+import * as path from 'path';
 import express from 'express';
 
 import * as bodyParser from 'body-parser';
@@ -17,6 +17,8 @@ import { ChargeItemCtrl } from './controllers/chargeItem.controller';
 import { ClaimResponseCtrl } from './controllers/claimResponse.controller';
 import { EncounterCtrl } from './controllers/encounter.controller';
 import { identity } from './utils/identity';
+import { DefaultCtrl } from './controllers/default.controller';
+import { join } from 'path';
 
 const app: express.Application = express();
 const port = process.env.PORT || 10100;
@@ -35,17 +37,21 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/organization', OrganizationCtrl);
-app.use('/payment', PaymentCtrl);
-app.use('/claim', ClaimCtrl);
-app.use('/patient', PatientCtrl);
-app.use('/participant', ParticipantCtrl);
-app.use('/invoice', InvoiceCtrl);
-app.use('/account', AccountCtrl);
-app.use('/procedure', ProcedureCtrl);
-app.use('/chargeItem', ChargeItemCtrl);
-app.use('/claimResponse', ClaimResponseCtrl);
-app.use('/encounter', EncounterCtrl);
+
+app.use('/', DefaultCtrl);
+// console.log(join(__dirname, 'index.html'));
+// app.use('/', express.static(path.join(__dirname, 'index.html')));
+app.use('/api/organization', OrganizationCtrl);
+app.use('/api/payment', PaymentCtrl);
+app.use('/api/claim', ClaimCtrl);
+app.use('/api/patient', PatientCtrl);
+app.use('/api/participant', ParticipantCtrl);
+app.use('/api/invoice', InvoiceCtrl);
+app.use('/api/account', AccountCtrl);
+app.use('/api/procedure', ProcedureCtrl);
+app.use('/api/chargeItem', ChargeItemCtrl);
+app.use('/api/claimResponse', ClaimResponseCtrl);
+app.use('/api/encounter', EncounterCtrl);
 
 const serverIdentity = identity();
 
