@@ -7,6 +7,7 @@
     "start": "pm2-runtime pm2.config.json",
     "start:dev": "npm run tsc -- -w & npm run start",
     "tsc": "tsc",
+    "html": "find ./src -name 'index.html' -type f -exec cp {} ./dist/src \\;",
     "clean": "rimraf dist client",
     "refresh": "./node_modules/pm2/bin/pm2 stop 0 && ./node_modules/pm2/bin/pm2 start 0",
     "build": "npm run clean && tsc",
