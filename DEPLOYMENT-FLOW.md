@@ -84,6 +84,10 @@ Since you already created an identity, now you can enroll it to get a private ke
 
 To enroll, you can use the Forma Helper located in the folder `./packages/administration/enroll.js`.
 
+Before running the following command, be sure to change the CA address to point to your ICA's IP and Port: `CA_ADDRESS=X.X.X.X`. You can find both values in your Nodes Environment.
+
+![CA Address](images/CA.png?raw=true "CA Address")
+
 ```bash
 # Enroll the user and get its certificate
 npx lerna run start --stream --scope administration  -- <username> <password> <organisation>
