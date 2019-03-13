@@ -15,7 +15,7 @@ router.get('/', async (req: Request, res: Response) => {
 });
 router.get('/healthcheck', async (req: Request, res: Response) => {
     try {
-        res.send('Success');
+        res.send('SUCCESS');
     } catch (ex) {
         console.log(ex);
         res.status(500).send(ex);
