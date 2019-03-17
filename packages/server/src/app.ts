@@ -21,7 +21,7 @@ import { DefaultCtrl } from './controllers/default.controller';
 import { join } from 'path';
 
 const app: express.Application = express();
-const port = process.env.PORT || 10100;
+const port = process.env.PORT || 8080;
 
 app.use(bodyParser.urlencoded({
   extended: true,
