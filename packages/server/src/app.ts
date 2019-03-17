@@ -37,8 +37,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(join(__dirname, '../frontend')));
-app.use('/', DefaultCtrl);
+app.use(express.static(join(__dirname, '../../../frontend/dist')));
+
 // console.log(join(__dirname, 'index.html'));
 // app.use('/', express.static(path.join(__dirname, 'index.html')));
 app.use('/api/organization', OrganizationCtrl);
@@ -52,6 +52,7 @@ app.use('/api/procedure', ProcedureCtrl);
 app.use('/api/chargeItem', ChargeItemCtrl);
 app.use('/api/claimResponse', ClaimResponseCtrl);
 app.use('/api/encounter', EncounterCtrl);
+app.use('/*', DefaultCtrl); // catch all for frontend routes
 
 const serverIdentity = identity();
 

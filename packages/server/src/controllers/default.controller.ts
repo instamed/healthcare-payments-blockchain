@@ -5,7 +5,7 @@ const router: Router = Router();
 
 router.get('/', async (req: Request, res: Response) => {
     try {
-        const indexFile = join(__dirname, '../index.html');
+        const indexFile = join(__dirname, '../../../../frontend/dist/index.html');
         console.log(indexFile);
         res.sendFile(indexFile);
     } catch (ex) {
