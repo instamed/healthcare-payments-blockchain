@@ -262,7 +262,7 @@ export default {
       },
       saving: false,
       selected_services: [],
-      target_time: 20
+      target_time: 8
     };
   },
   mounted() {
@@ -332,6 +332,7 @@ export default {
       axios
         .post(`${this.$hostname}/payment/make`, this.paymentJson())
         .then(function(response) {
+          that.timer = 100
           console.log("paid claim", response);
           that.saving = false;
           that.timer = 0;

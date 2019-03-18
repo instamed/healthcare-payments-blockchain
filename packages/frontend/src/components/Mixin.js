@@ -18,8 +18,13 @@ export const Mixin = {
             }, interval);
           },
           incrementTimer() {
+            let increment = 5
             if (this.timer < 95 && this.saving) {
-              this.timer = this.timer + 5;
+              this.timer = this.timer + 5;                              
+              if(this.timer > 79){
+                increment = (this.timer - 79)/4
+              }              
+              this.timer = this.timer + increment;
               this.startTimer();
             }
           },

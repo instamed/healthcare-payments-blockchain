@@ -197,7 +197,7 @@ export default {
       postal_code: "",
       selected_services: [],
       state: "",
-      target_time: 14      
+      target_time: 8      
     };
   },
   created() {
@@ -401,6 +401,7 @@ export default {
       axios
         .post(`${this.$hostname}/claim`, this.claimJson())
         .then(function(response) {
+          that.timer = 100
           console.log("saved claim", response);
           that.saving = false;
           that.timer = 0

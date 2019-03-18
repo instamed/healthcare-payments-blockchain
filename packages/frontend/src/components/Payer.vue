@@ -267,7 +267,7 @@ export default {
         required: value => !!value || "Required."
       },
       saving: false,
-      target_time: 40
+      target_time: 20
     };
   },
   created() {
