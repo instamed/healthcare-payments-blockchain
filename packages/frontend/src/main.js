@@ -8,13 +8,16 @@ Vue.prototype.$hostname = 'https://blockchain-demo.instamed.com/api' // no trail
 
 Vue.prototype.$block_explorer = 'https://blockchain-demo.instamed.com:8443' // no trailing slash
 
-Vue.prototype.$channel_id = 'public' // no trailing slash
+Vue.prototype.$channel_id = 'public'
 
 Vue.prototype.$provider_id = 'resource:org.fhir.core.Organization#Southbend_Flu_Clinic'
 
 Vue.prototype.$payer_id = 'resource:org.fhir.core.Organization#All_American_Health'
 
 Vue.config.productionTip = false
+
+import VueHighlightJS from 'vue-highlightjs'
+Vue.use(VueHighlightJS)
 
 new Vue({
   router,

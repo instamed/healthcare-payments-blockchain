@@ -111,7 +111,7 @@
         </template>
 
       </v-card-text>
-      <template v-if="selected && !loading_user && !saving">
+      <template v-if="selected && !loading_user && !saving && !error">
         <v-divider></v-divider>
         <v-card-text class="text-xs-center user-card-text">
 
@@ -322,6 +322,7 @@ export default {
       );
       json.identifier[0].value = json.id;
       this.patient_id = json.id.toString();
+      this.$emit("saveFhir", {name: 'fhir_patient', data: json})
       return json;
     },
     savePatient() {
@@ -376,6 +377,7 @@ export default {
       json.claimUid = json.claimUid.concat(id, "-1");
       this.encounter_uid = json.encounterUid;
       this.claim_uid = json.claimUid.toString(); // Cast to string unlinks the data
+      this.$emit("saveFhir", {name: 'fhir_claim', data: json})
       return json;
     },
     saveClaim() {

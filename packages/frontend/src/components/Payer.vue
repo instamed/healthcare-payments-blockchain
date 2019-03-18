@@ -131,7 +131,7 @@
                             suffix="%"
                             mask="###"
                             :rules="[rules.percentage]"
-                            label="Eligibility Percentage"></v-text-field>
+                            label="Plan Covers"></v-text-field>
 
             </v-flex>
           </v-layout>
@@ -267,7 +267,7 @@ export default {
         required: value => !!value || "Required."
       },
       saving: false,
-      target_time: 35
+      target_time: 40
     };
   },
   created() {
@@ -329,6 +329,7 @@ export default {
       this.invoice_uid = json.invoiceUid;
       this.account_uid =json.accountUid;
       this.claim_response_uid = json.uid
+      this.$emit("saveFhir", {name: 'fhir_adjudication', data: json})
       return json;
     },
     approveClaim() {
