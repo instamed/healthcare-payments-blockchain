@@ -533,7 +533,7 @@
 		{
 			"id": "20486481-76b9-428f-8033-f85610bc2bab",
 			"key": "server",
-			"value": "http://localhost:10100/",
+			"value": "http://localhost:8080/",
 			"type": "string"
 		}
 	]
