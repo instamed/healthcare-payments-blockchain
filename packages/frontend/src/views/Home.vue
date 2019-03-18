@@ -30,7 +30,18 @@
             </template>
             <template v-if="selectedBlock.fhir">
               <p class="entry-strong">FHIR Transaction</p>
+              <p><a href="#" @click="view_fhir = true" v-if="!view_fhir">View Transaction Details <i class="fas fa-caret-down"></i></a>
+              <a href="#" @click="view_fhir = false" v-else>Hide Transaction Details <i class="fas fa-caret-up"></i></a>
+              </p>
+              <pre style="white-space: pre; overflow-x:scroll;" v-show="view_fhir"
+                   v-highlightjs="selectedBlock.fhir"><code class="json"></code></pre>
 
+            </template>
+             <template v-if="selectedBlock.write_data">
+              <p class="entry-strong">Block Write Information</p>
+              <p><a href="#" @click="view_write = true" v-if="!view_write">View Transaction Details <i class="fas fa-caret-down"></i></a>
+              <a href="#" @click="view_write = false" v-else>Hide Transaction Details <i class="fas fa-caret-up"></i></a>
+              </p>
               <pre style="white-space: pre; overflow-x:scroll;"
                    v-highlightjs="selectedBlock.fhir"><code class="json"></code></pre>
 
@@ -131,9 +142,11 @@
 <script>
 import axios from "axios"; // posts to REST api
 // @ is an alias to /src
+import moment from "moment"; // time tools
 import Provider from "@/components/Provider.vue";
 import Payer from "@/components/Payer.vue";
 import Patient from "@/components/Patient.vue";
+
 
 export default {
   name: "Home",
@@ -265,7 +278,8 @@ export default {
         }
       ],
       step: "provider",
-      viewFhir: false
+      view_fhir: false,
+      view_write: false
     };
   },
   mounted() {
@@ -402,6 +416,7 @@ export default {
             blocknumber: blockNumber
           })
           .then(function(response) {
+            console.log('block info', response)
             if (typeof response === "object")
               that.processBlock(response, blockNumber);
             else {
@@ -424,28 +439,36 @@ export default {
         blockJson.indexOf(this.claim.claim_response_uid) > 0
       ) {
         block.type = "payer";
-        block.name = "Approve Claim";
+         block.name = "Approve Claim for Southbend Flu Clinic for ".concat(
+          this.claim.first_name,
+          " ",
+          this.claim.last_name, ' on ', moment(this.claim.timestamp).format("MM/DD/YYYY") 
+        );    
         block.fhir = JSON.stringify(this.fhir_adjudication, null, 2);
       } else if (
         this.claim.invoice_uid &&
         blockJson.indexOf(this.claim.invoice_uid) > 0
       ) {
         block.type = "patient";
-        block.name = "Make Payment";
+        block.name = `Payment from ${this.claim.first_name} ${this.claim.last_name} to Southbend Flu Clinic for visit on ${moment(this.claim.timestamp).format("MM/DD/YYYY")}`
         block.fhir = JSON.stringify(this.fhir_payment, null, 2);
       } else if (
         this.claim.encounter_uid &&
         blockJson.indexOf(this.claim.encounter_uid) > 0
       ) {
         block.type = "provider";
-        block.name = "Create Claim";
+        block.name = "Create Claim for Southbend Flu Clinic for ".concat(
+          this.claim.first_name,
+          " ",
+          this.claim.last_name, ' on ', moment(this.claim.timestamp).format("MM/DD/YYYY") 
+        );
         block.fhir = JSON.stringify(this.fhir_claim, null, 2);
       } else if (
         this.claim.patient_id &&
         blockJson.indexOf(this.claim.patient_id) > 0
       ) {
         block.type = "provider";
-        block.name = "Create Patient for ".concat(
+        block.name = "Create Patient ".concat(
           this.claim.first_name,
           " ",
           this.claim.last_name

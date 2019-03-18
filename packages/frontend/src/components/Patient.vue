@@ -42,13 +42,13 @@
               <p class="saving-text">
                 <v-progress-circular color="cyan"
                                      :value="0"
-                                     v-if="timer < 35"></v-progress-circular>
+                                     v-if="timer < 15"></v-progress-circular>
                 <v-progress-circular color="cyan"
                                      v-else-if="timer > 99"
                                      :value="100"></v-progress-circular>
                 <v-progress-circular color="cyan"
                                      v-else
-                                     :value="(timer - 35) * 2"></v-progress-circular>
+                                     :value="(timer - 15)"></v-progress-circular>
                 </v-progress-circular>
                 Updating Patient Account
               </p>

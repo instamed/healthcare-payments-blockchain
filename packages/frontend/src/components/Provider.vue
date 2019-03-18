@@ -52,9 +52,9 @@
                 Saving Patient</p>
                 <p class="saving-text">
                   <v-progress-circular color="teal"
-                                     :value="0" v-if="timer < 30"></v-progress-circular>
+                                     :value="0" v-if="timer < 15"></v-progress-circular>
                   <v-progress-circular color="teal" v-else
-                                     :value="timer - 30"></v-progress-circular> Creating Claim </p>            
+                                     :value="timer - 15"></v-progress-circular> Creating Claim </p>            
             </v-flex>        
           </v-layout>          
         </template>
@@ -317,32 +317,45 @@ export default {
         }
       };
       // Hash the object and set the ID to the hash. This creates a unique ID with low chance of collision, which is good enough for our purposes here.
-      json.id = "resource:org.fhir.core.Patient#".concat(
-        Spark.hash(JSON.stringify(json))
-      );
+     
+      // USE THIS TO CREATE NEW PATIENTS. THIS IS COMMENTED OUT TO REUSE THE SAME DEFAULT PATIENT ID
+      // json.id = "resource:org.fhir.core.Patient#".concat(this.first_name, "_", this.last_name, "_",
+      //   Spark.hash(JSON.stringify(json)).toString().substring(0,8)
+      // );
+      json.id = this.$patient_id
+      
       json.identifier[0].value = json.id;
       this.patient_id = json.id.toString();
       this.$emit("saveFhir", {name: 'fhir_patient', data: json})
       return json;
     },
     savePatient() {
+      let that = this;
       // Sends Save Patient Request. We do this before sending the claim as we're creating a new patient
       this.saving = true;
       this.startTimer();
-      let that = this;
-      axios
-        .post(`${this.$hostname}/patient`, this.patientJson())
-        .then(function(response) {
-          console.log("saved patient", response);
-          that.saveClaim();
-        })
-        .catch(function(error) {
-          // handle error
-          console.log(error);
-          that.error = error;
-          that.saving = false;
-          that.timer = 0
-        });
+      let json = this.patientJson()
+
+      // If using default ID, we don't create a patient
+      if(json.id === this.$patient_id){
+        that.saveClaim(true);        
+      } else {        
+        axios
+          .post(`${this.$hostname}/patient`, this.patientJson())
+          .then(function(response) {
+            console.log("saved patient", response);
+            that.saveClaim();
+          })
+          .catch(function(error) {
+            // handle error
+            console.log(error);
+            that.error = error;
+            that.saving = false;
+            that.timer = 0
+          });
+      }
+
+      
     },
     claimJson() {
       // Creates Claim FHIR JSON
@@ -380,9 +393,9 @@ export default {
       this.$emit("saveFhir", {name: 'fhir_claim', data: json})
       return json;
     },
-    saveClaim() {
+    saveClaim(skippedSavePatient) {
       // Sends claim create to server
-      if(this.timer < 45) this.timer = 50
+      if(this.timer < 45 && !skippedSavePatient) this.timer = 50
       this.saving = true;
       let that = this;
       axios

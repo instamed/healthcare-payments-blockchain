@@ -14,6 +14,8 @@ Vue.prototype.$provider_id = 'resource:org.fhir.core.Organization#Southbend_Flu_
 
 Vue.prototype.$payer_id = 'resource:org.fhir.core.Organization#All_American_Health'
 
+Vue.prototype.$patient_id = 'resource:org.fhir.core.Patient#1'
+
 Vue.config.productionTip = false
 
 import VueHighlightJS from 'vue-highlightjs'
