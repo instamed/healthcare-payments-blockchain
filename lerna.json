@@ -5,7 +5,25 @@
   "version": "0.1.0",
   "command": {
     "bootstrap": {
-      "hoist": true
+      "hoist": true,
+      "nohoist": [
+        "@vue/cli-plugin-babel",
+        "@vue/cli-service",
+        "axios",
+        "fibers",
+        "moment",
+        "sass-loader",
+        "sass",
+        "spark-md5",
+        "stylus-loader",
+        "stylus",
+        "vue-cli-plugin-vuetify",
+        "vue-router",
+        "vue-template-compiler",
+        "vue",
+        "vuetify-loader",
+        "vuetify"
+      ]
     }
   }
 }

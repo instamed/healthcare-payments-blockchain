@@ -12,6 +12,7 @@
     "env:restart": "hurl new",
     "test": "npm-run-all -s lerna:test",
     "server:start": "npx lerna run start:dev --scope server --stream",
+    "frontend:start": "npx lerna run serve --scope frontend --stream",
     "env:clean": "hurl clean",
     "cc:start": "f() { npm run cc:package; npm run cc:install; }; f",
     "cc:upgrade": "f() { npm run cc:package -- financial org1; hurl upgrade financial node $1  -P ./chaincode-financial; }; f",
