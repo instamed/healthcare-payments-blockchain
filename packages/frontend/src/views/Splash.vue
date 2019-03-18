@@ -59,11 +59,12 @@ export default {
   // margin-right: auto;
   //   max-width: 1200px;
 
-  position: fixed;
+ // position: fixed;
   left: 0;
   top: 0;
   width: 100vw;
   height: 100vh;
+  
 
   display: flex;
   .container {

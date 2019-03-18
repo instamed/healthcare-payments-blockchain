@@ -4,25 +4,47 @@
               max-width="700">
       <v-card>
         <v-card-title v-if="selectedBlock && selectedBlock.number"
-                      class="headline" style="color: white;" :class="{'teal': selectedBlock.type === 'provider', 'indigo': selectedBlock.type === 'payer', 'cyan': selectedBlock.type === 'patient', 'grey': !selectedBlock.type}">Block {{selectedBlock.number}}</v-card-title>
-        <v-card-text v-if="selectedBlock" style="text-align: left;">
-          <v-flex xs12
-                  >
-            <p class="entry-strong">Transaction</p>
-            <p class="entry-text">{{selectedBlock.name}}</p>
-            <template v-if="selectedBlock.data_hash"><p class="entry-strong">Hash</p>
-            <p class="entry-text">{{selectedBlock.data_hash}}</p>
+                      class="headline"
+                      style="color: white;"
+                      :class="{'teal': selectedBlock.type === 'provider', 'indigo': selectedBlock.type === 'payer', 'cyan': selectedBlock.type === 'patient', 'grey': !selectedBlock.type}">Block {{selectedBlock.number}}</v-card-title>
+        <v-card-text v-if="selectedBlock"
+                     style="text-align: left;">
+          <v-flex xs12>
+            <v-alert v-if="selectedBlock.other"
+                     :value="true"
+                     color="info"
+                     outline>
+              This block was created by another user
+            </v-alert>
+            <template v-if="selectedBlock.name">
+              <p class="entry-strong">Transaction</p>
+              <p class="entry-text">{{selectedBlock.name}}</p>
+            </template>
+            <template v-if="selectedBlock.data_hash">
+              <p class="entry-strong">Hash</p>
+              <p class="entry-text">{{selectedBlock.data_hash}}</p>
             </template>
             <template v-if="selectedBlock.previous_hash">
-             <p class="entry-strong">Previous Block Hash</p>
-            <p class="entry-text">{{selectedBlock.previous_hash}}</p>
+              <p class="entry-strong">Previous Block Hash</p>
+              <p class="entry-text">{{selectedBlock.previous_hash}}</p>
             </template>
-            <template v-if="selectedBlock.data">
-              <a href="#" @click="viewFullData = true" v-if="!viewFullData">View Full Write Data</a>
-              <template v-else>
-                <a href="#" @click="viewFullData = false">Hide Write Data</a>
-                <p style="white-space: pre; overflow-x:scroll;">{{selectedBlock.data}}</p>
-              </template>
+            <template v-if="selectedBlock.fhir">
+              <p class="entry-strong">FHIR Transaction</p>
+              <p><a href="#" @click="view_fhir = true" v-if="!view_fhir">View Transaction Details <i class="fas fa-caret-down"></i></a>
+              <a href="#" @click="view_fhir = false" v-else>Hide Transaction Details <i class="fas fa-caret-up"></i></a>
+              </p>
+              <pre style="white-space: pre; overflow-x:scroll;" v-show="view_fhir"
+                   v-highlightjs="selectedBlock.fhir"><code class="json"></code></pre>
+
+            </template>
+             <template v-if="selectedBlock.write_data">
+              <p class="entry-strong">Block Write Information</p>
+              <p><a href="#" @click="view_write = true" v-if="!view_write">View Transaction Details <i class="fas fa-caret-down"></i></a>
+              <a href="#" @click="view_write = false" v-else>Hide Transaction Details <i class="fas fa-caret-up"></i></a>
+              </p>
+              <pre style="white-space: pre; overflow-x:scroll;"
+                   v-highlightjs="selectedBlock.fhir"><code class="json"></code></pre>
+
             </template>
           </v-flex>
 
@@ -36,18 +58,22 @@
       </v-card>
     </v-dialog>
     <div id="nav">
-      <div id="nav-title">Healthcare Payments in Blockchain</div>
+      <div id="nav-title">Healthcare Payments on Blockchain</div>
     </div>
     <div id="block-bar-wrapper">
       <div id="block-bar">
-        <transition-group name="slide" mode="out-in">
-        
-          <div v-for="block in blockList" v-if="block.number > (blockHeightStart - 1)" :key="block.number" class="block darken-1"
+        <transition-group name="slide"
+                          mode="out-in">
+
+          <div v-for="block in blockList"
+               v-if="block.number > (blockHeightStart - 1)"
+               :key="block.number"
+               class="block darken-1"
                :class="{'teal': block.type === 'provider', 'indigo': block.type === 'payer', 'cyan': block.type === 'patient', 'grey': !block.type}"
                @click.stop="viewBlock(block)">
             {{block.number}}
           </div>
-        
+
         </transition-group>
         <v-progress-circular indeterminate
                              v-if="blocksLoading && blockHeightStart"
@@ -91,12 +117,15 @@
                   :step="step"
                   :services="services"
                   @createClaim="createClaim"
+                  @saveFhir="saveFhir"
                   @setName="setName"></provider>
         <payer @approveClaim="approveClaim"
+               @saveFhir="saveFhir"
                :claim="claim"
                :step="step"
                :selected="step === 'payer'"></payer>
         <patient @payClaim="payClaim"
+                 @saveFhir="saveFhir"
                  @startNewClaim="startNewClaim"
                  :claim="claim"
                  :step="step"
@@ -113,9 +142,11 @@
 <script>
 import axios from "axios"; // posts to REST api
 // @ is an alias to /src
+import moment from "moment"; // time tools
 import Provider from "@/components/Provider.vue";
 import Payer from "@/components/Payer.vue";
 import Patient from "@/components/Patient.vue";
+
 
 export default {
   name: "Home",
@@ -126,7 +157,6 @@ export default {
   },
   watch: {
     $route(to, from) {
-      console.log("route change", to);
       this.waitAndGetBlockHeight(to);
       // if the route changes we need to refetch data
       this.step = to.name;
@@ -172,7 +202,7 @@ export default {
     return {
       blocks: [],
       blockList: {},
-      blocksEnabled: true,      
+      blocksEnabled: true,
       blocksLoading: false,
       blockLoadLastRoute: null,
       blockLoadAttempts: 0,
@@ -200,6 +230,10 @@ export default {
         last_name: ""
       },
       dialog: false,
+      fhir_claim: {},
+      fhir_patient: {},
+      fhir_adjudication: {},
+      fhir_payment: {},
       selectedBlock: null,
       services: [
         {
@@ -244,18 +278,25 @@ export default {
         }
       ],
       step: "provider",
-      viewFullData: false
+      view_fhir: false,
+      view_write: false
     };
   },
   mounted() {
     this.$router.push("provider");
-    this.getBlockHeight()
+    this.getBlockHeight();
   },
   methods: {
     blockColor(b) {},
     setName(c) {
       // Set name from Provider card to use in other cards
       this.claim = c;
+    },
+    saveFhir(payload) {
+      //saving submitted FHIR JSON to display on blocks
+      if (payload.name && payload.data && this[payload.name]) {
+        this[payload.name] = payload.data;
+      }
     },
     createClaim(c) {
       // Create claim from Provider card
@@ -297,19 +338,15 @@ export default {
       this.dialog = true;
     },
     waitAndGetBlockHeight(to) {
-      console.log("heres to", to);
       let that = this;
       setTimeout(function() {
-        console.log('in wait timeout', to)
         if (to) {
           that.blockLoadLastRoute = to.path;
-          that.blockLoadAttempts = 0
-        }
-        else if (
+          that.blockLoadAttempts = 0;
+        } else if (
           that.blockLoadLastRoute &&
           that.blockLoadLastRoute !== that.$route.path
         ) {
-          console.log('in the return to exit wait')
           return; // exit out because route has changed and we've started another set of block queries
         }
         that.blockLoadAttempts++;
@@ -317,7 +354,6 @@ export default {
       }, 500);
     },
     getBlockHeight() {
-      console.log('get block height')
       let that = this;
       this.blocksLoading = true;
       axios
@@ -325,23 +361,18 @@ export default {
           channelid: this.$channel_id
         })
         .then(function(response) {
-          console.log("block height", response);
           if (response.data && response.data.height && response.data.height.low)
             that.blockHeight = parseInt(response.data.height.low);
-          if (!that.blockHeightStart){
-            console.log('block height not set', that.blockHeightStart)
+          if (!that.blockHeightStart) {
             that.blockHeightStart = parseInt(response.data.height.low);
-            that.blocksLoading = false           
-          } 
-          else if (that.blockHeight > that.blockHeightStart) {       
-            if(that.blockHeight > (that.blockHeightStart + 30)) that.blockHeightStart++ //Increase Start to decrease number shown on page
-            console.log('wait and get all')     
+            that.blocksLoading = false;
+          } else if (that.blockHeight > that.blockHeightStart) {
+            if (that.blockHeight > that.blockHeightStart + 30)
+              that.blockHeightStart++; //Increase Start to decrease number shown on page
             that.waitAndGetAllBlocks();
           } else if (that.blockLoadAttempts < 4) {
-            console.log('waiting and try again')
             that.waitAndGetBlockHeight();
           } else {
-            console.log('do nothing')
             that.blocksLoading = false;
           }
         })
@@ -352,33 +383,30 @@ export default {
         });
     },
     waitAndGetAllBlocks() {
-      console.log('wait and get all blocks')
       let that = this;
       setTimeout(function() {
         that.getAllBlocks(); // adding some wait time as the block explorer can be slightly behind
       }, 1000);
     },
     getAllBlocks() {
-      let skips = 0
+      let skips = 0;
       for (let i = this.blockHeightStart; i < this.blockHeight; i++) {
         // Get block info if we don't already have it
-        if(typeof this.blockList[i] !== 'object') this.getBlockInfo(i);
-        else skips ++
+        if (typeof this.blockList[i] !== "object") this.getBlockInfo(i);
+        else skips++;
       }
-      if(skips > 0) this.blocksLoading = false
+      if (skips > 0) this.blocksLoading = false;
     },
-    waitAndGetBlockInfo(i, attempts){
-      let that = this
-        if(!attempts || attempts < 5){
+    waitAndGetBlockInfo(i, attempts) {
+      let that = this;
+      if (!attempts || attempts < 5) {
         setTimeout(function() {
           that.getBlockInfo(i, attempts); // adding some wait time as the block explorer can be slightly behind
         }, 500);
       }
-      
     },
     getBlockInfo(i, attempts) {
-      if(!attempts) attempts = 0
-      console.log("get block info");
+      if (!attempts) attempts = 0;
       let that = this;
       let blockNumber = i; // height is one off from block number because it starts at zero
       if (!that.blockList[blockNumber]) {
@@ -388,9 +416,11 @@ export default {
             blocknumber: blockNumber
           })
           .then(function(response) {
-            if(typeof response === 'object') that.processBlock(response, blockNumber);
+            console.log('block info', response)
+            if (typeof response === "object")
+              that.processBlock(response, blockNumber);
             else {
-              that.getBlockInfo(i, attempts++)
+              that.getBlockInfo(i, attempts++);
             }
           })
           .catch(function(error) {
@@ -402,71 +432,114 @@ export default {
     processBlock(block, blockNumber) {
       let that = this;
       let blockJson = JSON.stringify(block); //turn to JSON string to search.
-      console.log("blockJson", blockJson);
       block.number = blockNumber;
 
       if (
         this.claim.claim_response_uid &&
         blockJson.indexOf(this.claim.claim_response_uid) > 0
       ) {
-        console.log("found payer block");
         block.type = "payer";
-        block.name = "Approve Claim";
+         block.name = "Approve Claim for Southbend Flu Clinic for ".concat(
+          this.claim.first_name,
+          " ",
+          this.claim.last_name, ' on ', moment(this.claim.timestamp).format("MM/DD/YYYY") 
+        );    
+        block.fhir = JSON.stringify(this.fhir_adjudication, null, 2);
       } else if (
         this.claim.invoice_uid &&
         blockJson.indexOf(this.claim.invoice_uid) > 0
       ) {
-        console.log("found patient block");
         block.type = "patient";
-        block.name = "Make Payment";
+        block.name = `Payment from ${this.claim.first_name} ${this.claim.last_name} to Southbend Flu Clinic for visit on ${moment(this.claim.timestamp).format("MM/DD/YYYY")}`
+        block.fhir = JSON.stringify(this.fhir_payment, null, 2);
       } else if (
         this.claim.encounter_uid &&
         blockJson.indexOf(this.claim.encounter_uid) > 0
       ) {
-        console.log("found patient block");
         block.type = "provider";
-        block.name = "Create Claim";
+        block.name = "Create Claim for Southbend Flu Clinic for ".concat(
+          this.claim.first_name,
+          " ",
+          this.claim.last_name, ' on ', moment(this.claim.timestamp).format("MM/DD/YYYY") 
+        );
+        block.fhir = JSON.stringify(this.fhir_claim, null, 2);
       } else if (
         this.claim.patient_id &&
         blockJson.indexOf(this.claim.patient_id) > 0
       ) {
-        console.log("found patient block");
         block.type = "provider";
-        block.name = "Create Patient";
+        block.name = "Create Patient ".concat(
+          this.claim.first_name,
+          " ",
+          this.claim.last_name
+        );
+        block.fhir = JSON.stringify(this.fhir_patient, null, 2);
+      } else {
+        block.other = true;
       }
 
-      block.data_hash = ''
-      block.previous_hash = ''
+      block.data_hash = "";
+      block.previous_hash = "";
 
-      if(block.data && block.data.header){
-        block.data_hash = block.data.header.data_hash
-        block.previous_hash = block.data.header.previous_hash
+      if (block.data && block.data.header) {
+        block.data_hash = block.data.header.data_hash;
+        block.previous_hash = block.data.header.previous_hash;
       }
 
-      
-      if(typeof block.data.data.data[0].payload.data.actions[0].payload.action.proposal_response_payload.extension.results.ns_rwset[0].rwset.writes[0].value !== 'undefined'){
-        let d = JSON.parse(block.data.data.data[0].payload.data.actions[0].payload.action.proposal_response_payload.extension.results.ns_rwset[0].rwset.writes[0].value)              
-        block.data = JSON.stringify(d, null, 2)
-      }
-
-      console.log("in process block", block);
       this.$set(this.blockList, blockNumber, block);
       that.blocksLoading = false;
       that.blockLoadAttempts = 0;
-
-      
     },
-    addFakeBlocks(num){
+    addFakeBlocks(num) {
       // for Testing Purposes
-      if(!num) num = 20
-      let n = this.blockHeight + 1 + num
-      let o = {"adapter":{"_custom":{"type":"function","display":"<span>ƒ</span> xhrAdapter(config)"}},"transformRequest":{"0":{"_custom":{"type":"function","display":"<span>ƒ</span> transformRequest(data, headers)"}}},"transformResponse":{"0":{"_custom":{"type":"function","display":"<span>ƒ</span> transformResponse(data)"}}},"timeout":0,"xsrfCookieName":"XSRF-TOKEN","xsrfHeaderName":"X-XSRF-TOKEN","maxContentLength":-1,"validateStatus":{"_custom":{"type":"function","display":"<span>ƒ</span> validateStatus(status)"}},"headers":{"Accept":"application/json, text/plain, */*","Content-Type":"application/json;charset=utf-8"},"method":"post","url":"https://blockchain-demo.instamed.com:8443/block","data":"{\"channelid\":\"public\",\"blocknumber\":284}"}
-      
+      if (!num) num = 20;
+      let n = this.blockHeight + 1 + num;
+      let o = {
+        adapter: {
+          _custom: {
+            type: "function",
+            display: "<span>ƒ</span> xhrAdapter(config)"
+          }
+        },
+        transformRequest: {
+          "0": {
+            _custom: {
+              type: "function",
+              display: "<span>ƒ</span> transformRequest(data, headers)"
+            }
+          }
+        },
+        transformResponse: {
+          "0": {
+            _custom: {
+              type: "function",
+              display: "<span>ƒ</span> transformResponse(data)"
+            }
+          }
+        },
+        timeout: 0,
+        xsrfCookieName: "XSRF-TOKEN",
+        xsrfHeaderName: "X-XSRF-TOKEN",
+        maxContentLength: -1,
+        validateStatus: {
+          _custom: {
+            type: "function",
+            display: "<span>ƒ</span> validateStatus(status)"
+          }
+        },
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json;charset=utf-8"
+        },
+        method: "post",
+        url: "https://blockchain-demo.instamed.com:8443/block",
+        data: '{"channelid":"public","blocknumber":284}'
+      };
+
       for (let i = this.blockHeight + 1; i < n; i++) {
-        o.number = parseInt(i)
-        this.$set(this.blockList, i, o)
+        o.number = parseInt(i);
+        this.$set(this.blockList, i, o);
       }
-      
     }
   }
 };
@@ -491,9 +564,9 @@ export default {
 
 .block {
   height: 36px;
-  min-width: 36px;  
+  min-width: 36px;
   padding: 0px 8px;
-  border-radius: 2px;  
+  border-radius: 2px;
   margin: 4px 8px 4px 0px;
   display: inline-block;
   vertical-align: middle;
@@ -594,10 +667,9 @@ export default {
   color: rgba(0, 0, 0, 0.54);
 }
 
-.saving-text{
+.saving-text {
   font-size: 24px;
   color: rgba(0, 0, 0, 0.54);
-
 }
 
 .user-card-waiting {
@@ -624,5 +696,16 @@ export default {
 .slide-leave-to {
   transform: translateX(-100vw);
 }
-
+pre {
+  white-space: pre-wrap;
+  /* css-3 */
+  white-space: -moz-pre-wrap;
+  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;
+  /* Opera 4-6 */
+  white-space: -o-pre-wrap;
+  /* Opera 7 */
+  word-wrap: break-word;
+  /* Internet Explorer 5.5+ */
+}
 </style>
