@@ -6,6 +6,10 @@ import router from './router'
 // Set the backend hostname address. We use this in components to make API calls
 Vue.prototype.$hostname = 'https://blockchain-demo.instamed.com/api' // no trailing slash
 
+Vue.prototype.$block_explorer = 'https://blockchain-demo.instamed.com:8443' // no trailing slash
+
+Vue.prototype.$channel_id = 'public' // no trailing slash
+
 Vue.prototype.$provider_id = 'resource:org.fhir.core.Organization#Southbend_Flu_Clinic'
 
 Vue.prototype.$payer_id = 'resource:org.fhir.core.Organization#All_American_Health'

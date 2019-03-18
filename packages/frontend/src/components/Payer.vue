@@ -14,15 +14,62 @@
           <span class="card-sub-title">PAYER</span>
           <h3 class="card-title">All American Health</h3>
         </div>
-      </v-card-title>
+      </v-card-title>    
       <template v-if="saving">
-        <v-card-text class="text-xs-center waiting-text">
-          <v-progress-circular indeterminate
-                               color="primary"></v-progress-circular><br /><br />
-          Saving...
-
-        </v-card-text>
-      </template>
+         <v-card-text class="text-xs-center user-card-text saving-card">
+          <!-- Saving Indicators -->         
+          <v-layout row
+                    wrap
+                    class="mt-5">
+            
+            <v-flex xs12
+                    md12 style="text-align: left;">
+                    
+              <p class="saving-text">
+                 <v-progress-circular color="indigo" v-if="timer > 24"
+                                     :value="100"></v-progress-circular>
+                <v-progress-circular color="indigo" v-else
+                                     :value="timer*4"></v-progress-circular>
+                </v-progress-circular>
+                Saving Claim
+                </p>
+                <p class="saving-text">
+                <v-progress-circular color="indigo"
+                                     :value="0" v-if="timer < 20"></v-progress-circular>
+                 <v-progress-circular color="indigo" v-else-if="timer > 49"
+                                     :value="100"></v-progress-circular>
+                <v-progress-circular color="indigo" v-else
+                                     :value="(timer - 20) * 4"></v-progress-circular>
+                </v-progress-circular>
+                 Creating Claim Reponse for Provider
+                </p>
+                <p class="saving-text">
+                 <v-progress-circular color="indigo"
+                                     :value="0" v-if="timer < 30"></v-progress-circular>
+                 <v-progress-circular color="indigo" v-else-if="timer > 74"
+                                     :value="100"></v-progress-circular>
+                <v-progress-circular color="indigo" v-else
+                                     :value="(timer - 30) * 3"></v-progress-circular>
+                </v-progress-circular>
+                 Saving Patient Account
+                </p>
+                <p class="saving-text">
+                  <v-progress-circular color="indigo"
+                                     :value="0" v-if="timer < 50"></v-progress-circular>
+                 <v-progress-circular color="indigo" v-else-if="timer > 99"
+                                     :value="100"></v-progress-circular>
+                <v-progress-circular color="indigo" v-else
+                                     :value="(timer - 50) * 3"></v-progress-circular>
+                </v-progress-circular>
+                 Creating Invoice for Patient
+                </p>
+               
+               
+               
+            </v-flex>        
+          </v-layout>   
+                 </v-card-text>  
+        </template>
       <template v-else-if="error">
         <v-card-text class="waiting-text">
           <v-alert :value="true"
@@ -169,10 +216,12 @@
 
 <script>
 import axios from "axios"; // posts to REST api
+import { Mixin } from "./Mixin.js"
 import moment from "moment"; // time tools
 import Spark from "spark-md5"; // creates hashes used for IDs
 export default {
   name: "Payer",
+  mixins: [ Mixin ],
   props: {
     claim: Object,
     selected: Boolean,
@@ -205,20 +254,20 @@ export default {
   },
   data() {
     return {
+      account_uid: null,
+      claim_response_uid: null,
       claim_timestamp: null,
       eligpercent: 80,
       error: null,
       invoice_uid: null,
       rules: {
         percentage: value => {
-          return (
-            (parseInt(value) >= 0 && parseInt(value) < 101) ||
-            "Invalid Eligibility Percentage"
-          );
+          return parseInt(value) >= 0 && parseInt(value) < 101 || "Invalid Eligibility Percentage";
         },
         required: value => !!value || "Required."
       },
-      saving: false
+      saving: false,
+      target_time: 35
     };
   },
   created() {
@@ -229,6 +278,8 @@ export default {
       // Emit Claim to Home.vue
       let c = Object.assign({}, this.claim);
       c.invoice_uid = this.invoice_uid;
+      c.claim_response_uid = this.claim_response_uid
+      c.account_uid = this.account_uid
       c.total_responsibility = this.totalResponsibility;
       c.total_benefit = this.totalBenefit;
       c.eligibility_percentage = this.elgibilityPercentage;
@@ -244,6 +295,10 @@ export default {
       this.claim_timestamp = new Date();
 
       let adjudications = [];
+      if(!this.claim || !this.claim.services){
+        this.$router.push('/provider')
+        return
+      }
       for (let i = 0; i < this.claim.services.length; i++) {
         let service = this.claim.services[i];
         let s = {
@@ -267,13 +322,17 @@ export default {
         adjudications: adjudications
       };
 
-      json.uid = json.uid.concat(Spark.hash(JSON.stringify(json)));
-      json.accountUid = json.accountUid.concat(Spark.hash(json.uid));
-      json.invoiceUid = json.invoiceUid.concat(json.accountUid, "-1");
+      let id1 = Spark.hash(JSON.stringify(json))      
+      json.accountUid = json.accountUid.concat(id1);
+      json.uid = json.uid.concat(id1);
+      json.invoiceUid = json.invoiceUid.concat(id1, "-1");
       this.invoice_uid = json.invoiceUid;
+      this.account_uid =json.accountUid;
+      this.claim_response_uid = json.uid
       return json;
     },
     approveClaim() {
+      this.startTimer()
       // Sends adjudicate claim to server
       this.saving = true;
       let that = this;
@@ -282,6 +341,7 @@ export default {
         .then(function(response) {
           console.log("approved claim", response);
           that.saving = false;
+          that.timer = 0;
           that.emitClaim();
         })
         .catch(function(error) {
@@ -289,6 +349,7 @@ export default {
           console.log(error);
           that.error = error;
           that.saving = false;
+          that.timer = 0;
         });
     }
   }

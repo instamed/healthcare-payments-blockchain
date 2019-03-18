@@ -17,25 +17,43 @@
           <h3 class="card-title"
               v-else>Patient Name</h3>
         </div>
-      </v-card-title>
-      <template v-if="saving">
-        <v-card-text class="text-xs-center waiting-text">
-          <v-progress-circular indeterminate
-                               color="primary"></v-progress-circular><br /><br />
-          Saving...
-
-        </v-card-text>
-      </template>
-      <template v-else-if="error">
-        <v-card-text class="waiting-text">
-          <v-alert :value="true"
-                   type="error">
-            <strong>Error</strong><br />
-            {{error}}
-          </v-alert>
-
-        </v-card-text>
-      </template>
+      </v-card-title>    
+        <template v-if="saving">
+         <v-card-text class="text-xs-center user-card-text saving-card">
+          <!-- Saving Indicators -->         
+          <v-layout row
+                    wrap
+                    class="mt-5">
+            
+            <v-flex xs12
+                    md12 style="text-align: left;">
+                    
+              <p class="saving-text">
+                 <v-progress-circular color="cyan" v-if="timer > 49"
+                                     :value="100"></v-progress-circular>
+                <v-progress-circular color="cyan" v-else
+                                     :value="timer*2"></v-progress-circular>
+                </v-progress-circular>
+                Marking Patient Invoice as Paid
+                </p>
+                <p class="saving-text">
+                <v-progress-circular color="cyan"
+                                     :value="0" v-if="timer < 35"></v-progress-circular>
+                 <v-progress-circular color="cyan" v-else-if="timer > 99"
+                                     :value="100"></v-progress-circular>
+                <v-progress-circular color="cyan" v-else
+                                     :value="(timer - 35) * 2"></v-progress-circular>
+                </v-progress-circular>
+                 Updating Patient Account
+                </p>
+              
+               
+               
+               
+            </v-flex>        
+          </v-layout>   
+                 </v-card-text>  
+        </template>
       <template v-else-if="selected && step === 'patient'">
         <v-card-text class="text-xs-center user-card-text">
           <h2 class="card-entry-title">{{claim.first_name}} {{claim.last_name}} Pays Claim</h2>
@@ -186,9 +204,11 @@
 
 <script>
 import axios from "axios"; // posts to REST api
+import { Mixin } from "./Mixin.js"
 import Spark from "spark-md5"; // creates hashes used for IDs
 export default {
   name: "Patient",
+  mixins: [ Mixin ],
   props: {
     selected: Boolean,
     services: Array,
@@ -238,7 +258,8 @@ export default {
         }
       },
       saving: false,
-      selected_services: []
+      selected_services: [],
+      target_time: 20
     };
   },
   mounted() {
@@ -300,13 +321,22 @@ export default {
     payClaim() {
       // Sends Make Payment
       this.saving = true;
+      this.startTimer()
       let that = this;
       axios
         .post(`${this.$hostname}/payment/make`, this.paymentJson())
         .then(function(response) {
           console.log("paid claim", response);
           that.saving = false;
+          that.timer = 0;
           that.emitClaim();
+        })
+         .catch(function(error) {
+          // handle error
+          console.log(error);
+          that.error = error;
+          that.saving = false;
+          that.timer = 0;
         });
     }
   }

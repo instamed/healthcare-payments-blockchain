@@ -14,7 +14,7 @@
           <h3 class="card-title">Southbend Flu Clinic</h3>
         </div>
       </v-card-title>
-      <v-card-text class="text-xs-center user-card-text">
+      <v-card-text class="text-xs-center user-card-text saving-card">
 
         <template v-if="loading_user">
           <v-card-text class="text-xs-center waiting-text">
@@ -35,12 +35,28 @@
           </v-card-text>
         </template>
         <template v-else-if="saving">
-          <v-card-text class="text-xs-center waiting-text">
-            <v-progress-circular indeterminate
-                                 color="primary"></v-progress-circular><br /><br />
-            Saving...
-
-          </v-card-text>
+          <!-- Saving Indicators -->         
+          <v-layout row
+                    wrap
+                    class="mt-5">
+            
+            <v-flex xs12
+                    md12 style="text-align: left;">
+                    
+              <p class="saving-text">
+                 <v-progress-circular color="teal" v-if="timer > 49"
+                                     :value="100"></v-progress-circular>
+                <v-progress-circular color="teal" v-else
+                                     :value="timer*2"></v-progress-circular>
+                </v-progress-circular>
+                Saving Patient</p>
+                <p class="saving-text">
+                  <v-progress-circular color="teal"
+                                     :value="0" v-if="timer < 30"></v-progress-circular>
+                  <v-progress-circular color="teal" v-else
+                                     :value="timer - 30"></v-progress-circular> Creating Claim </p>            
+            </v-flex>        
+          </v-layout>          
         </template>
         <template v-else-if="selected">
           <h2 class="card-entry-title">Southbend Flu Clinic Creates Claim</h2>
@@ -129,9 +145,11 @@
 
 <script>
 import axios from "axios"; // posts to REST api
+import { Mixin } from "./Mixin.js"
 import Spark from "spark-md5"; // creates hashes used for IDs
 export default {
   name: "Provider",
+  mixins: [ Mixin ],
   props: {
     claim: Object,
     selected: Boolean,
@@ -167,6 +185,7 @@ export default {
       copay: 10,
       country: "USA",
       email: "jonsmith@gmail.com",
+      encounter_uid: null,
       error: false,
       fake_data: {},
       first_name: "John",
@@ -176,9 +195,9 @@ export default {
       patient_id: null,
       phone: "",
       postal_code: "",
-      saving: false,
       selected_services: [],
-      state: ""
+      state: "",
+      target_time: 14      
     };
   },
   created() {
@@ -308,6 +327,7 @@ export default {
     savePatient() {
       // Sends Save Patient Request. We do this before sending the claim as we're creating a new patient
       this.saving = true;
+      this.startTimer();
       let that = this;
       axios
         .post(`${this.$hostname}/patient`, this.patientJson())
@@ -320,6 +340,7 @@ export default {
           console.log(error);
           that.error = error;
           that.saving = false;
+          that.timer = 0
         });
     },
     claimJson() {
@@ -350,16 +371,16 @@ export default {
         payerId: this.$payer_id,
         services: s // list of selected services set above
       };
-
-      json.encounterUid = json.encounterUid.concat(
-        Spark.hash(JSON.stringify(json))
-      ); // add Unique Hash for Uid
-      json.claimUid = json.claimUid.concat(json.encounterUid, "-1");
+      let id = Spark.hash(JSON.stringify(json));
+      json.encounterUid = json.encounterUid.concat(id); // add Unique Hash for Uid
+      json.claimUid = json.claimUid.concat(id, "-1");
+      this.encounter_uid = json.encounterUid;
       this.claim_uid = json.claimUid.toString(); // Cast to string unlinks the data
       return json;
     },
     saveClaim() {
       // Sends claim create to server
+      if(this.timer < 45) this.timer = 50
       this.saving = true;
       let that = this;
       axios
@@ -367,6 +388,7 @@ export default {
         .then(function(response) {
           console.log("saved claim", response);
           that.saving = false;
+          that.timer = 0
           that.emitClaim();
         });
     },
@@ -374,11 +396,12 @@ export default {
       // Emit claim to Home.vue
       let c = {};
       c.claim_uid = this.claim_uid;
-      c.patient_id = this.patient_id;
+      c.copay = this.copay;
+      c.email = this.email;
+      c.encounter_uid = this.encounter_uid;
       c.first_name = this.first_name;
       c.last_name = this.last_name;
-      c.email = this.email;
-      c.copay = this.copay;
+      c.patient_id = this.patient_id;
       c.services = this.selected_services;
       c.timestamp = this.claim_timestamp;
       c.total_charges = this.totalCharges.toFixed(2);

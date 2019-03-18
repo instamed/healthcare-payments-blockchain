@@ -1,11 +1,32 @@
 <template>
   <div class="home">
     <v-dialog v-model="dialog"
-              max-width="290">
+              max-width="700">
       <v-card>
         <v-card-title v-if="selectedBlock && selectedBlock.number"
-                      class="headline">Block {{selectedBlock.number}}</v-card-title>
-        <v-card-text>This is information about the block</v-card-text>
+                      class="headline" style="color: white;" :class="{'teal': selectedBlock.type === 'provider', 'indigo': selectedBlock.type === 'payer', 'cyan': selectedBlock.type === 'patient', 'grey': !selectedBlock.type}">Block {{selectedBlock.number}}</v-card-title>
+        <v-card-text v-if="selectedBlock" style="text-align: left;">
+          <v-flex xs12
+                  >
+            <p class="entry-strong">Transaction</p>
+            <p class="entry-text">{{selectedBlock.name}}</p>
+            <template v-if="selectedBlock.data_hash"><p class="entry-strong">Hash</p>
+            <p class="entry-text">{{selectedBlock.data_hash}}</p>
+            </template>
+            <template v-if="selectedBlock.previous_hash">
+             <p class="entry-strong">Previous Block Hash</p>
+            <p class="entry-text">{{selectedBlock.previous_hash}}</p>
+            </template>
+            <template v-if="selectedBlock.data">
+              <a href="#" @click="viewFullData = true" v-if="!viewFullData">View Full Write Data</a>
+              <template v-else>
+                <a href="#" @click="viewFullData = false">Hide Write Data</a>
+                <p style="white-space: pre; overflow-x:scroll;">{{selectedBlock.data}}</p>
+              </template>
+            </template>
+          </v-flex>
+
+        </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="green darken-1"
@@ -20,14 +41,17 @@
     <div id="block-bar-wrapper">
       <div id="block-bar">
 
-        <template v-for="(block, index) in blocks">
+        <template v-for="block in blockList">
           <div class="block darken-1"
-               :class="{'teal': block.type === 'provider', 'indigo': block.type === 'payer', 'cyan': block.type === 'patient'}"
-               @click.stop="viewBlock(block, index)">
-            {{index + 1}}
+               :class="{'teal': block.type === 'provider', 'indigo': block.type === 'payer', 'cyan': block.type === 'patient', 'grey': !block.type}"
+               @click.stop="viewBlock(block)">
+            {{block.number}}
           </div>
-        </template>
 
+        </template>
+        <v-progress-circular indeterminate
+                             v-if="blocksLoading && blockHeightStart"
+                             color="primary"></v-progress-circular>
       </div>
     </div>
 
@@ -53,7 +77,7 @@
                           step="3">Patient</v-stepper-step>
         </v-stepper-header>
 
-      </v-stepper>     
+      </v-stepper>
 
     </v-container>
 
@@ -87,13 +111,14 @@
 </template>
 
 <script>
+import axios from "axios"; // posts to REST api
 // @ is an alias to /src
 import Provider from "@/components/Provider.vue";
 import Payer from "@/components/Payer.vue";
 import Patient from "@/components/Patient.vue";
 
 export default {
-  name: "home",
+  name: "Home",
   components: {
     Provider,
     Payer,
@@ -102,50 +127,57 @@ export default {
   watch: {
     $route(to, from) {
       console.log("route change", to);
+      this.waitAndGetBlockHeight(to);
       // if the route changes we need to refetch data
       this.step = to.name;
     }
   },
   computed: {
     stepNumber: {
-      get: function (){
-         switch (this.step) {
-            case "provider":
-              return 1;
-              break;
-            case "payer":
-              return 2;
-              break;
-            case "patient":
-              return 3;
-              break;
-            case "paid":
-              return 4;
-              break;
-          }
+      get: function() {
+        switch (this.step) {
+          case "provider":
+            return 1;
+            break;
+          case "payer":
+            return 2;
+            break;
+          case "patient":
+            return 3;
+            break;
+          case "paid":
+            return 4;
+            break;
+        }
       },
-      set: function(newValue){
+      set: function(newValue) {
         switch (newValue) {
-            case 1:
-              this.step = "provider";
-              break;
-            case 2:
-              this.step = "payer";
-              break;
-            case 3:
-              this.step = "patient";
-              break;
-            case 4:
-              this.step = "paid";
-              break;
-          } 
+          case 1:
+            this.step = "provider";
+            break;
+          case 2:
+            this.step = "payer";
+            break;
+          case 3:
+            this.step = "patient";
+            break;
+          case 4:
+            this.step = "paid";
+            break;
+        }
       }
-     
     }
   },
   data() {
     return {
       blocks: [],
+      blockList: {},
+      blocksEnabled: true,
+      blocksLoading: false,
+      blockLoadLastRoute: null,
+      blockLoadAttempts: 0,
+      blockHeight: null,
+      blockHeightStart: null,
       blockTemplate: {
         number: null
       },
@@ -211,11 +243,13 @@ export default {
           unitPrice: 350
         }
       ],
-      step: "provider"
+      step: "provider",
+      viewFullData: false
     };
   },
   mounted() {
     this.$router.push("provider");
+    this.getBlockHeight()
   },
   methods: {
     blockColor(b) {},
@@ -258,10 +292,168 @@ export default {
       //this.step = 'provider'
       this.$router.push("provider");
     },
-    viewBlock(block, i) {
+    viewBlock(block) {
       this.selectedBlock = block;
-      this.$set(this.selectedBlock, "number", i + 1);
       this.dialog = true;
+    },
+    waitAndGetBlockHeight(to) {
+      console.log("heres to", to);
+      let that = this;
+      setTimeout(function() {
+        console.log('in wait timeout', to)
+        if (to) {
+          that.blockLoadLastRoute = to.path;
+          that.blockLoadAttempts = 0
+        }
+        else if (
+          that.blockLoadLastRoute &&
+          that.blockLoadLastRoute !== that.$route.path
+        ) {
+          console.log('in the return to exit wait')
+          return; // exit out because route has changed and we've started another set of block queries
+        }
+        that.blockLoadAttempts++;
+        that.getBlockHeight(); // adding some wait time as the block explorer can be slightly behind
+      }, 500);
+    },
+    getBlockHeight() {
+      console.log('get block height')
+      let that = this;
+      this.blocksLoading = true;
+      axios
+        .post(`${this.$block_explorer}/blockinfo`, {
+          channelid: this.$channel_id
+        })
+        .then(function(response) {
+          console.log("block height", response);
+          if (response.data && response.data.height && response.data.height.low)
+            that.blockHeight = parseInt(response.data.height.low);
+          if (!that.blockHeightStart){
+            console.log('block height not set', that.blockHeightStart)
+            that.blockHeightStart = parseInt(response.data.height.low);
+            that.blocksLoading = false
+          } 
+          else if (that.blockHeight > that.blockHeightStart) {       
+            console.log('wait and get all')     
+            that.waitAndGetAllBlocks();
+          } else if (that.blockLoadAttempts < 4) {
+            console.log('waiting and try again')
+            that.waitAndGetBlockHeight();
+          } else {
+            console.log('do nothing')
+            that.blocksLoading = false;
+          }
+        })
+        .catch(function(error) {
+          console.error(error);
+          that.blocksEnabled = false;
+          that.blocksLoading = false;
+        });
+    },
+    waitAndGetAllBlocks() {
+      console.log('wait and get all blocks')
+      let that = this;
+      setTimeout(function() {
+        that.getAllBlocks(); // adding some wait time as the block explorer can be slightly behind
+      }, 1000);
+    },
+    getAllBlocks() {
+      let skips = 0
+      for (let i = this.blockHeightStart; i < this.blockHeight; i++) {
+        // Get block info if we don't already have it
+        if(typeof this.blockList[i] !== 'object') this.getBlockInfo(i);
+        else skips ++
+      }
+      if(skips > 0) this.blocksLoading = false
+    },
+    waitAndGetBlockInfo(i, attempts){
+      let that = this
+        if(!attempts || attempts < 5){
+        setTimeout(function() {
+          that.getBlockInfo(i, attempts); // adding some wait time as the block explorer can be slightly behind
+        }, 500);
+      }
+      
+    },
+    getBlockInfo(i, attempts) {
+      if(!attempts) attempts = 0
+      console.log("get block info");
+      let that = this;
+      let blockNumber = i; // height is one off from block number because it starts at zero
+      if (!that.blockList[blockNumber]) {
+        axios
+          .post(`${this.$block_explorer}/block`, {
+            channelid: this.$channel_id,
+            blocknumber: blockNumber
+          })
+          .then(function(response) {
+            if(typeof response === 'object') that.processBlock(response, blockNumber);
+            else {
+              that.getBlockInfo(i, attempts++)
+            }
+          })
+          .catch(function(error) {
+            that.blocksLoading = false;
+            console.error(error);
+          });
+      }
+    },
+    processBlock(block, blockNumber) {
+      let that = this;
+      let blockJson = JSON.stringify(block); //turn to JSON string to search.
+      console.log("blockJson", blockJson);
+      block.number = blockNumber;
+
+      if (
+        this.claim.claim_response_uid &&
+        blockJson.indexOf(this.claim.claim_response_uid) > 0
+      ) {
+        console.log("found payer block");
+        block.type = "payer";
+        block.name = "Approve Claim";
+      } else if (
+        this.claim.invoice_uid &&
+        blockJson.indexOf(this.claim.invoice_uid) > 0
+      ) {
+        console.log("found patient block");
+        block.type = "patient";
+        block.name = "Make Payment";
+      } else if (
+        this.claim.encounter_uid &&
+        blockJson.indexOf(this.claim.encounter_uid) > 0
+      ) {
+        console.log("found patient block");
+        block.type = "provider";
+        block.name = "Create Claim";
+      } else if (
+        this.claim.patient_id &&
+        blockJson.indexOf(this.claim.patient_id) > 0
+      ) {
+        console.log("found patient block");
+        block.type = "provider";
+        block.name = "Create Patient";
+      }
+
+      block.data_hash = ''
+      block.previous_hash = ''
+
+      if(block.data && block.data.header){
+        block.data_hash = block.data.header.data_hash
+        block.previous_hash = block.data.header.previous_hash
+      }
+
+      
+      if(typeof block.data.data.data[0].payload.data.actions[0].payload.action.proposal_response_payload.extension.results.ns_rwset[0].rwset.writes[0].value !== 'undefined'){
+        let d = JSON.parse(block.data.data.data[0].payload.data.actions[0].payload.action.proposal_response_payload.extension.results.ns_rwset[0].rwset.writes[0].value)              
+        block.data = JSON.stringify(d, null, 2)
+      }
+
+      console.log("in process block", block);
+      this.$set(this.blockList, blockNumber, block);
+      that.blocksLoading = false;
+      that.blockLoadAttempts = 0;
+
+      
     }
   }
 };
@@ -286,7 +478,8 @@ export default {
 
 .block {
   height: 36px;
-  width: 36px;
+  min-width: 36px;
+  padding: 0px 8px;
   border-radius: 2px;
   margin-right: 8px;
   display: inline-block;
@@ -296,6 +489,7 @@ export default {
   color: white;
   font-size: 15px;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .defgreen {
@@ -387,11 +581,21 @@ export default {
   color: rgba(0, 0, 0, 0.54);
 }
 
+.saving-text{
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.54);
+
+}
+
 .user-card-waiting {
   opacity: 0.5;
 }
 
 .v-stepper--vertical {
   padding-bottom: 0px !important;
+}
+
+.saving-card {
+  min-height: 280px;
 }
 </style>
