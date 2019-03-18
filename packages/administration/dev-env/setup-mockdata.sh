@@ -13,17 +13,17 @@ FINGERPRINT=`node -e "console.log(JSON.parse(require('fs').readFileSync('$HOME/h
 
 echo "User1 Org1 user fingerprint is $FINGERPRINT"
 
-echo "STEP 1: Creating Organization XYZ_Provider"
+echo "STEP 1: Creating Organization first Provider"
 
 read -r -d '' orgXZYProvider << EndOfMessage
 {
 "resourceType": "Organization",
-        "id": "resource:org.fhir.core.Organization#XYZ_Provider",
+        "id": "resource:org.fhir.core.Organization#Southbend_Flu_Clinic",
         "identifier": [
             {
                 "use": "usual",
                 "system": "Blockchain:Provider",
-                "value": "resource:org.fhir.core.Organization#XYZ_Provider"
+                "value": "resource:org.fhir.core.Organization#Southbend_Flu_Clinic"
             }
         ],
         "active": true,
@@ -91,19 +91,19 @@ EndOfMessage
 
 ./node_modules/.bin/hurl invoke financial organization_create "$orgXZYProvider" "$FINGERPRINT"
 
-echo "STEP 1: Completed Creating Organization XYZ_Provider"
+echo "STEP 1: Completed Creating Organization first Provider"
 
-echo "STEP 2: Creating Organization ABC_Healthcare"
+echo "STEP 2: Creating Organization fist Payer"
 
 read -r -d '' orgABC_Healthcare << EndOfMessage
 {
         "resourceType": "Organization",
-        "id": "resource:org.fhir.core.Organization#ABC_Healthcare",
+        "id": "resource:org.fhir.core.Organization#All_American_Health",
         "identifier": [
             {
                 "use": "usual",
                 "system": "Blockchain:Payer",
-                "value": "resource:org.fhir.core.Organization#ABC_Healthcare"
+                "value": "resource:org.fhir.core.Organization#All_American_Health"
             }
         ],
         "active": true,
@@ -173,7 +173,7 @@ EndOfMessage
 ./node_modules/.bin/hurl invoke financial organization_create "$orgABC_Healthcare" "$FINGERPRINT"
 
 
-echo "STEP 2: Completed Creating Organization ABC_Healthcare"
+echo "STEP 2: Completed Creating Organization first Payer"
 echo "STEP 3: Creating Participant Bob"
 
 read -r -d '' partBob << EndOfMessage 
@@ -191,7 +191,7 @@ echo "STEP 4: Creating Participant Payer"
 read -r -d '' payerInsura << EndOfMessage 
 {
     "id": "Payer::Insura",
-    "payerUid": "resource:org.fhir.core.Organization#ABC_Healthcare"
+    "payerUid": "resource:org.fhir.core.Organization#All_American_Health"
 }
 EndOfMessage
 
@@ -203,7 +203,7 @@ echo "STEP 5: Creating Participant Provider"
 read -r -d '' providerProvida << EndOfMessage 
 {
     "id": "Provider::Provida",
-    "providerUid": "resource:org.fhir.core.Organization#XYZ_Provider"
+    "providerUid": "resource:org.fhir.core.Organization#Southbend_Flu_Clinic"
 }
 EndOfMessage
 
