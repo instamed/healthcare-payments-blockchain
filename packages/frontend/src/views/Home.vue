@@ -40,15 +40,15 @@
     </div>
     <div id="block-bar-wrapper">
       <div id="block-bar">
-
-        <template v-for="block in blockList">
-          <div class="block darken-1"
+        <transition-group name="slide" mode="out-in">
+        
+          <div v-for="block in blockList" v-if="block.number > (blockHeightStart - 1)" :key="block.number" class="block darken-1"
                :class="{'teal': block.type === 'provider', 'indigo': block.type === 'payer', 'cyan': block.type === 'patient', 'grey': !block.type}"
                @click.stop="viewBlock(block)">
             {{block.number}}
           </div>
-
-        </template>
+        
+        </transition-group>
         <v-progress-circular indeterminate
                              v-if="blocksLoading && blockHeightStart"
                              color="primary"></v-progress-circular>
@@ -172,7 +172,7 @@ export default {
     return {
       blocks: [],
       blockList: {},
-      blocksEnabled: true,
+      blocksEnabled: true,      
       blocksLoading: false,
       blockLoadLastRoute: null,
       blockLoadAttempts: 0,
@@ -331,9 +331,10 @@ export default {
           if (!that.blockHeightStart){
             console.log('block height not set', that.blockHeightStart)
             that.blockHeightStart = parseInt(response.data.height.low);
-            that.blocksLoading = false
+            that.blocksLoading = false           
           } 
           else if (that.blockHeight > that.blockHeightStart) {       
+            if(that.blockHeight > (that.blockHeightStart + 30)) that.blockHeightStart++ //Increase Start to decrease number shown on page
             console.log('wait and get all')     
             that.waitAndGetAllBlocks();
           } else if (that.blockLoadAttempts < 4) {
@@ -454,6 +455,18 @@ export default {
       that.blockLoadAttempts = 0;
 
       
+    },
+    addFakeBlocks(num){
+      // for Testing Purposes
+      if(!num) num = 20
+      let n = this.blockHeight + 1 + num
+      let o = {"adapter":{"_custom":{"type":"function","display":"<span>ƒ</span> xhrAdapter(config)"}},"transformRequest":{"0":{"_custom":{"type":"function","display":"<span>ƒ</span> transformRequest(data, headers)"}}},"transformResponse":{"0":{"_custom":{"type":"function","display":"<span>ƒ</span> transformResponse(data)"}}},"timeout":0,"xsrfCookieName":"XSRF-TOKEN","xsrfHeaderName":"X-XSRF-TOKEN","maxContentLength":-1,"validateStatus":{"_custom":{"type":"function","display":"<span>ƒ</span> validateStatus(status)"}},"headers":{"Accept":"application/json, text/plain, */*","Content-Type":"application/json;charset=utf-8"},"method":"post","url":"https://blockchain-demo.instamed.com:8443/block","data":"{\"channelid\":\"public\",\"blocknumber\":284}"}
+      
+      for (let i = this.blockHeight + 1; i < n; i++) {
+        o.number = parseInt(i)
+        this.$set(this.blockList, i, o)
+      }
+      
     }
   }
 };
@@ -461,7 +474,7 @@ export default {
 
 <style lang="scss">
 #block-bar-wrapper {
-  height: 72px;
+  min-height: 72px;
   width: 100%;
   background-color: #ffffff;
   box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.24);
@@ -478,10 +491,10 @@ export default {
 
 .block {
   height: 36px;
-  min-width: 36px;
+  min-width: 36px;  
   padding: 0px 8px;
-  border-radius: 2px;
-  margin-right: 8px;
+  border-radius: 2px;  
+  margin: 4px 8px 4px 0px;
   display: inline-block;
   vertical-align: middle;
   text-align: center;
@@ -598,4 +611,18 @@ export default {
 .saving-card {
   min-height: 280px;
 }
+
+.slide-leave-active,
+.slide-enter-active {
+  transition: 1s;
+}
+
+.slide-enter {
+  transform: translateX(100vw);
+}
+
+.slide-leave-to {
+  transform: translateX(-100vw);
+}
+
 </style>
