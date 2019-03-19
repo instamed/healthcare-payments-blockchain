@@ -20,8 +20,12 @@
               <p class="entry-strong">Transaction</p>
               <p class="entry-text">{{selectedBlock.name}}</p>
             </template>
-            <template v-if="selectedBlock.data_hash">
+            <template v-if="selectedBlock.hash">
               <p class="entry-strong">Hash</p>
+              <p class="entry-text">{{selectedBlock.hash}}</p>
+            </template>
+            <template v-else-if="selectedBlock.data_hash">
+              <p class="entry-strong">Data Hash</p>
               <p class="entry-text">{{selectedBlock.data_hash}}</p>
             </template>
             <template v-if="selectedBlock.previous_hash">
@@ -428,7 +432,7 @@ export default {
             console.error(error);
           });
       }
-    },
+    },    
     processBlock(block, blockNumber) {
       let that = this;
       let blockJson = JSON.stringify(block); //turn to JSON string to search.
@@ -486,9 +490,38 @@ export default {
         block.previous_hash = block.data.header.previous_hash;
       }
 
-      this.$set(this.blockList, blockNumber, block);
-      that.blocksLoading = false;
-      that.blockLoadAttempts = 0;
+      // Get the full block hash from endpoint, which
+      if(block.previous_hash && block.data_hash) this.getBlockHash(block)
+      else {
+          this.$set(this.blockList, blockNumber, block);
+          that.blocksLoading = false;
+          that.blockLoadAttempts = 0;
+      }
+     
+    },
+    getBlockHash(block, attempts) {
+      
+      let that = this;      
+      
+        axios
+          .post(`${this.$block_explorer}/blockhash`, {
+            number: block.number,
+            prevhash: block.previous_hash,
+            datahash: block.data_hash
+          })
+          .then(function(response) {
+            console.log('block hash', response)
+            block.hash = response.data            
+             that.$set(that.blockList, block.number, block);
+              that.blocksLoading = false;
+              that.blockLoadAttempts = 0;
+          })
+          .catch(function(error) {
+            console.error(error);
+              that.blocksLoading = false;
+              that.blockLoadAttempts = 0;
+          });
+      
     },
     addFakeBlocks(num) {
       // for Testing Purposes
