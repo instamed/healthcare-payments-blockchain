@@ -10,15 +10,14 @@
   "scripts": {
     "clean": "rimraf dist client",
     "tsc": "tsc",
-    "build": "npm run clean && npm run client:generate && tsc",
+    "build": "npm run clean && tsc",
     "prepare": "npm run build",
-    "test": "npm run build && mocha -r ts-node/register tests/*.spec.ts --reporter spec",
-    "client:generate": "echo 'Client is not required anymore'"
+    "test": "npm run build && mocha -r ts-node/register tests/*.spec.ts --reporter spec"
   },
   "dependencies": {
-    "@worldsibu/convector-core-chaincode": "1.2.1-0-alpha.57ce2bb4",
-    "@worldsibu/convector-core-controller": "1.2.1-0-alpha.57ce2bb4",
-    "@worldsibu/convector-core-model": "1.2.1-0-alpha.57ce2bb4",
+    "@worldsibu/convector-core-chaincode": "~1.3.0",
+    "@worldsibu/convector-core-controller": "~1.3.0",
+    "@worldsibu/convector-core-model": "~1.3.0",
     "reflect-metadata": "^0.1.12",
     "yup": "^0.26.6"
   },

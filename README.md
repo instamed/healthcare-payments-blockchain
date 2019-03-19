@@ -39,6 +39,41 @@ This will:
 
 * Just start the server in dev mode `npm run server:start`. Run this in case after the `npm start` you close the terminal. This won't install the network again, just the NodeJS server.
 
+### Enable the block browser capabilities
+
+The front end project makes it possible to visualize blocks in the network as well as its contents.
+
+![Blocks](/images/blocks.png)
+
+The current project uses the [Byzantine Browser](https://github.com/in-the-keyhole/byzantine-browser)'s API to get the blocks from the transactions to the ledger in realtime. For now it uses a fork from [WorldSibu that enables TLS in the server](https://github.com/worldsibu/byzantine-browser).
+
+```bash
+# Go outside this folder and clone the repo
+git clone https://github.com/worldsibu/byzantine-browser.git
+
+cd byzantine-browser
+
+npm install
+```
+
+Make sure you already started this (healthcare-payments-blockchain) project with `npm start` so a blockchain network is running on your computer with [Hurley](https://github.com/worldsibu/hurley).
+
+Go to `$HOME/hyperledger-fabric-network/.hfc-org1`, copy all its contents and paste them into `./hfc-key-store` (inside the Byzantine Browser folder).
+
+Replace the `.env` in the root of the Byzantine Browser folder (or create it if it doesn't exist).
+
+```bash
+USERID=user1
+NETWORK_URL=grpc://localhost:7051
+EVENT_URL=grpc://localhost:7052
+```
+
+Start the server
+
+```bash
+npm start
+```
+
 ## Explore the project
 
 ### Code structure
