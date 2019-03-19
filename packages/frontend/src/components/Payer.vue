@@ -41,7 +41,7 @@
                 <v-progress-circular color="indigo" v-else
                                      :value="(timer - 20) * 4"></v-progress-circular>
                 </v-progress-circular>
-                 Creating Claim Reponse for Provider
+                 Creating Claim Response for Provider
                 </p>
                 <p class="saving-text">
                  <v-progress-circular color="indigo"
