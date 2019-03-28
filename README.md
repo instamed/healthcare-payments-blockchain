@@ -1,4 +1,4 @@
-# Healthcare Payments in Blockchain FHIR Demo
+# Healthcare Payments on Blockchain FHIR Demo
 
 This is a [Hyperledger Fabric](https://www.hyperledger.org/projects/fabric) project to represent the FHIR Financial module. It's built with [Convector](https://github.com/worldsibu/convector) and follows the [FHIR spec](https://www.hl7.org/fhir/).
 
