@@ -2,6 +2,12 @@
 
 This is a [Hyperledger Fabric](https://www.hyperledger.org/projects/fabric) project to represent the FHIR Financial module. It's built with [Convector](https://github.com/worldsibu/convector) and follows the [FHIR spec](https://www.hl7.org/fhir/).
 
+The live demo can be found at: https://blockchain-demo.instamed.com/
+
+The live network block browser can be found at: https://blockchain-demo.instamed.com:8443/
+
+A video describing this flow can be found at: https://vimeo.com/325931177/e21834462d
+
 ## Prerequisites
 
 * [Node](https://nodejs.org/en/download/) 8.11.0
