@@ -9,7 +9,7 @@ Vue.prototype.$hostname = '/api' // No trailing slash. If its / it defaults to s
 // URL to pull block information from
 Vue.prototype.$block_explorer = window.location.protocol + '//' + window.location.hostname + ':4001' // no trailing slash
 
-Vue.prototype.$channel_id = 'public'
+Vue.prototype.$channel_id = 'ch1'
 
 Vue.prototype.$provider_id = 'resource:org.fhir.core.Organization#Southbend_Flu_Clinic'
 
