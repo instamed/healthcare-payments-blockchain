@@ -1,10 +1,10 @@
-import { FlatConvectorModel } from '@worldsibu/convector-core-model';
 import {
+    FlatConvectorModel,
     Controller,
     ConvectorController,
     Invokable,
     Param
-} from '@worldsibu/convector-core-controller';
+} from '@worldsibu/convector-core';
 
 import * as fhirTypes from './utils/fhirTypes';
 import {

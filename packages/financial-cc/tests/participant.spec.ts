@@ -6,7 +6,7 @@ import { MockControllerAdapter } from '@worldsibu/convector-adapter-mock';
 import { OrganizationController } from '../src/organization.controller';
 import 'mocha';
 import * as chaiAsPromised from 'chai-as-promised';
-import { ClientFactory } from '@worldsibu/convector-core-adapter';
+import { ClientFactory } from '@worldsibu/convector-core';
 import {
     PatientController, Organization, Patient, ParticipantController,
     ConsumerParticipant, ProviderParticipant, PayerParticipant

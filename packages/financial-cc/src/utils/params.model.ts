@@ -6,7 +6,7 @@ import {
 import {
     FlatConvectorModel, Validate, ConvectorModel,
     Default, ReadOnly, Required
-} from '@worldsibu/convector-core-model';
+} from '@worldsibu/convector-core';
 import * as yup from 'yup';
 
 export class Adjudication extends ConvectorModel<ServiceItem>{

@@ -1,4 +1,4 @@
-import { FlatConvectorModel } from '@worldsibu/convector-core-model';
+import { FlatConvectorModel } from '@worldsibu/convector-core';
 
 import { Currencies, CodingTypes } from './enums';
 import {

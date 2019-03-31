@@ -1,4 +1,4 @@
-import { BaseStorage } from '@worldsibu/convector-core-storage';
+import { BaseStorage } from '@worldsibu/convector-core';
 import { CouchDBStorage } from '@worldsibu/convector-storage-couchdb';
 // import { FinancialController } from 'financial-cc';
 import { Env } from './env';

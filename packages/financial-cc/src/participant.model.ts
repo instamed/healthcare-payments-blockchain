@@ -5,7 +5,7 @@ import {
   ReadOnly,
   Required,
   Validate
-} from '@worldsibu/convector-core-model';
+} from '@worldsibu/convector-core';
 import { Patient, Organization } from './financial.model';
 import { x509Identities } from './utils/identities.model';
 

@@ -3,7 +3,7 @@ import {
     ConvectorController,
     Invokable,
     Param
-} from '@worldsibu/convector-core-controller';
+} from '@worldsibu/convector-core';
 
 import { Patient } from './financial.model';
 import { FQDNObjects } from './utils/enums';

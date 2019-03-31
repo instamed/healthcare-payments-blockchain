@@ -2,7 +2,7 @@ import {
   Controller,
   ConvectorController,
   Invokable
-} from '@worldsibu/convector-core-controller';
+} from '@worldsibu/convector-core';
 import {
   Invoice, Patient, Organization
 } from './financial.model';

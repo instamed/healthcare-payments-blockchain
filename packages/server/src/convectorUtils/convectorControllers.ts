@@ -5,7 +5,7 @@
  * the blockchain based on your own configuration.
  */
 import { FabricControllerAdapter } from '@worldsibu/convector-adapter-fabric';
-import { ClientFactory } from '@worldsibu/convector-core-adapter';
+import { ClientFactory } from '@worldsibu/convector-core';
 import { SelfGenContext } from './selfGenContext';
 import {
   CHANNEL, CHAINCODE

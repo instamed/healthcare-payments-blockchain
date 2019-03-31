@@ -7,7 +7,7 @@ import {
    Required,
    Validate,
    Default
-} from '@worldsibu/convector-core-model';
+} from '@worldsibu/convector-core';
 import { x509Identities } from './utils/identities.model';
 
 export type date = string;

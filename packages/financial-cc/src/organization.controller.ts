@@ -3,7 +3,7 @@ import {
     ConvectorController,
     Invokable,
     Param
-} from '@worldsibu/convector-core-controller';
+} from '@worldsibu/convector-core';
 import * as yup from 'yup';
 import { FQDNObjects } from './utils/enums';
 import { Organization } from './financial.model';
