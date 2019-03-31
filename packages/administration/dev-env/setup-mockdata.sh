@@ -202,6 +202,151 @@ EndOfMessage
 ./node_modules/.bin/hurl invoke financial participant_createProvider "$providerProvida"
 echo "STEP 5: Completed Creating Participant Provider"
 
+
+echo "STEP 6: Create a default patient"
+
+read -r -d '' patient << EndOfMessage
+{
+
+            "resourceType": "Patient",
+
+            "id": "resource:org.fhir.core.Patient#1",
+
+            "identifier": [
+
+                {
+
+                    "use": "usual",
+
+                    "system": "Blockchain:Patient",
+
+                    "value": "resource:org.fhir.core.Patient#1"
+
+                }
+
+            ],
+
+            "active": true,
+
+            "name": [
+
+                {
+
+                    "use": "usual",
+
+                    "family": "Patient",
+
+                    "given": [
+
+                        "Test"
+
+                    ],
+
+                    "suffix": [
+
+                        "Mr"
+
+                    ]
+
+                }
+
+            ],
+
+            "telecom": [
+
+                {
+
+                    "system": "phone",
+
+                    "value": "1234567890",
+
+                    "use": "mobile"
+
+                },
+
+                {
+
+                    "system": "email",
+
+                    "value": "test_patient@example.com",
+
+                    "use": "home"
+
+                }
+
+            ],
+
+            "gender": "male",
+
+            "birthDate": "1944-11-17",
+
+            "deceasedBoolean": false,
+
+            "address": [
+
+                {
+
+                    "use": "home",
+
+                    "line": [
+
+                        "123 Test Way"
+
+                    ],
+
+                    "city": "Newport Beach",
+
+                    "postalCode": "12345",
+
+                    "country": "USA"
+
+                }
+
+            ],
+
+            "maritalStatus": {
+
+                "coding": [
+
+                    {
+
+                        "system": "http://hl7.org/fhir/v3/MaritalStatus",
+
+                        "code": "M",
+
+                        "display": "Married"
+
+                    }
+
+                ],
+
+                "text": "Married"
+
+            },
+
+            "managingOrganization": {
+
+                "identifier": {
+
+                    "$class": "org.fhir.datatypes.Identifier",
+
+                    "use": "usual",
+
+                    "system": "Blockchain:Provider",
+
+                    "value": "resource:org.fhir.core.Organization#Southbend_Flu_Clinic"
+
+                }
+
+            }
+
+        }
+EndOfMessage
+
+./node_modules/.bin/hurl invoke financial patient_create "$patient"
+
+echo "STEP 6: Completed Creating Patient"
+
 echo "The mock data has been provisioned successfully"
 
 echo "Installing CouchDB views"
