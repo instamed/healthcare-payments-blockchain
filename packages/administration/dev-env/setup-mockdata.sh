@@ -1,14 +1,5 @@
 set +e
 
-echo "Attempt to start the servers. Ignore the following error ------"
-./node_modules/.bin/hurl invoke financial init || null
-
-echo "------ Ignore the previews error"
-
-echo "Installing CouchDB views"
-npm run views:install
-echo "CouchDB views ready"
-
 FINGERPRINT=`node -e "console.log(JSON.parse(require('fs').readFileSync('$HOME/hyperledger-fabric-network/.hfc-org1/user1', 'utf8')).enrollment.identity.certificate)" | openssl x509 -fingerprint -noout | cut -d '=' -f2`
 
 echo "User1 Org1 user fingerprint is $FINGERPRINT"
@@ -93,7 +84,7 @@ EndOfMessage
 
 echo "STEP 1: Completed Creating Organization first Provider"
 
-echo "STEP 2: Creating Organization fist Payer"
+echo "STEP 2: Creating Organization first Payer"
 
 read -r -d '' orgABC_Healthcare << EndOfMessage
 {
@@ -211,3 +202,7 @@ EndOfMessage
 echo "STEP 5: Completed Creating Participant Provider"
 
 echo "The mock data has been provisioned successfully"
+
+echo "Installing CouchDB views"
+npm run views:install
+echo "CouchDB views ready"
