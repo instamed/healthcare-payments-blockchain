@@ -28,7 +28,7 @@ npm start
 # Create some mock data automatically
 npm run mockData
 
-# Start the server again?
+# Start the server
 npm run server:start
 ```
 
