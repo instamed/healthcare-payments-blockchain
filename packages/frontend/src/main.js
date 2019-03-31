@@ -17,7 +17,7 @@ Vue.prototype.$payer_id = 'resource:org.fhir.core.Organization#All_American_Heal
 
 // Can be toggled to use reuse a single patient id, which makes the demo run faster, or it can create a patient each time
 Vue.prototype.$patient_id = 'resource:org.fhir.core.Patient#1'
-Vue.prototype.$create_patients = false
+Vue.prototype.$create_patients = true
 
 Vue.config.productionTip = false
 
