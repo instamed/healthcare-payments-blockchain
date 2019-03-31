@@ -319,10 +319,10 @@ export default {
       // Hash the object and set the ID to the hash. This creates a unique ID with low chance of collision, which is good enough for our purposes here.
      
       // USE THIS TO CREATE NEW PATIENTS. THIS IS COMMENTED OUT TO REUSE THE SAME DEFAULT PATIENT ID
-      // json.id = "resource:org.fhir.core.Patient#".concat(this.first_name, "_", this.last_name, "_",
-      //   Spark.hash(JSON.stringify(json)).toString().substring(0,8)
-      // );
-      json.id = this.$patient_id
+      json.id = "resource:org.fhir.core.Patient#".concat(this.first_name, "_", this.last_name, "_",
+        Spark.hash(JSON.stringify(json)).toString().substring(0,8)
+      );
+     
       
       json.identifier[0].value = json.id;
       this.patient_id = json.id.toString();
@@ -337,7 +337,8 @@ export default {
       let json = this.patientJson()
 
       // If using default ID, we don't create a patient
-      if(json.id === this.$patient_id){
+      if(!this.$create_patients){
+        json.id = this.$patient_id
         that.saveClaim(true);        
       } else {        
         axios
