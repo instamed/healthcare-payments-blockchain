@@ -7,7 +7,7 @@ import router from './router'
 Vue.prototype.$hostname = '/api' // No trailing slash. If its / it defaults to self URL
 
 // URL to pull block information from
-Vue.prototype.$block_explorer = window.location.protocol + '//' + window.location.hostname + ':8443' // no trailing slash
+Vue.prototype.$block_explorer = window.location.protocol + '//' + window.location.hostname + ':4001' // no trailing slash
 
 Vue.prototype.$channel_id = 'public'
 
