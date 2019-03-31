@@ -1,3 +1,4 @@
+#!/bin/bash
 set +e
 
 FINGERPRINT=`node -e "console.log(JSON.parse(require('fs').readFileSync('$HOME/hyperledger-fabric-network/.hfc-org1/user1', 'utf8')).enrollment.identity.certificate)" | openssl x509 -fingerprint -noout | cut -d '=' -f2`
