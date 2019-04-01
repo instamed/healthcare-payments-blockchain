@@ -1,8 +1,8 @@
-# Healthcare Payments on Blockchain Prototype
+# Healthcare Payments on Blockchain
 
 In the InstaMed Innovation Lab, we built a blockchain prototype focused on healthcare payments among providers, payers and patients. One of the prototype’s purposes is to evaluate the value of blockchain in driving a better healthcare payments experience for all stakeholders. [Learn more about the project](https://developers.instamed.com/healthcare-payments-blockchain/)
 
-This is a [Hyperledger Fabric](https://www.hyperledger.org/projects/fabric) project to represent the FHIR Financial module. It's built with [Convector](https://github.com/worldsibu/convector) and follows the [FHIR spec](https://www.hl7.org/fhir/).
+This is a [Hyperledger Fabric](https://www.hyperledger.org/projects/fabric) blockchain project that implements the FHIR Financial module. It is built with [Convector](https://github.com/worldsibu/convector) and follows the [FHIR spec](https://www.hl7.org/fhir/). This is a prototype; it is not intended for production use without further modification and testing. A demo frontend app is included in the project in /packages/frontend. 
 
 The live demo can be found at: https://blockchain-demo.instamed.com/
 
