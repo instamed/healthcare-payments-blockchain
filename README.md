@@ -1,4 +1,6 @@
-# Healthcare Payments on Blockchain FHIR Demo
+# Healthcare Payments on Blockchain Prototype
+
+In the InstaMed Innovation Lab, we built a blockchain prototype focused on healthcare payments among providers, payers and patients. One of the prototype’s purposes is to evaluate the value of blockchain in driving a better healthcare payments experience for all stakeholders. [Learn more about the project](https://developers.instamed.com/healthcare-payments-blockchain/)
 
 This is a [Hyperledger Fabric](https://www.hyperledger.org/projects/fabric) project to represent the FHIR Financial module. It's built with [Convector](https://github.com/worldsibu/convector) and follows the [FHIR spec](https://www.hl7.org/fhir/).
 
@@ -15,6 +17,8 @@ A video describing this flow can be found at: https://vimeo.com/325931177/e21834
 * [npx](https://www.npmjs.com/package/npx) (Typically installed automatically with Node)
 
 ## How to run the project
+
+Detailed instructions for installing on Ubuntu can be found here: https://developers.instamed.com/healthcare-payments-blockchain/install-blockchain-on-linux/
 
 ### Start from scratch
 
@@ -82,7 +86,7 @@ NETWORK_URL=grpc://localhost:7051
 EVENT_URL=grpc://localhost:7052
 ```
 
-Use your favorite text editor or use Nao
+Use your favorite text editor or use Nano
 
 ```
 nano .env
