@@ -7,9 +7,9 @@ import router from './router'
 Vue.prototype.$hostname = '/api' // No trailing slash. If its / it defaults to self URL
 
 // URL to pull block information from
-Vue.prototype.$block_explorer = window.location.protocol + '//' + window.location.hostname + ':8443' // no trailing slash
+Vue.prototype.$block_explorer = window.location.protocol + '//' + window.location.hostname + ':4001' // no trailing slash
 
-Vue.prototype.$channel_id = 'public'
+Vue.prototype.$channel_id = 'ch1'
 
 Vue.prototype.$provider_id = 'resource:org.fhir.core.Organization#Southbend_Flu_Clinic'
 
@@ -17,7 +17,7 @@ Vue.prototype.$payer_id = 'resource:org.fhir.core.Organization#All_American_Heal
 
 // Can be toggled to use reuse a single patient id, which makes the demo run faster, or it can create a patient each time
 Vue.prototype.$patient_id = 'resource:org.fhir.core.Patient#1'
-Vue.prototype.$create_patients = false
+Vue.prototype.$create_patients = true
 
 Vue.config.productionTip = false
 

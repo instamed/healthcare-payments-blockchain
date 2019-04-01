@@ -12,7 +12,7 @@ A video describing this flow can be found at: https://vimeo.com/325931177/e21834
 
 * [Node](https://nodejs.org/en/download/) 8.11.0
 * [Docker Community Edition](https://www.docker.com/community-edition)
-* [npx](https://www.npmjs.com/package/npx)
+* [npx](https://www.npmjs.com/package/npx) (Typically installed automatically with Node)
 
 ## How to run the project
 
@@ -53,20 +53,28 @@ The front end project makes it possible to visualize blocks in the network as we
 
 The current project uses the [Byzantine Browser](https://github.com/in-the-keyhole/byzantine-browser)'s API to get the blocks from the transactions to the ledger in realtime. For now it uses a fork from [WorldSibu that enables TLS in the server](https://github.com/worldsibu/byzantine-browser).
 
+Make sure you already started the blockchain (healthcare-payments-blockchain) with `npm start` so a blockchain network is running on your computer with [Hurley](https://github.com/worldsibu/hurley).
+
+You have to run npm install twice for the backend and the frontend.
+
 ```bash
 # Go outside this folder and clone the repo
 git clone https://github.com/worldsibu/byzantine-browser.git
-
 cd byzantine-browser
-
 npm install
+cd ui
+npm install
+npm run build
+cd ..
+```
+Copy the keys from the hyperledger-fabric-network directory. We're assuming here you have installed the byzantine-browser in that same parent directory as the blockchain.
+
+
+```
+cp $HOME/hyperledger-fabric-network/.hfc-org1/* ./hfc-key-store
 ```
 
-Make sure you already started this (healthcare-payments-blockchain) project with `npm start` so a blockchain network is running on your computer with [Hurley](https://github.com/worldsibu/hurley).
-
-Go to `$HOME/hyperledger-fabric-network/.hfc-org1`, copy all its contents and paste them into `./hfc-key-store` (inside the Byzantine Browser folder).
-
-Replace the `.env` in the root of the Byzantine Browser folder (or create it if it doesn't exist).
+Replace the `.env` in the root of the Byzantine Browser folder (or create it if it doesn't exist) with the information below. 
 
 ```bash
 USERID=user1
@@ -74,11 +82,23 @@ NETWORK_URL=grpc://localhost:7051
 EVENT_URL=grpc://localhost:7052
 ```
 
-Start the server
+Use your favorite text editor or use Nao
 
-```bash
-npm start
 ```
+nano .env
+(copy text from above and right click to paste into terminal)
+control-O
+control-X
+
+```
+
+Run the Byzantine server
+
+```
+./runApiServer.sh
+
+```
+
 
 ## Explore the project
 
