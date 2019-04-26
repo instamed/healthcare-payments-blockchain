@@ -160,7 +160,7 @@ Every transaction sent from the server will be signed with the user1 in org1 ide
 
 ### Running environment
 
-* Call the server located in `http://localhost:10100`
+* Call the server located in `http://localhost:8080`
 * Check the CouchDB server provisioned at http://localhost:5084/_utils/#/database/ch1_financial/_all_docs
 
 ## Architecture
