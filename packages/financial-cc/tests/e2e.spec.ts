@@ -9,7 +9,7 @@ import {
     PatientController, Organization, Patient, Claim, Encounter,
     ChargeItem, Account, Procedure, Invoice, ParticipantController,
     ConsumerParticipant, ProviderParticipant, PayerParticipant,
-    ClaimController, PaymentController
+    ClaimController, PaymentController, GovernanceController, GovernanceCollections
 } from '../src';
 import { CreateClaim, AdjudicateClaim } from '../src/utils/params.model';
 import { InvoiceStatus } from '../src/utils/enums';
@@ -23,7 +23,8 @@ describe.only('Fhir Financial', () => {
         participant: ParticipantController,
         patient: PatientController,
         claim: ClaimController,
-        payment: PaymentController
+        payment: PaymentController,
+        governance: GovernanceController
     };
     let provider = new Organization;
     let payer = new Organization;
@@ -59,6 +60,10 @@ describe.only('Fhir Financial', () => {
             version: '*',
             controller: 'ClaimController',
             name: join(__dirname, '..')
+        }, {
+            version: '*',
+            controller: 'GovernanceController',
+            name: join(__dirname, '..')
         }]);
 
         ctrl = {
@@ -66,8 +71,22 @@ describe.only('Fhir Financial', () => {
             participant: ClientFactory(ParticipantController, adapter),
             patient: ClientFactory(PatientController, adapter),
             payment: ClientFactory(PaymentController, adapter),
-            claim: ClientFactory(ClaimController, adapter)
+            claim: ClientFactory(ClaimController, adapter),
+            governance: ClientFactory(GovernanceController, adapter)
         };
+    });
+
+    it('should configure the governance collections', async () => {
+        await ctrl.governance.updateOrganizationsList(['XYZ_Provider', 'ABC_Healthcare', 'InstaMed']);
+        let result = new GovernanceCollections(await ctrl.governance.getOrganizationsList());
+
+        expect(result).to.exist;
+        expect(result.organizations).to.exist;
+        expect(result.organizations.length).to.eq(3);
+    });
+
+    it('should show all the possible permutations', async ()=>{
+        console.log(await ctrl.governance.getPrivateCollections());
     });
 
     it('should create a Provider organization', async () => {
@@ -328,7 +347,7 @@ describe.only('Fhir Financial', () => {
         expect(createdParticipant).to.exist;
         expect(createdParticipant.id).to.equal(participantId);
     });
-    
+
     it('should create a Payer participant', async () => {
         const participantId = 'Payer::Insura';
         const participant = new PayerParticipant({
@@ -394,7 +413,8 @@ describe.only('Fhir Financial', () => {
         log(`Encounter with id '${encounter.id}' created successfully`);
     });
 
-    it('adjudicate a claim (create a claim response, invoice, account)', async () => {
+    it('should adjudicate a claim (create a claim response, invoice, account)', async () => {
+        debugger;
         const claim = new AdjudicateClaim({
             txDate: new Date(),
             'uid': 'resource:org.fhir.core.ClaimResponse#ClaimResponse-1',
@@ -435,7 +455,7 @@ describe.only('Fhir Financial', () => {
         log(`Invoice with id '${claim.invoiceUid}' created successfully`);
     });
 
-    it('make a payment', async () => {
+    it('should make a payment', async () => {
         log('Checking that payment was not made before');
         let invoice = await adapter.getById<Invoice>(invoiceId);
         expect(invoice.status).to.not.equal(InvoiceStatus.BALANCED);

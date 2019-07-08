@@ -30,6 +30,8 @@ import {
     InvoiceLineItemPriceComponentTypes, CodingTypes, ClaimResponseOutcomes,
     ClaimResponseUses
 } from './utils/enums';
+import { pickRightCollection } from './utils/privateCollections';
+import { PublicClaim } from './public.model';
 
 
 @Controller('claim')
@@ -106,8 +108,11 @@ export class ClaimController extends ConvectorController {
         const id = data.uid;
         const claimResponse = new ClaimResponse(id);
 
+        let publicCoordinates = await PublicClaim.getOne(data.claimUid);
         // Hydrate objects
-        data.claim = await Claim.getOne(data.claimUid);
+        data.claim = await Claim.getOne(data.claimUid, Claim, {
+            privateCollection: publicCoordinates.collection
+        });
 
         let invoiceLineItems = await buildInvoiceLineItems(data.claim.item);
         claimResponse.identifier = [buildIdentifier(id, IdentifierUses.USUAL, IdentifierTypes.CLAIMRESPONSE)];
@@ -422,7 +427,17 @@ export class ClaimController extends ConvectorController {
             claim.total.value += claim.item[i].net.value;
         }
 
-        await claim.save();
+        const targetCollection = await pickRightCollection([
+            data.providerId,
+            data.payerId
+        ]);
+        // await claim.save();
+        await claim.save({
+            privateCollection: targetCollection
+        });
+        let publicClaim = new PublicClaim(claim.id);
+        publicClaim.collection = targetCollection;
+        await publicClaim.save();
 
         // Add Claim to registry
         // Update the Encounter records
