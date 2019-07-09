@@ -1,8 +1,8 @@
 import { ConvectorModel, Default, ReadOnly, Required, Validate } from '@worldsibu/convector-core';
 import * as yup from 'yup';
 
-export class PublicClaim extends ConvectorModel<PublicClaim> {
-    @Default('fhir.datatypes.public.Claim')
+export class PublicModelRouter extends ConvectorModel<PublicModelRouter> {
+    @Default('fhir.datatypes.public.router')
     @ReadOnly()
     public readonly type: string;
 

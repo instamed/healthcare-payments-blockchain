@@ -5,8 +5,8 @@ import {
     Param
 } from '@worldsibu/convector-core';
 import * as yup from 'yup';
-import { GovernanceCollections } from './collections.model';
-import { getCols } from './utils/privateCollections';
+import { GovernanceCollections } from '../models/collections.model';
+import { getCols } from '../utils/privateCollections';
 
 @Controller('governance')
 export class GovernanceController extends ConvectorController {

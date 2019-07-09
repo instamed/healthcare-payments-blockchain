@@ -5,7 +5,7 @@ import {
     ClaimResponseItemAdjudication, CodeableConcept,
     ClaimResponseTotal, ClaimItem, InvoiceLineItem, ChargeItem,
     Identifier, Narrative, Coding, Money, Reference
-} from '../financial.model';
+} from '../models/financial.model';
 
 /**
    * 

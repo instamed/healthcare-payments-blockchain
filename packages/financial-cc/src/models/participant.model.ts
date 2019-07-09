@@ -7,7 +7,7 @@ import {
   Validate
 } from '@worldsibu/convector-core';
 import { Patient, Organization } from './financial.model';
-import { x509Identities } from './utils/identities.model';
+import { x509Identities } from '../utils/identities.model';
 
 export abstract class Participant<T extends Participant<any>> extends ConvectorModel<T> {
 

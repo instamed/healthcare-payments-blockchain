@@ -2,7 +2,7 @@ import { InvoiceLineItem } from '..';
 import {
     Patient, Organization, Claim, Encounter, Procedure,
     ChargeItem, Account, Invoice
-} from '../financial.model';
+} from '../models/financial.model';
 import {
     FlatConvectorModel, Validate, ConvectorModel,
     Default, ReadOnly, Required

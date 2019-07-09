@@ -5,9 +5,9 @@ import {
 } from '@worldsibu/convector-core';
 import {
   Invoice, Patient, Organization
-} from './financial.model';
-import { InvoiceStatus } from './utils/enums';
-import { ConsumerParticipant } from './participant.model';
+} from '../models/financial.model';
+import { InvoiceStatus } from '../utils/enums';
+import { ConsumerParticipant } from '../models/participant.model';
 
 @Controller('payment')
 export class PaymentController extends ConvectorController {

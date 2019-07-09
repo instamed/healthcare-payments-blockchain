@@ -2,9 +2,9 @@
 import { join } from 'path';
 import { expect } from 'chai';
 import { MockControllerAdapter } from '@worldsibu/convector-adapter-mock';
-import { OrganizationController } from '../src/organization.controller';
+import { OrganizationController } from '../src/';
 import 'mocha';
-import { ClientFactory } from '@worldsibu/convector-core';
+import { ClientFactory, ConvectorControllerClient } from '@worldsibu/convector-core';
 import {
     PatientController, Organization, Patient, Claim, Encounter,
     ChargeItem, Account, Procedure, Invoice, ParticipantController,
@@ -21,9 +21,9 @@ describe.only('Fhir Financial', () => {
     let ctrl: {
         org: OrganizationController,
         participant: ParticipantController,
-        patient: PatientController,
-        claim: ClaimController,
-        payment: PaymentController,
+        patient: ConvectorControllerClient<PatientController>,
+        claim: ConvectorControllerClient<ClaimController>,
+        payment: ConvectorControllerClient<PaymentController>,
         governance: GovernanceController
     };
     let provider = new Organization;
@@ -85,7 +85,7 @@ describe.only('Fhir Financial', () => {
         expect(result.organizations.length).to.eq(3);
     });
 
-    it('should show all the possible permutations', async ()=>{
+    it('should show all the possible permutations', async () => {
         console.log(await ctrl.governance.getPrivateCollections());
     });
 
@@ -387,7 +387,10 @@ describe.only('Fhir Financial', () => {
                 }
             ]
         });
-        await ctrl.claim.create(claim);
+        await ctrl.claim.$config({
+            transient: { data: claim.toJSON() }
+        }).create();
+
         const createdClaim = await adapter.getById<Claim>(claimId);
         expect(createdClaim.id).to.equal(claimId);
         log(`Claim with id '${createdClaim.id}' created successfully`);

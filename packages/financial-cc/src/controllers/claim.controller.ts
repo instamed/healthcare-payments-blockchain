@@ -6,41 +6,45 @@ import {
     Param
 } from '@worldsibu/convector-core';
 
-import * as fhirTypes from './utils/fhirTypes';
+import * as fhirTypes from '../utils/fhirTypes';
 import {
     Claim, ClaimResponse, CodeableConcept, ClaimResponseItem,
     InvoiceLineItemPriceComponent, Patient, Organization,
     Encounter, Period, Quantity, Procedure, ProcedurePerformer,
     ChargeItem, ClaimPayee, ClaimCareTeam, ClaimItem, ClaimProcedure,
     SimpleQuantity, EncounterStatusHistory, Account, Invoice, Identifier
-} from './financial.model';
+} from '../models/financial.model';
 import {
     InvoiceData, AccountData,
     CreateClaim, AdjudicateClaim, ServiceItem
-} from './utils/params.model';
+} from '../utils/params.model';
 import {
     buildIdentifier, buildNarrative, buildInvoiceLineItems, buildReference,
     buildCoding, buildTotalCosts, buildTotalBenefits, buildAdjudicationItem,
     buildMoney
-} from './utils/utils';
+} from '../utils/utils';
 import {
     IdentifierTypes, ResourceTypes, AccountStatus, InvoiceStatus,
     EncounterStatus, NarrativeStatus, IdentifierUses, ClaimResponseStatus,
     ClaimStatus, ClaimUses, FQDNObjects, ChargeItemStatus, ProcedureStatus,
     InvoiceLineItemPriceComponentTypes, CodingTypes, ClaimResponseOutcomes,
     ClaimResponseUses
-} from './utils/enums';
-import { pickRightCollection } from './utils/privateCollections';
-import { PublicClaim } from './public.model';
-
+} from '../utils/enums';
+import { pickRightCollections } from '../utils/privateCollections';
+import { PublicModelRouter } from '../models/public.model';
+import { ChaincodeTx } from '@worldsibu/convector-core-chaincode';
+import { PrivateCollectionsRoutes } from '../models/privateCollectionsRoutes.model';
 
 @Controller('claim')
-export class ClaimController extends ConvectorController {
+export class ClaimController extends ConvectorController<ChaincodeTx> {
 
     @Invokable()
-    public async create(
-        @Param(CreateClaim)
-        data: CreateClaim) {
+    public async create() {
+        const data: CreateClaim = await this.tx.getTransientValue<CreateClaim>('data', CreateClaim);
+        const collections = new PrivateCollectionsRoutes(data.patientId,
+            data.providerId, data.payerId);
+        await collections.load();
+
         const id = data.encounterUid;
 
         // Hydrate objects
@@ -96,9 +100,9 @@ export class ClaimController extends ConvectorController {
         // Add the Encounter to the ledger
         for (let service of data.services) {
             service.encounter = encounter;
-            await this.createService(service, data.txDate);
+            await this.createService(service, data.txDate, collections);
         }
-        await this.closeEncounter(data, data.txDate);
+        await this.closeEncounter(data, data.txDate, collections);
     }
 
     @Invokable()
@@ -108,11 +112,9 @@ export class ClaimController extends ConvectorController {
         const id = data.uid;
         const claimResponse = new ClaimResponse(id);
 
-        let publicCoordinates = await PublicClaim.getOne(data.claimUid);
-        // Hydrate objects
-        data.claim = await Claim.getOne(data.claimUid, Claim, {
-            privateCollection: publicCoordinates.collection
-        });
+        debugger;
+        data.claim = await this.getClaim(data.claimUid);
+        debugger;
 
         let invoiceLineItems = await buildInvoiceLineItems(data.claim.item);
         claimResponse.identifier = [buildIdentifier(id, IdentifierUses.USUAL, IdentifierTypes.CLAIMRESPONSE)];
@@ -261,7 +263,7 @@ export class ClaimController extends ConvectorController {
         await this.createInvoice(invoiceData, data.txDate);
     }
 
-    async createService(data: FlatConvectorModel<ServiceItem>, txDate: Date) {
+    async createService(data: FlatConvectorModel<ServiceItem>, txDate: Date, collections: PrivateCollectionsRoutes) {
         const procedureId = data.procedureUid;
         const procedure = new Procedure(procedureId);
         data.procedure = procedure;
@@ -292,7 +294,7 @@ export class ClaimController extends ConvectorController {
         // Add the transaction date as the performed date for the PoC
         procedure.performedDateTime = fhirTypes.date(txDate);
 
-        await procedure.save();
+        await this.saveProcedure(procedure, collections.procedure);
 
         //-----------------------------------------------
         //-Now add ChargeItem corresponding to procedure-
@@ -328,10 +330,10 @@ export class ClaimController extends ConvectorController {
         const service = buildReference(procedure.identifier[0]);
         chargeItem.service = [service];
 
-        await chargeItem.save();
+        await this.saveChargeItem(chargeItem, collections.chargeItem);
     }
 
-    async closeEncounter(data: CreateClaim, txDate: Date) {
+    async closeEncounter(data: CreateClaim, txDate: Date, collections: PrivateCollectionsRoutes) {
         //--------------------------------------------
         // First, attempt to create a new Claim object
         //--------------------------------------------
@@ -418,7 +420,7 @@ export class ClaimController extends ConvectorController {
 
             // Update the ChargeItems
             chargeItem.status = ChargeItemStatus.BILLED;
-            await chargeItem.save();
+            this.saveChargeItem(chargeItem, collections.chargeItem);
             counter++;
         }
         claim.total = buildMoney(0);
@@ -427,17 +429,7 @@ export class ClaimController extends ConvectorController {
             claim.total.value += claim.item[i].net.value;
         }
 
-        const targetCollection = await pickRightCollection([
-            data.providerId,
-            data.payerId
-        ]);
-        // await claim.save();
-        await claim.save({
-            privateCollection: targetCollection
-        });
-        let publicClaim = new PublicClaim(claim.id);
-        publicClaim.collection = targetCollection;
-        await publicClaim.save();
+        await this.saveClaim(claim, collections.claim);
 
         // Add Claim to registry
         // Update the Encounter records
@@ -456,7 +448,7 @@ export class ClaimController extends ConvectorController {
         data.encounter.statusHistory.push(statusHistory);
         data.encounter.status = EncounterStatus.FINISHED;
 
-        await new Encounter(data.encounter).save();
+        this.saveEncounter(data.encounter, collections.encounter);
     }
 
     async createAccount(data: AccountData) {
@@ -539,5 +531,47 @@ export class ClaimController extends ConvectorController {
 
         // Add Account to ledger
         await invoice.save();
+    }
+
+    async saveClaim(claim: Claim, collection: string) {
+        await claim.save({
+            privateCollection: collection
+        });
+        let publicClaim = new PublicModelRouter(claim.id);
+        publicClaim.collection = collection;
+        await publicClaim.save();
+    }
+
+    async getClaim(id: string): Promise<Claim> {
+        let publicCoordinates = await PublicModelRouter.getOne(id);
+        return await Claim.getOne(id, Claim, {
+            privateCollection: publicCoordinates.collection
+        });
+    }
+
+    async saveEncounter(encounter: Encounter, collection: string) {
+        await encounter.save({
+            privateCollection: collection
+        });
+        let publicEncounter = new PublicModelRouter(encounter.id);
+        publicEncounter.collection = collection;
+        await publicEncounter.save();
+    }
+
+    async saveProcedure(procedure: Procedure, collection: string) {
+        await procedure.save({
+            privateCollection: collection
+        });
+        let publicModel = new PublicModelRouter(procedure.id);
+        publicModel.collection = collection;
+        await publicModel.save();
+    }
+    async saveChargeItem(chargeItem: Procedure, collection: string) {
+        await chargeItem.save({
+            privateCollection: collection
+        });
+        let publicModel = new PublicModelRouter(chargeItem.id);
+        publicModel.collection = collection;
+        await publicModel.save();
     }
 }

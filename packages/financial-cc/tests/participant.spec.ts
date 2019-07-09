@@ -3,7 +3,7 @@ import { join } from 'path';
 import { expect } from 'chai';
 import * as chai from 'chai';
 import { MockControllerAdapter } from '@worldsibu/convector-adapter-mock';
-import { OrganizationController } from '../src/organization.controller';
+import { OrganizationController } from '../src';
 import 'mocha';
 import * as chaiAsPromised from 'chai-as-promised';
 import { ClientFactory } from '@worldsibu/convector-core';

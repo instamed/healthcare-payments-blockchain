@@ -1,13 +1,13 @@
-export * from './financial.model';
-export * from './participant.model';
+export * from './models/financial.model';
+export * from './models/participant.model';
 
-export * from './payment.controller';
-export * from './claim.controller';
-export * from './patient.controller';
-export * from './participant.controller';
-export * from './organization.controller';
+export * from './controllers/payment.controller';
+export * from './controllers/claim.controller';
+export * from './controllers/patient.controller';
+export * from './controllers/participant.controller';
+export * from './controllers/organization.controller';
 
 export * from './utils/params.model';
 
-export * from './collections.model';
-export * from './governance.controller';
+export * from './models/collections.model';
+export * from './controllers/governance.controller';

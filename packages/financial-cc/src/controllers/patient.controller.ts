@@ -5,8 +5,8 @@ import {
     Param
 } from '@worldsibu/convector-core';
 
-import { Patient } from './financial.model';
-import { FQDNObjects } from './utils/enums';
+import { Patient } from '../models/financial.model';
+import { FQDNObjects } from '../utils/enums';
 
 @Controller('patient')
 export class PatientController extends ConvectorController {

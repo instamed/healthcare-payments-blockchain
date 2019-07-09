@@ -1,4 +1,4 @@
-import * as fhirTypes from './utils/fhirTypes';
+import * as fhirTypes from '../utils/fhirTypes';
 import * as yup from 'yup';
 import {
    ConvectorModel,
@@ -8,7 +8,7 @@ import {
    Validate,
    Default
 } from '@worldsibu/convector-core';
-import { x509Identities } from './utils/identities.model';
+import { x509Identities } from '../utils/identities.model';
 
 export type date = string;
 export type instant = string;

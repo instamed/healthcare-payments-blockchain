@@ -5,13 +5,13 @@ import {
     Param
 } from '@worldsibu/convector-core';
 
-import { FQDNObjects } from './utils/enums';
-import { Patient, Organization } from './financial.model';
+import { FQDNObjects } from '../utils/enums';
+import { Patient, Organization } from '../models/financial.model';
 import {
     ConsumerParticipant,
     ProviderParticipant,
     PayerParticipant
-} from './participant.model';
+} from '../models/participant.model';
 import * as yup from 'yup';
 
 @Controller('participant')

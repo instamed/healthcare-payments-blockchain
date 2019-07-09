@@ -5,8 +5,8 @@ import {
     Param
 } from '@worldsibu/convector-core';
 import * as yup from 'yup';
-import { FQDNObjects } from './utils/enums';
-import { Organization } from './financial.model';
+import { FQDNObjects } from '../utils/enums';
+import { Organization } from '../models/financial.model';
 
 @Controller('organization')
 export class OrganizationController extends ConvectorController {

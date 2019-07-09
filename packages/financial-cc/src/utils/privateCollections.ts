@@ -1,21 +1,32 @@
-import { GovernanceCollections } from '../collections.model';
-import { GovernanceController } from '../governance.controller';
-import { Organization } from '../financial.model';
+import { GovernanceCollections } from '../models/collections.model';
+import { GovernanceController } from '../controllers/governance.controller';
+import { Organization } from '../models/financial.model';
 import { FQDNObjects } from './enums';
 
-export async function pickRightCollection(orgs: string[]) {
-    let col = orgs.map(org => org.replace(`${FQDNObjects.ORGANIZATION}#`, '')).join('');
-    // TODO: Maybe later will need a group of potential concats to get the 
-    // right name
-    let cols = await getCols();
-    if (cols.indexOf(col) !== -1) {
-        return col;
+/** Validate a collection combination exists */
+export async function pickRightCollections(objects: string[][]) {
+    let results = [];
+    for (let object of objects) {
+        object = object.sort();
+        let col = object.map(org => org.replace(`${FQDNObjects.ORGANIZATION}#`, '')).join('');
+        // TODO: Maybe later will need a group of potential concats to get the 
+        // right name
+        let cols = await getCols();
+        if (cols.indexOf(col) !== -1) {
+            results.push(col);
+        } else {
+            debugger;
+            throw new Error('Queried collection does not exist');
+        }
     }
-    throw new Error('Queried collection does not exist');
+    return results;
 }
+
+/** Build all possible permutations */
 export async function getCols(): Promise<Array<string>> {
     let input = (await GovernanceCollections.getOne(GovernanceController.governanceCollectionKey)).organizations;
-
+    // Need a deterministic order
+    input = input.sort();
     let result: Array<string> = [];
     let f = function (prefix, input) {
         for (var i = 0; i < input.length; i++) {
