@@ -6,6 +6,8 @@ import {
     ClaimResponseTotal, ClaimItem, InvoiceLineItem, ChargeItem,
     Identifier, Narrative, Coding, Money, Reference
 } from '../models/financial.model';
+import { ChaincodeTx } from '@worldsibu/convector-core-chaincode';
+import { PrivateCollectionsRoutes } from '../models/privateCollectionsRoutes.model';
 
 /**
    * 
@@ -41,18 +43,19 @@ export function buildTotalBenefits() {
     return { totalBenefit, totalBenefitCategory };
 }
 
-export async function buildInvoiceLineItems(items: FlatConvectorModel<ClaimItem>[]) {
+export async function buildInvoiceLineItems(items: FlatConvectorModel<ClaimItem>[], privateCollection: PrivateCollectionsRoutes,
+    tx: ChaincodeTx) {
     let invoiceLineItems: InvoiceLineItem[] = [];
     for (let item of items) {
         let encounterId = item.encounter[0].identifier.value;
 
-        let chargeItems =  <ChargeItem[]>(await ChargeItem.query(ChargeItem,
-            {
-                'selector': {
-                    'context.identifier.value': encounterId
-                }
-            }))
-            
+        let chargeItems = <ChargeItem[]>(await tx.stub.getQueryResultAsList({
+            'selector': {
+                'context.identifier.value': encounterId
+            }
+        }, { privateCollection: privateCollection.chargeItem }));
+
+        
         let key = 0;
         for (let chargeItem of chargeItems) {
             key++;

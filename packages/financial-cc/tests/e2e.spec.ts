@@ -31,7 +31,7 @@ describe.only('Fhir Financial', () => {
 
     const providerId = 'resource:org.fhir.core.Organization#XYZ_Provider';
     const payerId = 'resource:org.fhir.core.Organization#ABC_Healthcare';
-    const patientId = 'resource:org.fhir.core.Patient#Bob';
+    const patientId = 'resource:org.fhir.core.Patient#com.instamed.patient.Bob';
     const claimId = 'resource:org.fhir.core.Claim#Claim-1';
     const accountId = 'resource:org.fhir.core.Account#Account-1';
     const invoiceId = 'resource:org.fhir.core.Invoice#Invoice-1';
@@ -417,7 +417,7 @@ describe.only('Fhir Financial', () => {
     });
 
     it('should adjudicate a claim (create a claim response, invoice, account)', async () => {
-        debugger;
+        
         const claim = new AdjudicateClaim({
             txDate: new Date(),
             'uid': 'resource:org.fhir.core.ClaimResponse#ClaimResponse-1',
@@ -444,7 +444,8 @@ describe.only('Fhir Financial', () => {
             }
             ]
         });
-        await ctrl.claim.adjudicate(claim);
+        await ctrl.claim.$config({ transient: { data: claim.toJSON() } }).adjudicate();
+
         const claimResponseCreated = await adapter.getById<Account>(claim.uid);
         expect(claimResponseCreated.id).to.equal(claim.uid);
         log(`Claim response with id '${claim.uid}' created successfully`);

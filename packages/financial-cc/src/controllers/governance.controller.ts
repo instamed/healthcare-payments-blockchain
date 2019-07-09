@@ -17,7 +17,7 @@ export class GovernanceController extends ConvectorController {
         items: string[]) {
         let cols = new GovernanceCollections();
         cols.id = GovernanceController.governanceCollectionKey;
-        cols.organizations = items;
+        cols.organizations = items.map(item=> item.toUpperCase());
 
         await cols.save();
     }

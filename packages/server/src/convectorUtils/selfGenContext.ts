@@ -17,7 +17,7 @@ export namespace SelfGenContext {
   }
 
   export async function getClient() {
-    debugger;
+    
     const keyStore = identity().keyStore;
     const user = identity().user;
     const org = identity().org;

@@ -16,7 +16,7 @@ import { identity } from '../utils/identity';
 
 async function InitFabricAdapter() {
   await SelfGenContext.getClient();
-  debugger;
+  
   const adapter = new FabricControllerAdapter({
     txTimeout: 300000,
     user: identity().user,

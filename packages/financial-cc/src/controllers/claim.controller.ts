@@ -41,6 +41,7 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
     @Invokable()
     public async create() {
         const data: CreateClaim = await this.tx.getTransientValue<CreateClaim>('data', CreateClaim);
+
         const collections = new PrivateCollectionsRoutes(data.patientId,
             data.providerId, data.payerId);
         await collections.load();
@@ -106,17 +107,21 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
     }
 
     @Invokable()
-    public async adjudicate(
-        @Param(AdjudicateClaim)
-        data: AdjudicateClaim) {
+    public async adjudicate() {
+        const data: AdjudicateClaim = await this.tx.getTransientValue<AdjudicateClaim>('data', AdjudicateClaim);;
         const id = data.uid;
         const claimResponse = new ClaimResponse(id);
 
-        debugger;
         data.claim = await this.getClaim(data.claimUid);
-        debugger;
 
-        let invoiceLineItems = await buildInvoiceLineItems(data.claim.item);
+        
+        const collections = new PrivateCollectionsRoutes(data.claim.patient.identifier.value,
+            data.claim.provider.identifier.value, data.claim.insurer.identifier.value);
+        await collections.load();
+
+        
+
+        let invoiceLineItems = await buildInvoiceLineItems(data.claim.item, collections, this.tx);
         claimResponse.identifier = [buildIdentifier(id, IdentifierUses.USUAL, IdentifierTypes.CLAIMRESPONSE)];
         claimResponse.resourceType = ResourceTypes.CLAIMRESPONSE;
 
@@ -233,7 +238,7 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
         claimResponse.total.push(totalBenefit);
 
         // Save to the blockchain
-        await claimResponse.save();
+        await this.saveClaimResponse(claimResponse, collections.claimResponse);
 
         // Calculate amount
         let amountOwed = totalBenefit.amount.value - totalCost.amount.value;
@@ -245,7 +250,7 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
             accountUid: data.accountUid
         };
 
-        await this.createAccount(accountData);
+        await this.createAccount(accountData, collections);
 
         let invoiceData: InvoiceData = {
             patientUid: claimResponse.patient.identifier.value,
@@ -260,7 +265,7 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
             invoiceTotalGross: invoiceTotalGross
         };
 
-        await this.createInvoice(invoiceData, data.txDate);
+        await this.createInvoice(invoiceData, data.txDate, collections);
     }
 
     async createService(data: FlatConvectorModel<ServiceItem>, txDate: Date, collections: PrivateCollectionsRoutes) {
@@ -451,7 +456,7 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
         this.saveEncounter(data.encounter, collections.encounter);
     }
 
-    async createAccount(data: AccountData) {
+    async createAccount(data: AccountData, collections: PrivateCollectionsRoutes) {
         const id = data.accountUid;
 
         data.patient = await Patient.getOne(data.patientUid);
@@ -483,10 +488,10 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
         account.owner = buildReference(data.owner.identifier[0]);
         account.description = `Account for tracking charges incurred during encounter.`;
 
-        account.save();
+        await this.saveAccount(account, collections.account);
     }
 
-    async createInvoice(data: InvoiceData, invoiceDate: Date) {
+    async createInvoice(data: InvoiceData, invoiceDate: Date, collections: PrivateCollectionsRoutes) {
         const id = data.invoiceUid;
 
         data.patient = await Patient.getOne(data.patientUid);
@@ -530,7 +535,7 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
         invoice.totalGross = buildMoney(data.invoiceTotalGross);
 
         // Add Account to ledger
-        await invoice.save();
+        await this.saveInvoice(invoice, collections.invoice);
     }
 
     async saveClaim(claim: Claim, collection: string) {
@@ -550,7 +555,7 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
     }
 
     async saveEncounter(encounter: Encounter, collection: string) {
-        await encounter.save({
+        await new Encounter(encounter).save({
             privateCollection: collection
         });
         let publicEncounter = new PublicModelRouter(encounter.id);
@@ -571,6 +576,30 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
             privateCollection: collection
         });
         let publicModel = new PublicModelRouter(chargeItem.id);
+        publicModel.collection = collection;
+        await publicModel.save();
+    }
+    async saveClaimResponse(claimResponse: ClaimResponse, collection: string) {
+        await claimResponse.save({
+            privateCollection: collection
+        });
+        let publicModel = new PublicModelRouter(claimResponse.id);
+        publicModel.collection = collection;
+        await publicModel.save();
+    }
+    async saveAccount(account: Account, collection: string) {
+        await account.save({
+            privateCollection: collection
+        });
+        let publicModel = new PublicModelRouter(account.id);
+        publicModel.collection = collection;
+        await publicModel.save();
+    }
+    async saveInvoice(invoice: Invoice, collection: string) {
+        await invoice.save({
+            privateCollection: collection
+        });
+        let publicModel = new PublicModelRouter(invoice.id);
         publicModel.collection = collection;
         await publicModel.save();
     }
