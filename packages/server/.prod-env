@@ -1,0 +1,7 @@
+NODE_ENV=production
+
+CHANNEL=public
+CHAINCODE=fhirfinancial
+COUCHDB_PROTOCOL=http
+COUCHDB_HOST=c-prod001.worldsibu.com
+COUCHDB_PORT=30046

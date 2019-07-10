@@ -145,6 +145,16 @@ npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-<org>/<user>
 }
 ```
 
+#### Private Collections
+
+For this project running locally, organizations are related to **Hurley organizations** in the followin order:
+
+|Organization|Hurley Org|
+|---|---|
+|ABC_HEALTHCARE|org1MSP|
+|INSTAMED|org2MSP|
+|XYZ_PROVIDER|org3MSP|
+
 #### A practical example
 
 Get the fingerprint of the user1 in the org1

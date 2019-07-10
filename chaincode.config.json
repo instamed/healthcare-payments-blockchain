@@ -32,32 +32,11 @@
       "name": "financial-cc",
       "version": "file:./packages/financial-cc",
       "controller": "OrganizationController"
+    },
+    {
+      "name": "financial-cc",
+      "version": "file:./packages/financial-cc",
+      "controller": "GovernanceController"
     }
-  ],
-  "policy": {
-    "identities": [
-      {
-        "role": {
-          "name": "member",
-          "mspId": "Org1MSP"
-        }
-      },
-      {
-        "role": {
-          "name": "member",
-          "mspId": "Org2MSP"
-        }
-      }
-    ],
-    "policy": {
-      "1-of": [
-        {
-          "signed-by": 0
-        },
-        {
-          "signed-by": 1
-        }
-      ]
-    }
-  }
+  ]
 }

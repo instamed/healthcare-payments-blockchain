@@ -1,0 +1,58 @@
+[
+  {
+    "name": "ABC_HEALTHCARE",
+    "policy": "OR( 'org1MSP.member' )",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 3,
+    "blockToLive": 0,
+    "memberOnlyRead": true
+  },
+  {
+    "name": "ABC_HEALTHCARE-INSTAMED",
+    "policy": "OR( 'org1MSP.member','org2MSP.member' )",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 3,
+    "blockToLive": 0,
+    "memberOnlyRead": true
+  },
+  {
+    "name": "ABC_HEALTHCARE-INSTAMED-XYZ_PROVIDER",
+    "policy": "OR( 'org1MSP.member','org2MSP.member','org3MSP.member' )",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 3,
+    "blockToLive": 0,
+    "memberOnlyRead": true
+  },
+  {
+    "name": "ABC_HEALTHCARE-XYZ_PROVIDER",
+    "policy": "OR( 'org1MSP.member','org3MSP.member' )",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 3,
+    "blockToLive": 0,
+    "memberOnlyRead": true
+  },
+  {
+    "name": "INSTAMED",
+    "policy": "OR( 'org2MSP.member' )",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 3,
+    "blockToLive": 0,
+    "memberOnlyRead": true
+  },
+  {
+    "name": "INSTAMED-XYZ_PROVIDER",
+    "policy": "OR( 'org2MSP.member','org3MSP.member' )",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 3,
+    "blockToLive": 0,
+    "memberOnlyRead": true
+  },
+  {
+    "name": "XYZ_PROVIDER",
+    "policy": "OR( 'org3MSP.member' )",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 3,
+    "blockToLive": 0,
+    "memberOnlyRead": true
+  }
+]

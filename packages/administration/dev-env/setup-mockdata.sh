@@ -3,6 +3,16 @@ set +e
 
 FINGERPRINT=`node -e "console.log(JSON.parse(require('fs').readFileSync('$HOME/hyperledger-fabric-network/.hfc-org1/user1', 'utf8')).enrollment.identity.certificate)" | openssl x509 -fingerprint -noout | cut -d '=' -f2`
 
+echo "Setup Organizations"
+
+read -r -d '' basicOrganizations << EndOfMessage
+[
+"ABC_HEALTHCARE", "XYZ_PROVIDER", "InstaMed"
+]
+EndOfMessage
+
+./node_modules/.bin/hurl invoke financial governance_updateOrganizationsList "$basicOrganizations"
+
 echo "User1 Org1 user fingerprint is $FINGERPRINT"
 
 echo "STEP 1: Creating Organization first Provider"
@@ -161,16 +171,14 @@ read -r -d '' orgABC_Healthcare << EndOfMessage
     }
 EndOfMessage
 
-
 ./node_modules/.bin/hurl invoke financial organization_create "$orgABC_Healthcare" "$FINGERPRINT"
-
 
 echo "STEP 2: Completed Creating Organization first Payer"
 echo "STEP 3: Creating Participant Bob"
 
 read -r -d '' partBob << EndOfMessage 
 {
-        "id": "Consumer::Bob"
+        "id": "com.instamed.patient.Consumer::Bob"
     }
 EndOfMessage
 

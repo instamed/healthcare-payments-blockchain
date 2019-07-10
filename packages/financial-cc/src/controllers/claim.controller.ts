@@ -453,7 +453,7 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
         data.encounter.statusHistory.push(statusHistory);
         data.encounter.status = EncounterStatus.FINISHED;
 
-        this.saveEncounter(data.encounter, collections.encounter);
+        await this.saveEncounter(data.encounter, collections.encounter);
     }
 
     async createAccount(data: AccountData, collections: PrivateCollectionsRoutes) {

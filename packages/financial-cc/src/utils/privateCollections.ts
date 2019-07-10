@@ -10,14 +10,15 @@ export async function pickRightCollections(objects: string[][]) {
         let tempList = object.map(org =>
             extractOrganizationId(extractPatientOrganizationId(org)));
         tempList = tempList.sort();
-        const col = tempList.join('_');
+        const col = tempList.join('-');
         
         let cols = await getCols();
+        console.log(cols);
         if (cols.indexOf(col) !== -1) {
             results.push(col);
         } else {
             
-            throw new Error('Queried collection does not exist');
+            throw new Error(`Queried collection [${col}] does not exist`);
         }
     }
     return results;
@@ -50,8 +51,8 @@ export async function getCols(): Promise<Array<string>> {
     let result: Array<string> = [];
     let f = function (prefix, input) {
         for (var i = 0; i < input.length; i++) {
-            result.push((prefix ? `${prefix}_` : prefix) + input[i]);
-            f((prefix ? `${prefix}_` : prefix) + input[i], input.slice(i + 1));
+            result.push((prefix ? `${prefix}-` : prefix) + input[i]);
+            f((prefix ? `${prefix}-` : prefix) + input[i], input.slice(i + 1));
         }
     }
     f('', input);

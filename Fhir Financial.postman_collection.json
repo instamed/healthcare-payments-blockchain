@@ -19,7 +19,13 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": ""
+							"raw": "{{server}}/api/organization",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"organization"
+							]
 						}
 					},
 					"response": []
@@ -318,7 +324,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"participant\": {\n        \"id\": \"Consumer::Bob\"\n    },\n    \"fingerprint\": \"<fingerprint>\"\n}"
+					"raw": "{\n    \"participant\": {\n        \"id\": \"com.instamed.patient.Consumer::Bob\"\n    },\n    \"fingerprint\": \"<fingerprint>\"\n}"
 				},
 				"url": {
 					"raw": "{{server}}/api/participant/consumer",
@@ -405,7 +411,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n            \"resourceType\": \"Patient\",\n            \"id\": \"resource:org.fhir.core.Patient#Bob\",\n            \"identifier\": [\n                {\n                    \"use\": \"usual\",\n                    \"system\": \"Blockchain:Patient\",\n                    \"value\": \"resource:org.fhir.core.Patient#Bob\"\n                }\n            ],\n            \"active\": true,\n            \"name\": [\n                {\n                    \"use\": \"usual\",\n                    \"family\": \"Testington\",\n                    \"given\": [\n                        \"Bob\"\n                    ],\n                    \"suffix\": [\n                        \"Mr\"\n                    ]\n                }\n            ],\n            \"telecom\": [\n                {\n                    \"system\": \"phone\",\n                    \"value\": \"1234567890\",\n                    \"use\": \"mobile\"\n                },\n                {\n                    \"system\": \"email\",\n                    \"value\": \"bob_test@instamed.com\",\n                    \"use\": \"home\"\n                }\n            ],\n            \"gender\": \"male\",\n            \"birthDate\": \"1944-11-17\",\n            \"deceasedBoolean\": false,\n            \"address\": [\n                {\n                    \"use\": \"home\",\n                    \"line\": [\n                        \"123 Test Way\"\n                    ],\n                    \"city\": \"Newport Beach\",\n                    \"postalCode\": \"12345\",\n                    \"country\": \"USA\"\n                }\n            ],\n            \"maritalStatus\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://hl7.org/fhir/v3/MaritalStatus\",\n                        \"code\": \"M\",\n                        \"display\": \"Married\"\n                    }\n                ],\n                \"text\": \"Married\"\n            },\n            \"managingOrganization\": {\n                \"identifier\": {\n                    \"$class\": \"org.fhir.datatypes.Identifier\",\n                    \"use\": \"usual\",\n                    \"system\": \"Blockchain:Provider\",\n                    \"value\": \"Provider::Provida\"\n                }\n            }\n        }"
+					"raw": "{\n            \"resourceType\": \"Patient\",\n            \"id\": \"resource:org.fhir.core.Patient#com.instamed.patient.Bob\",\n            \"identifier\": [\n                {\n                    \"use\": \"usual\",\n                    \"system\": \"Blockchain:Patient\",\n                    \"value\": \"resource:org.fhir.core.Patient#com.instamed.patient.Bob\"\n                }\n            ],\n            \"active\": true,\n            \"name\": [\n                {\n                    \"use\": \"usual\",\n                    \"family\": \"Testington\",\n                    \"given\": [\n                        \"Bob\"\n                    ],\n                    \"suffix\": [\n                        \"Mr\"\n                    ]\n                }\n            ],\n            \"telecom\": [\n                {\n                    \"system\": \"phone\",\n                    \"value\": \"1234567890\",\n                    \"use\": \"mobile\"\n                },\n                {\n                    \"system\": \"email\",\n                    \"value\": \"bob_test@instamed.com\",\n                    \"use\": \"home\"\n                }\n            ],\n            \"gender\": \"male\",\n            \"birthDate\": \"1944-11-17\",\n            \"deceasedBoolean\": false,\n            \"address\": [\n                {\n                    \"use\": \"home\",\n                    \"line\": [\n                        \"123 Test Way\"\n                    ],\n                    \"city\": \"Newport Beach\",\n                    \"postalCode\": \"12345\",\n                    \"country\": \"USA\"\n                }\n            ],\n            \"maritalStatus\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://hl7.org/fhir/v3/MaritalStatus\",\n                        \"code\": \"M\",\n                        \"display\": \"Married\"\n                    }\n                ],\n                \"text\": \"Married\"\n            },\n            \"managingOrganization\": {\n                \"identifier\": {\n                    \"$class\": \"org.fhir.datatypes.Identifier\",\n                    \"use\": \"usual\",\n                    \"system\": \"Blockchain:Provider\",\n                    \"value\": \"Provider::Provida\"\n                }\n            }\n        }"
 				},
 				"url": {
 					"raw": "{{server}}/api/patient/",
@@ -434,7 +440,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"txDate\": \"Fri Mar 08 2019 09:28:27 GMT-0600 (CST)\",\n    \"patientId\": \"resource:org.fhir.core.Patient#Bob\",\n    \"providerId\": \"resource:org.fhir.core.Organization#XYZ_Provider\",\n    \"encounterUid\": \"resource:org.fhir.core.Encounter#Encounter-1\",\n    \"claimUid\": \"resource:org.fhir.core.Claim#Claim-1\",\n    \"payerId\": \"resource:org.fhir.core.Organization#ABC_Healthcare\",\n    \"services\": [\n        {\n            \"hcpcsCode\": \"99230\",\n            \"quantity\": 1,\n            \"unitPrice\": 45,\n            \"procedureUid\": \"resource:org.fhir.core.Procedure#Procedure-1\",\n            \"chargeItemUid\": \"resource:org.fhir.core.ChargeItem#ChargeItem-1\"\n        },\n        {\n            \"hcpcsCode\": \"90756\",\n            \"quantity\": 3,\n            \"unitPrice\": 55,\n            \"procedureUid\": \"resource:org.fhir.core.Procedure#Procedure-2\",\n            \"chargeItemUid\": \"resource:org.fhir.core.ChargeItem#ChargeItem-2\"\n        }\n    ]\n}"
+					"raw": "{\n    \"txDate\": \"Fri Mar 08 2019 09:28:27 GMT-0600 (CST)\",\n    \"patientId\": \"resource:org.fhir.core.Patient#com.instamed.patient.Bob\",\n    \"providerId\": \"resource:org.fhir.core.Organization#XYZ_Provider\",\n    \"encounterUid\": \"resource:org.fhir.core.Encounter#Encounter-1\",\n    \"claimUid\": \"resource:org.fhir.core.Claim#Claim-1\",\n    \"payerId\": \"resource:org.fhir.core.Organization#ABC_Healthcare\",\n    \"services\": [\n        {\n            \"hcpcsCode\": \"99230\",\n            \"quantity\": 1,\n            \"unitPrice\": 45,\n            \"procedureUid\": \"resource:org.fhir.core.Procedure#Procedure-1\",\n            \"chargeItemUid\": \"resource:org.fhir.core.ChargeItem#ChargeItem-1\"\n        },\n        {\n            \"hcpcsCode\": \"90756\",\n            \"quantity\": 3,\n            \"unitPrice\": 55,\n            \"procedureUid\": \"resource:org.fhir.core.Procedure#Procedure-2\",\n            \"chargeItemUid\": \"resource:org.fhir.core.ChargeItem#ChargeItem-2\"\n        }\n    ]\n}"
 				},
 				"url": {
 					"raw": "{{server}}/api/claim",
@@ -533,7 +539,7 @@
 		{
 			"id": "20486481-76b9-428f-8033-f85610bc2bab",
 			"key": "server",
-			"value": "http://localhost:8080/",
+			"value": "http://localhost:8080/api",
 			"type": "string"
 		}
 	]
