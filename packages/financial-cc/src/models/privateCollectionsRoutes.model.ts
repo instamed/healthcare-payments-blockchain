@@ -8,14 +8,14 @@ export class PrivateCollectionsRoutes {
     chargeItem = '';
     account = '';
     invoice = '';
-    constructor(private patient: string, private provider: string, private payer: string) {
+    constructor(private patient: string, private provider: string, private payer: string, private orgs?: string[]) {
     }
     async load() {
         let colls = await pickRightCollections([
             [this.provider, this.payer],
             [this.patient, this.provider],
             [this.patient, this.provider, this.payer],
-        ]);
+        ], this.orgs);
 
         console.log(colls);
         console.log(colls[1]);

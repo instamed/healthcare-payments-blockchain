@@ -4,7 +4,7 @@ import { CouchDBStorage } from '@worldsibu/convector-storage-couchdb';
 import { Env } from './env';
 import {
   CHAINCODE, COUCHDB_HOST,
-  COUCHDB_PROTOCOL, COUCHDB_PORT, CHANNEL
+  COUCHDB_PROTOCOL, COUCHDB_PORT, CHANNEL, identity
 } from '../utils';
 
 /**
@@ -16,12 +16,22 @@ BaseStorage.current = new CouchDBStorage({
   port: COUCHDB_PORT
 }, `${CHANNEL}_${CHAINCODE}`);
 
-export async function couchQueryAll(view: string, type: any, queryOptions?: {}) {
+export async function couchQueryAll(view: string, type: any, queryOptions?: {},
+  col?: string, userId?: string) {
   const channel = CHANNEL;
   const cc = CHAINCODE;
-  const dbName = `${channel}_${cc}`;
+  const dbName = `${channel}_${cc}${col ? `$$p${col}` : ''}`;
   const viewUrl = `_design/${cc}/_view/${view}`;
-  const options = queryOptions || { startKey: [''], endKey: [''] };
+
+  const identityToQuery = identity(userId);
+  console.log(`calling couch to ${identityToQuery.couch.port} in db ${dbName}`);
+
+
+  BaseStorage.current = new CouchDBStorage({
+    host: identityToQuery.couch.host,
+    protocol: identityToQuery.couch.protocol,
+    port: identityToQuery.couch.port,
+  });
 
   try {
     const results = <any[]>(await type.query(type, dbName, viewUrl, queryOptions));

@@ -5,7 +5,8 @@ const router: Router = Router();
 router.post('/make', async (req: Request, res: Response) => {
     try {
         const payment = req.body.payment;
-        await paymentMake(payment);
+        const { user } = req.query;
+        await paymentMake(payment, user);
         res.send(200);
     } catch (ex) {
         console.log(ex);

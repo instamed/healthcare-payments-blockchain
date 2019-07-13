@@ -5,7 +5,7 @@ DB=ch1_financial
 DB_PAYER_PATIENT_PROVIDER="ch1_financial\$\$pabc_healthcare-instamed-xyz_provider"
 DB_PAYER_PATIENT="ch1_financial\$\$pabc_healthcare-instamed"
 DB_PAYER_PROVIDER="ch1_financial\$\$pabc_healthcare-xyz_provider"
-DB_PATIENT_PROVIDER="ch1_financial\$\$instamed-xyz_provider"
+DB_PATIENT_PROVIDER="ch1_financial\$\$pinstamed-xyz_provider"
 
 DBS=( $DB $DB_PAYER_PATIENT_PROVIDER $DB_PAYER_PATIENT $DB_PAYER_PROVIDER $DB_PATIENT_PROVIDER )
 

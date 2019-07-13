@@ -33,4 +33,9 @@ export class ServerIdentity {
     org: string;
     networkProfile?: string;
     keyStore?: string;
+    couch: {
+        host: string,
+        protocol: string,
+        port: string
+    }
 } 

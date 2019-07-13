@@ -1,5 +1,6 @@
 import { Init, CreateClaim, AdjudicateClaim, couchQueryAll } from '../convectorUtils';
 import { Claim, InvoiceLineItem, TransientInvoiceLineItem } from 'financial-cc';
+import { collections } from '../utils/collections';
 
 export async function create(newClaim: CreateClaim) {
     const ctrls = await Init();
@@ -26,6 +27,8 @@ export async function adjudicate(toAdjudicateClaim: AdjudicateClaim) {
     }).adjudicate();
 }
 
-export async function getAll() {
-    return await couchQueryAll('claims_all', Claim);
+export async function getAll(user?: string) {
+    let resCols = await collections();
+    console.log(!!user);
+    return await couchQueryAll('claims_all', Claim, null, resCols.claim, user);
 }

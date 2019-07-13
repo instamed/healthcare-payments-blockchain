@@ -3,15 +3,16 @@ import { GovernanceController } from '../controllers/governance.controller';
 import { FQDNObjects } from './enums';
 
 /** Validate a collection combination exists */
-export async function pickRightCollections(objects: string[][]) {
+export async function pickRightCollections(objects: string[][], orgs?: string[]) {
     let results = [];
     for (let object of objects) {
         let tempList = object.map(org =>
             extractOrganizationId(extractPatientOrganizationId(org)));
         tempList = tempList.sort();
         const col = tempList.join('-');
-        
-        let cols = await getCols();
+
+        // Use passed list of orgs if available in params
+        // let cols = orgs ? _getCols(orgs) : await getCols();
         results.push(col);
         // if (cols.indexOf(col) !== -1) {
         // } else {
@@ -43,6 +44,12 @@ function extractOrganizationId(path: string) {
 /** Build all possible permutations */
 export async function getCols(): Promise<Array<string>> {
     let input = (await GovernanceCollections.getOne(GovernanceController.governanceCollectionKey)).organizations;
+
+    return _getCols(input);
+}
+
+/** Build all possible permutations */
+export async function _getCols(input: string[]): Promise<Array<string>> {
     // Need a deterministic order
     input = input.sort();
     let result: Array<string> = [];

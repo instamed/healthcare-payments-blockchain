@@ -4,7 +4,8 @@ const router: Router = Router();
 
 router.get('/', async (req: Request, res: Response) => {
     try {
-        let results = await getAll();
+        const { user } = req.query;
+        let results = await getAll(user);
         res.send(results);
     } catch (ex) {
         console.log(ex);
