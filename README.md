@@ -134,7 +134,7 @@ npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-<org>/<user>
 
 * The result fingerprint looks like `A5:EB:E4:1E:8E:86:03:72:00:3F:EA:CA:D2:9D:98:08:CA:70:24:F6`.
 * That same fingerprint will be validated when a transaction is signed by a identity from the blockchain.
-* Be sure to pass it throught Postman when registering a new `Payer Organization`, `Provider Organization`, or `Consumer Participant` as a param called `fingerprint`. Transactions will validate that the right identity is trying to perform requests.
+* Be sure to pass it throught Postman when registering a new `Payer Organization` or `Consumer Participant` as a param called `fingerprint`. Transactions will validate that the right identity is trying to perform requests.
 * For example, to create a Consumer Participant, the following JSON is valid:
 
 ```json
