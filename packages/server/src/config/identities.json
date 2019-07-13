@@ -1,11 +1,11 @@
 [
     {
-        "uniqueId": "instamed",
+        "uniqueId": "patient",
         "user": "user1",
         "org": "org1"
     },
     {
-        "uniqueId": "paymentmaker",
+        "uniqueId": "provider",
         "user": "user1",
         "org": "org2"
     }
