@@ -16,7 +16,8 @@ A video describing this flow can be found at: https://vimeo.com/325931177/e21834
 
 * [Node](https://nodejs.org/en/download/) 8.11.0
 * [Docker Community Edition](https://www.docker.com/community-edition)
-* [npx](https://www.npmjs.com/package/npx) (Typically installed automatically with Node)
+* [npx](https://www.npmjs.com/package/npx) 
+* If you are running in Ubuntu, make sure you meet all the prerequisites for Fabric and Convector - [Prerequisites Ubuntu](https://docs.worldsibu.com/article/120-install-on-ubuntu)
 
 ## How to run the project
 
@@ -147,7 +148,7 @@ npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-<org>/<user>
 
 You will need two different identities. One can be shared between the Payer and InstaMed (working on behalf of the pacients) and the other one for a provider. The reason for this is that some data is stored only accessible to some identities (look for Private Collections later in this document), therefore a switch in the identity is made.
 
-Go to the Postman collection settings and set the value to the variable `fingerprint` to use the same for every transaction after you run `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org1/user1` and go and set the value of `providerFingerprint` to `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org2/user1`.
+Go to the Postman collection settings and set the value to the variable `patientFingerprint` to use the same for every transaction after you run `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org1/user1` and go and set the value of `providerFingerprint` to `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org3/user1`.
 
 #### Private Collections
 
@@ -156,7 +157,7 @@ For this project running locally, organizations are related to **Hurley organiza
 |Organization|Hurley Org|
 |---|---|
 |ABC_HEALTHCARE|org1MSP|
-|INSTAMED|org2MSP|
+|INSTAMED (Patient)|org2MSP|
 |XYZ_PROVIDER|org3MSP|
 
 #### A practical example
