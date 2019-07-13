@@ -17,6 +17,8 @@ export class PrivateCollectionsRoutes {
             [this.patient, this.provider, this.payer],
         ]);
 
+        console.log(colls);
+        console.log(colls[1]);
         this.claim = colls[0];
         this.claimResponse = colls[0];
         this.encounter = colls[1];
@@ -24,6 +26,5 @@ export class PrivateCollectionsRoutes {
         this.procedure = colls[2];
         this.account = colls[1];
         this.invoice = colls[1];
-        this.invoice = colls[2];
     }
 }

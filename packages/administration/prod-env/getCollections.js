@@ -17,7 +17,7 @@ result.map(item => {
     let orgs = item.split('-');
 
     resultCols.push({
-        "name": item.toUpperCase(),
+        "name": item.toLowerCase(),
         "policy": `OR( ${orgs.map(org => `'${org}.member'`).join(',')} )`,
         "requiredPeerCount": 0,
         "maxPeerCount": 3,

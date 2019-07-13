@@ -8,6 +8,7 @@ import {
 } from '../models/financial.model';
 import { ChaincodeTx } from '@worldsibu/convector-core-chaincode';
 import { PrivateCollectionsRoutes } from '../models/privateCollectionsRoutes.model';
+import { Iterators } from 'fabric-shim';
 
 /**
    * 
@@ -42,20 +43,47 @@ export function buildTotalBenefits() {
     totalBenefit.category.coding = [totalBenefitCategory];
     return { totalBenefit, totalBenefitCategory };
 }
+async function iteratorToList(iterator: Iterators.CommonIterator) {
+    const allResults = [];
+
+    let realIterator = (iterator as any).iterator ? (iterator as any).iterator : iterator;
+
+    let res: Iterators.NextResult;
+    while (res == null || !res.done) {
+        res = await realIterator.next();
+
+        if (res.value && res.value.value.toString()) {
+            let parsedItem: any;
+
+            try {
+                parsedItem = JSON.parse(res.value.value.toString('utf8'));
+            } catch (err) {
+                parsedItem = res.value.value.toString('utf8');
+            }
+            allResults.push(parsedItem);
+        }
+    }
+
+    await realIterator.close();
+
+    return allResults;
+}
 
 export async function buildInvoiceLineItems(items: FlatConvectorModel<ClaimItem>[], privateCollection: PrivateCollectionsRoutes,
     tx: ChaincodeTx) {
     let invoiceLineItems: InvoiceLineItem[] = [];
+
     for (let item of items) {
         let encounterId = item.encounter[0].identifier.value;
 
-        let chargeItems = <ChargeItem[]>(await tx.stub.getQueryResultAsList({
-            'selector': {
-                'context.identifier.value': encounterId
-            }
-        }, { privateCollection: privateCollection.chargeItem }));
+        let chargeItems = await iteratorToList(await tx.stub.getStub().getPrivateDataQueryResult(privateCollection.chargeItem,
+            JSON.stringify({
+                'selector': {
+                    'context.identifier.value': encounterId
+                }
+            })
+        ));
 
-        
         let key = 0;
         for (let chargeItem of chargeItems) {
             key++;

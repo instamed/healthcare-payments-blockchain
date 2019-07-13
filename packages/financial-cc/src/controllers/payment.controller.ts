@@ -1,7 +1,9 @@
+import * as yup from 'yup';
 import {
   Controller,
   ConvectorController,
-  Invokable
+  Invokable,
+  Param
 } from '@worldsibu/convector-core';
 import {
   Invoice, Patient, Organization
@@ -9,17 +11,33 @@ import {
 import { InvoiceStatus } from '../utils/enums';
 import { ConsumerParticipant } from '../models/participant.model';
 import { PublicModelRouter } from '../models/public.model';
+import { ChaincodeTx } from '@worldsibu/convector-core-chaincode';
+import { PrivateCollectionsRoutes } from '..';
+
+class parse {
+  constructor(data) {
+    Object.assign(this, data);
+    console.log(data);
+  }
+}
 
 @Controller('payment')
-export class PaymentController extends ConvectorController {
+export class PaymentController extends ConvectorController<ChaincodeTx> {
+
+  @Invokable()
+  public async getOneInvoice(
+    @Param(yup.string())
+    invoiceId) {
+    return await this.getInvoice(invoiceId);
+  }
   /**
    * Pay an invoice by Id
    * @param invoice Invoice Id
    */
   @Invokable()
-  public async make(id: string) {
-    let invoice = await this.getInvoice(id);
-
+  public async make() {
+    const invoice = await this.tx.getTransientValue('invoice', parse) as any;
+    console.log(invoice);
     let provider = await Organization.getOne(invoice.issuer.identifier.value);
     let fingerprint = provider.identities.find(identity => identity.status).fingerprint;
 
@@ -28,7 +46,8 @@ export class PaymentController extends ConvectorController {
     }
 
     invoice.status = InvoiceStatus.BALANCED;
-    await invoice.save();
+
+    await this.saveInvoice(invoice);
   }
 
   async getInvoice(id: string) {
@@ -36,5 +55,16 @@ export class PaymentController extends ConvectorController {
     return await Invoice.getOne(id, Invoice, {
       privateCollection: publicCoordinates.collection
     });
+  }
+  async saveInvoice(invoice: Invoice) {
+    const collections = new PrivateCollectionsRoutes(invoice.recipient.identifier.value,
+      invoice.issuer.identifier.value, invoice.issuer.identifier.value);
+    await collections.load();
+    await new Invoice(invoice).save({
+      privateCollection: collections.invoice
+    });
+    let publicModel = new PublicModelRouter(invoice.id);
+    publicModel.collection = collections.invoice;
+    await publicModel.save();
   }
 }

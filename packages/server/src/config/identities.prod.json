@@ -1,5 +1,6 @@
 [
     {
+        "uniqueId": "instamed",
         "user": "instamed",
         "org": "instamedycb-financialfhirtqj",
         "networkProfile": "../../../config/instamed.networkprofile.yaml",

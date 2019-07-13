@@ -1,3 +1,4 @@
+import * as yup from 'yup';
 import {
     FlatConvectorModel,
     Controller,
@@ -12,7 +13,7 @@ import {
     InvoiceLineItemPriceComponent, Patient, Organization,
     Encounter, Period, Quantity, Procedure, ProcedurePerformer,
     ChargeItem, ClaimPayee, ClaimCareTeam, ClaimItem, ClaimProcedure,
-    SimpleQuantity, EncounterStatusHistory, Account, Invoice, Identifier
+    SimpleQuantity, EncounterStatusHistory, Account, Invoice, Identifier, InvoiceLineItem
 } from '../models/financial.model';
 import {
     InvoiceData, AccountData,
@@ -34,6 +35,14 @@ import { pickRightCollections } from '../utils/privateCollections';
 import { PublicModelRouter } from '../models/public.model';
 import { ChaincodeTx } from '@worldsibu/convector-core-chaincode';
 import { PrivateCollectionsRoutes } from '../models/privateCollectionsRoutes.model';
+import { TransientInvoiceLineItem } from '../models/transient.model';
+
+class parse {
+    constructor(data) {
+        Object.assign(this, data);
+        console.log(data);
+    }
+}
 
 @Controller('claim')
 export class ClaimController extends ConvectorController<ChaincodeTx> {
@@ -106,22 +115,39 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
         await this.closeEncounter(data, data.txDate, collections);
     }
 
+    /** Returns the invoice lines to invoke the adjudication of the claim later */
+    @Invokable()
+    public async getInvoiceLineItems(
+        @Param(yup.string())
+        claimUid: string
+    ) {
+        const claim = new Claim(await this.getClaim(claimUid));
+        const collections = new PrivateCollectionsRoutes(claim.patient.identifier.value,
+            claim.provider.identifier.value, claim.insurer.identifier.value);
+        await collections.load();
+        const items = await buildInvoiceLineItems(claim.item, collections, this.tx);
+        return items;
+    }
+
     @Invokable()
     public async adjudicate() {
-        const data: AdjudicateClaim = await this.tx.getTransientValue<AdjudicateClaim>('data', AdjudicateClaim);;
+        const data: AdjudicateClaim = await this.tx.getTransientValue<AdjudicateClaim>('data', AdjudicateClaim);
+        const transientInvoiceLineItem =
+            await this.tx.getTransientValue('invoices', parse) as any;
+        const claim =
+            await this.tx.getTransientValue('claim', parse) as any;
+
+        const invoiceLineItems = transientInvoiceLineItem.items;
+
         const id = data.uid;
         const claimResponse = new ClaimResponse(id);
 
-        data.claim = await this.getClaim(data.claimUid);
+        data.claim = claim;
 
-        
         const collections = new PrivateCollectionsRoutes(data.claim.patient.identifier.value,
             data.claim.provider.identifier.value, data.claim.insurer.identifier.value);
         await collections.load();
 
-        
-
-        let invoiceLineItems = await buildInvoiceLineItems(data.claim.item, collections, this.tx);
         claimResponse.identifier = [buildIdentifier(id, IdentifierUses.USUAL, IdentifierTypes.CLAIMRESPONSE)];
         claimResponse.resourceType = ResourceTypes.CLAIMRESPONSE;
 
@@ -266,6 +292,12 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
         };
 
         await this.createInvoice(invoiceData, data.txDate, collections);
+    }
+
+    @Invokable()
+    public async getOne(@Param(yup.string())
+    claimId: string) {
+        return await this.getClaim(claimId);
     }
 
     async createService(data: FlatConvectorModel<ServiceItem>, txDate: Date, collections: PrivateCollectionsRoutes) {
@@ -571,6 +603,7 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
         publicModel.collection = collection;
         await publicModel.save();
     }
+
     async saveChargeItem(chargeItem: Procedure, collection: string) {
         await chargeItem.save({
             privateCollection: collection
@@ -579,6 +612,7 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
         publicModel.collection = collection;
         await publicModel.save();
     }
+
     async saveClaimResponse(claimResponse: ClaimResponse, collection: string) {
         await claimResponse.save({
             privateCollection: collection
@@ -587,6 +621,7 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
         publicModel.collection = collection;
         await publicModel.save();
     }
+
     async saveAccount(account: Account, collection: string) {
         await account.save({
             privateCollection: collection
@@ -595,6 +630,7 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
         publicModel.collection = collection;
         await publicModel.save();
     }
+    
     async saveInvoice(invoice: Invoice, collection: string) {
         await invoice.save({
             privateCollection: collection

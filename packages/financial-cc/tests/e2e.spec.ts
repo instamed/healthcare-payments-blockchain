@@ -2,7 +2,7 @@
 import { join } from 'path';
 import { expect } from 'chai';
 import { MockControllerAdapter } from '@worldsibu/convector-adapter-mock';
-import { OrganizationController } from '../src/';
+import { OrganizationController, InvoiceLineItem } from '../src/';
 import 'mocha';
 import { ClientFactory, ConvectorControllerClient } from '@worldsibu/convector-core';
 import {
@@ -13,6 +13,7 @@ import {
 } from '../src';
 import { CreateClaim, AdjudicateClaim } from '../src/utils/params.model';
 import { InvoiceStatus } from '../src/utils/enums';
+import { TransientInvoiceLineItem } from '../src/models/transient.model';
 
 const log = console.log;
 
@@ -417,8 +418,8 @@ describe.only('Fhir Financial', () => {
     });
 
     it('should adjudicate a claim (create a claim response, invoice, account)', async () => {
-        
-        const claim = new AdjudicateClaim({
+
+        const toAdjudicateClaim = new AdjudicateClaim({
             txDate: new Date(),
             'uid': 'resource:org.fhir.core.ClaimResponse#ClaimResponse-1',
             'claimUid': claimId,
@@ -441,30 +442,57 @@ describe.only('Fhir Financial', () => {
                     'eligpercent': 80,
                     'benefit': 22
                 }
-            }
-            ]
+            }]
         });
-        await ctrl.claim.$config({ transient: { data: claim.toJSON() } }).adjudicate();
 
-        const claimResponseCreated = await adapter.getById<Account>(claim.uid);
-        expect(claimResponseCreated.id).to.equal(claim.uid);
-        log(`Claim response with id '${claim.uid}' created successfully`);
+        let lines = await ctrl.claim.$query().getInvoiceLineItems(toAdjudicateClaim.claimUid);
 
-        const createdAccount = await adapter.getById<Account>(claim.accountUid);
-        expect(createdAccount.id).to.equal(claim.accountUid);
-        log(`Account with id '${claim.accountUid}' created successfully`);
+        expect(lines.length).to.eq(4);
 
-        const createdInvoice = await adapter.getById<Account>(claim.invoiceUid);
-        expect(createdInvoice.id).to.equal(claim.invoiceUid);
-        log(`Invoice with id '${claim.invoiceUid}' created successfully`);
+        lines = lines.map(item => new InvoiceLineItem(item).toJSON() as any);
+
+        const invoiceLines = new TransientInvoiceLineItem();
+        invoiceLines.items = lines;
+
+        let claim = await ctrl.claim.$query().getOne(toAdjudicateClaim.claimUid);
+
+        console.log('GODT CLAIM');
+        console.log(claim);
+        await ctrl.claim.$config({
+            transient: {
+                data: toAdjudicateClaim.toJSON(),
+                invoices: invoiceLines.toJSON(),
+                claim: new Claim(claim).toJSON()
+            }
+        }).adjudicate();
+
+        const claimResponseCreated = await adapter.getById<Account>(toAdjudicateClaim.uid);
+        expect(claimResponseCreated.id).to.equal(toAdjudicateClaim.uid);
+        log(`Claim response with id '${toAdjudicateClaim.uid}' created successfully`);
+
+        const createdAccount = await adapter.getById<Account>(toAdjudicateClaim.accountUid);
+        expect(createdAccount.id).to.equal(toAdjudicateClaim.accountUid);
+        log(`Account with id '${toAdjudicateClaim.accountUid}' created successfully`);
+
+        const createdInvoice = await adapter.getById<Account>(toAdjudicateClaim.invoiceUid);
+        expect(createdInvoice.id).to.equal(toAdjudicateClaim.invoiceUid);
+        log(`Invoice with id '${toAdjudicateClaim.invoiceUid}' created successfully`);
     });
 
     it('should make a payment', async () => {
         log('Checking that payment was not made before');
         let invoice = await adapter.getById<Invoice>(invoiceId);
         expect(invoice.status).to.not.equal(InvoiceStatus.BALANCED);
-        await ctrl.payment.make(invoiceId);
-        invoice = await adapter.getById<Invoice>(invoiceId);
+
+        let payment = await ctrl.payment.$query().getOneInvoice(invoiceId);
+
+        await ctrl.payment.$config({
+            transient: {
+                invoice: new Invoice(payment).toJSON()
+            }
+        }).make();
+        invoice =  new Invoice(await ctrl.payment.$query().getOneInvoice(invoiceId));
+
         expect(invoice.status).to.equal(InvoiceStatus.BALANCED);
         log('Payment successfully applied');
     });

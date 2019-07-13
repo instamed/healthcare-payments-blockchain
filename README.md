@@ -145,6 +145,10 @@ npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-<org>/<user>
 }
 ```
 
+You will need two different identities. One can be shared between the Payer and InstaMed (working on behalf of the pacients) and the other one for a provider. The reason for this is that some data is stored only accessible to some identities (look for Private Collections later in this document), therefore a switch in the identity is made.
+
+Go to the Postman collection settings and set the value to the variable `fingerprint` to use the same for every transaction after you run `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org1/user1` and go and set the value of `providerFingerprint` to `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org2/user1`.
+
 #### Private Collections
 
 For this project running locally, organizations are related to **Hurley organizations** in the followin order:
@@ -166,7 +170,9 @@ A5:EB:E4:1E:8E:86:03:72:00:3F:EA:CA:D2:9D:98:08:CA:70:24:F6
 
 Be sure that your server is using the identity of user1 in org1, defined in `./packages/server/src/config/identities.json`
 
-Every transaction sent from the server will be signed with the user1 in org1 identity, so the chaincode can safely check for the fingerprint throught the `this.sender`
+Every transaction sent from the server will be signed with the user1 in org1 identity, so the chaincode can safely check for the fingerprint through the `this.sender`
+
+Except for the transaction made by the provider (mark the payment as made) through another certificate in `org2`.
 
 ### Running environment
 

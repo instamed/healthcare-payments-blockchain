@@ -14,18 +14,18 @@ import { PatientController, OrganizationController, ClaimController, Participant
 import { PaymentController } from 'financial-cc';
 import { identity } from '../utils/identity';
 
-async function InitFabricAdapter() {
+async function InitFabricAdapter(user?: string) {
   await SelfGenContext.getClient();
-  
+
   const adapter = new FabricControllerAdapter({
     txTimeout: 300000,
-    user: identity().user,
+    user: identity(user).user,
     // set it later to enable Mutual TLS
     channel: CHANNEL,
     chaincode: CHAINCODE,
-    keyStore: identity().keyStore,
-    networkProfile: identity().networkProfile,
-    userMspPath: identity().keyStore
+    keyStore: identity(user).keyStore,
+    networkProfile: identity(user).networkProfile,
+    userMspPath: identity(user).keyStore
   });
 
   await adapter.init();
@@ -36,8 +36,8 @@ async function InitFabricAdapter() {
  * test env created by `hurley`.
  */
 
-export async function Init() {
-  const adapter = await InitFabricAdapter();
+export async function Init(user?: string) {
+  const adapter = await InitFabricAdapter(user);
   return {
     adapter,
     patient: ClientFactory(PatientController, adapter),

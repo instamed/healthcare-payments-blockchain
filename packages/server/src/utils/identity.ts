@@ -11,10 +11,11 @@ export function identity(user?: string) {
         throw new Error('No identities config .json found in path ./config');
     }
     let res: ServerIdentity;
+    console.log(`getting identity for ${user} in identities config json`);
     if (!user) {
         res = identities[0];
     } else {
-        res = <ServerIdentity>identities.find(identity => identity.user === user);
+        res = <ServerIdentity>identities.find(identity => identity.uniqueId === user);
     }
 
     // Fallback to Hurley's default paths
@@ -27,6 +28,7 @@ export function identity(user?: string) {
 }
 
 export class ServerIdentity {
+    uniqueId: string;
     user: string;
     org: string;
     networkProfile?: string;

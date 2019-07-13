@@ -1,6 +1,5 @@
 import { GovernanceCollections } from '../models/collections.model';
 import { GovernanceController } from '../controllers/governance.controller';
-import { Organization } from '../models/financial.model';
 import { FQDNObjects } from './enums';
 
 /** Validate a collection combination exists */
@@ -13,32 +12,30 @@ export async function pickRightCollections(objects: string[][]) {
         const col = tempList.join('-');
         
         let cols = await getCols();
-        console.log(cols);
-        if (cols.indexOf(col) !== -1) {
-            results.push(col);
-        } else {
-            
-            throw new Error(`Queried collection [${col}] does not exist`);
-        }
+        results.push(col);
+        // if (cols.indexOf(col) !== -1) {
+        // } else {
+        //     throw new Error(`Queried collection [${col}] does not exist`);
+        // }
     }
     return results;
 }
 
 /** Make sure to extract the patient organization part so the need appears */
 function extractPatientOrganizationId(path: string) {
-    path = path.toUpperCase();
-    if (path.toUpperCase().indexOf(`${FQDNObjects.PATIENT}#com.`.toUpperCase()) !== -1) {
-        let removedNS = path.replace(`${FQDNObjects.PATIENT}#com.`.toUpperCase(), '');
-        return removedNS.slice(0, removedNS.indexOf('.')).toUpperCase();
+    path = path.toLowerCase();
+    if (path.toLowerCase().indexOf(`${FQDNObjects.PATIENT}#com.`.toLowerCase()) !== -1) {
+        let removedNS = path.replace(`${FQDNObjects.PATIENT}#com.`.toLowerCase(), '');
+        return removedNS.slice(0, removedNS.indexOf('.')).toLowerCase();
     }
     return path;
 }
 
 /** Make sure to extract the organization part so the need appears */
 function extractOrganizationId(path: string) {
-    path = path.toUpperCase();
-    if (path.toUpperCase().indexOf(`${FQDNObjects.ORGANIZATION}`.toUpperCase()) !== -1) {
-        return path.replace(`${FQDNObjects.ORGANIZATION}#`.toUpperCase(), '').toUpperCase();
+    path = path.toLowerCase();
+    if (path.toLowerCase().indexOf(`${FQDNObjects.ORGANIZATION}`.toLowerCase()) !== -1) {
+        return path.replace(`${FQDNObjects.ORGANIZATION}#`.toLowerCase(), '').toLowerCase();
     }
     return path;
 }
