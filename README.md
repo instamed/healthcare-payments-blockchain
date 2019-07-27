@@ -166,6 +166,14 @@ For this project running locally, organizations are related to **Hurley organiza
 |INSTAMED (Patient)|org2MSP|
 |XYZ_PROVIDER|org3MSP|
 
+### Routing the server to query the different collections
+
+To *query* the private collections from the nodejs server you can pass the id of the user's nodes you'd like to access (any value of './packages/server/src/config/identities.json' and the server will route the read query to those nodes). 
+
+* I.e.: `GET https://----/----/----?user=payer` will send a transaction and look for data inside of the payer's nodes
+* I.e.: `GET https://----/----/----?user=provider` will send a transaction and look for data inside of the provider's nodes
+* I.e.: `GET https://----/----/----?user=patient` will send a transaction and look for data inside of the patient's nodes
+
 #### A practical example
 
 Get the fingerprint of the user1 in the org1
