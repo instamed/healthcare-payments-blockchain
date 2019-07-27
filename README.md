@@ -37,6 +37,12 @@ npm run mockData
 
 # Start the server
 npm run server:start
+
+# You can now run transactions (there's a Postman file included to help you talk to the endpoints "./Fhir Financial.postman_collection.json")
+# Read first the section "Identities on the project" of this README
+
+# Views are associated to databases and Fabric doesn't generate them until at least 1 value was saved there
+npm run views:install
 ```
 
 This will:
@@ -175,7 +181,7 @@ Every transaction sent from the server will be signed with the user1 in org1 ide
 
 Except for the transaction made by the provider (mark the payment as made) through another certificate in `org2`.
 
-### Running environment
+### Running local environment
 
 * Call the server located in `http://localhost:8080`
 * Check the CouchDB server provisioned at http://localhost:5084/_utils/#/database/ch1_financial/_all_docs
