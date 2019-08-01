@@ -33,7 +33,7 @@ export class ServerIdentity {
     org: string;
     networkProfile?: string;
     keyStore?: string;
-    couch: {
+    couch?: {
         host: string,
         protocol: string,
         port: string
