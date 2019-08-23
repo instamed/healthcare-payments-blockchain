@@ -1,3 +1,4 @@
+#!/bin/bash
 VIEWS=$(dirname "$0")
 
 DB=ch1_financial
