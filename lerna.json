@@ -22,7 +22,8 @@
         "vue-template-compiler",
         "vue",
         "vuetify-loader",
-        "vuetify"
+        "vuetify",
+        "yup"
       ]
     }
   }
