@@ -7,7 +7,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "axios": "^0.18.0",    
+    "axios": "^0.18.0",
     "moment": "^2.24.0",
     "spark-md5": "^3.0.0",
     "vue": "^2.5.22",
@@ -16,8 +16,11 @@
     "vuetify": "^1.5.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@vue/babel-preset-app": "^3.10.0",
     "@vue/cli-plugin-babel": "^3.4.0",
     "@vue/cli-service": "^3.4.0",
+    "autoprefixer": "^9.6.1",
     "fibers": "^3.1.1",
     "sass": "^1.16.0",
     "sass-loader": "^7.1.0",
