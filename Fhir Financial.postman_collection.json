@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "c1632064-97cb-4c08-8392-f3fc4ee92ad5",
-		"name": "Fhir Financial",
+		"_postman_id": "df2c5f3a-2956-4d91-93c1-8d125ff3c99e",
+		"name": "Fhir Financial copy",
 		"description": "Fhir financial blockchain system",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -269,7 +269,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"organization\": {\n        \"resourceType\": \"Organization\",\n        \"id\": \"resource:org.fhir.core.Organization#ABC_Healthcare\",\n        \"identifier\": [\n            {\n                \"use\": \"usual\",\n                \"system\": \"Blockchain:Payer\",\n                \"value\": \"resource:org.fhir.core.Organization#ABC_Healthcare\"\n            }\n        ],\n        \"active\": true,\n        \"type_\": [\n            {\n                \"coding\": [\n                    {\n                        \"system\": \"http://hl7.org/fhir/organization-type\",\n                        \"code\": \"ins\",\n                        \"display\": \"Insurance Company\"\n                    }\n                ]\n            }\n        ],\n        \"name\": \"ABC Healthcare Insurance\",\n        \"telecom\": [\n            {\n                \"system\": \"phone\",\n                \"value\": \"098-765 4321\"\n            }\n        ],\n        \"address\": [\n            {\n                \"line\": [\n                    \"Somewhere Newport Beach\"\n                ]\n            }\n        ],\n        \"contact\": [\n            {\n                \"purpose\": {\n                    \"coding\": [\n                        {\n                            \"system\": \"http://terminology.hl7.org/CodeSystem/contactentity-type\",\n                            \"code\": \"ADMIN\"\n                        }\n                    ]\n                },\n                \"name\": {\n                    \"text\": \"Insurance Management Guy\"\n                },\n                \"telecom\": [\n                    {\n                        \"system\": \"phone\",\n                        \"value\": \"1-234-567-8910\"\n                    },\n                    {\n                        \"system\": \"email\",\n                        \"value\": \"cool_guy@insura.com\"\n                    },\n                    {\n                        \"system\": \"fax\",\n                        \"value\": \"022-655 2322\"\n                    }\n                ],\n                \"address\": {\n                    \"line\": [\n                        \"Somewhere Newport Beach\"\n                    ]\n                }\n            }\n        ]\n    },\n    \"fingerprint\": \"{{patientFingerprint}}\"\n}"
+							"raw": "{\n    \"organization\": {\n        \"resourceType\": \"Organization\",\n        \"id\": \"resource:org.fhir.core.Organization#ABC_Healthcare\",\n        \"identifier\": [\n            {\n                \"use\": \"usual\",\n                \"system\": \"Blockchain:Payer\",\n                \"value\": \"resource:org.fhir.core.Organization#ABC_Healthcare\"\n            }\n        ],\n        \"active\": true,\n        \"type_\": [\n            {\n                \"coding\": [\n                    {\n                        \"system\": \"http://hl7.org/fhir/organization-type\",\n                        \"code\": \"ins\",\n                        \"display\": \"Insurance Company\"\n                    }\n                ]\n            }\n        ],\n        \"name\": \"ABC Healthcare Insurance\",\n        \"telecom\": [\n            {\n                \"system\": \"phone\",\n                \"value\": \"098-765 4321\"\n            }\n        ],\n        \"address\": [\n            {\n                \"line\": [\n                    \"Somewhere Newport Beach\"\n                ]\n            }\n        ],\n        \"contact\": [\n            {\n                \"purpose\": {\n                    \"coding\": [\n                        {\n                            \"system\": \"http://terminology.hl7.org/CodeSystem/contactentity-type\",\n                            \"code\": \"ADMIN\"\n                        }\n                    ]\n                },\n                \"name\": {\n                    \"text\": \"Insurance Management Guy\"\n                },\n                \"telecom\": [\n                    {\n                        \"system\": \"phone\",\n                        \"value\": \"1-234-567-8910\"\n                    },\n                    {\n                        \"system\": \"email\",\n                        \"value\": \"cool_guy@insura.com\"\n                    },\n                    {\n                        \"system\": \"fax\",\n                        \"value\": \"022-655 2322\"\n                    }\n                ],\n                \"address\": {\n                    \"line\": [\n                        \"Somewhere Newport Beach\"\n                    ]\n                }\n            }\n        ]\n    },\n    \"fingerprint\": \"{{payerFingerprint}}\"\n}"
 						},
 						"url": {
 							"raw": "{{server}}/organization",
@@ -473,13 +473,19 @@
 							"raw": "{\n\t\"payment\":\"resource:org.fhir.core.Invoice#Invoice-1\"\n}"
 						},
 						"url": {
-							"raw": "{{server}}/payment/make",
+							"raw": "{{server}}/payment/make?user=provider",
 							"host": [
 								"{{server}}"
 							],
 							"path": [
 								"payment",
 								"make"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "provider"
+								}
 							]
 						}
 					},
