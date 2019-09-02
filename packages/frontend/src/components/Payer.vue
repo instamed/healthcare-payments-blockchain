@@ -12,7 +12,7 @@
         </div>
         <div>
           <span class="card-sub-title">PAYER</span>
-          <h3 class="card-title">All American Health</h3>
+          <h3 class="card-title">ABC Healthcare</h3>
         </div>
       </v-card-title>    
       <template v-if="saving">
@@ -82,7 +82,7 @@
       </template>
       <template v-else-if="selected">
         <v-card-text class="text-xs-center user-card-text">
-          <h2 class="card-entry-title">All American Health Adjudicates Claim</h2>
+          <h2 class="card-entry-title">ABC Healthcare Adjudicates Claim</h2>
           <v-layout class="text-xs-left">
             <v-flex xs12
                     md6>
@@ -200,7 +200,7 @@
         <v-card-text class="text-xs-center user-card-text">
           <img src="@/assets/purple-check.png">
           <h2 class="success-title">Claim Approved</h2>
-          <p class="success-text">All American Health approved the claim and sent a statement to patient {{claim.first_name}} {{claim.last_name}}</p>
+          <p class="success-text">ABC Healthcare approved the claim and sent a statement to patient {{claim.first_name}} {{claim.last_name}}</p>
         </v-card-text>
       </template>
       <!-- <template v-else-if="!selected">

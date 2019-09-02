@@ -11,7 +11,7 @@
         </div>
         <div>
           <span class="card-sub-title">PROVIDER</span>
-          <h3 class="card-title">Southbend Flu Clinic</h3>
+          <h3 class="card-title">XYZ Provider</h3>
         </div>
       </v-card-title>
       <v-card-text class="text-xs-center user-card-text saving-card">
@@ -59,7 +59,7 @@
           </v-layout>          
         </template>
         <template v-else-if="selected">
-          <h2 class="card-entry-title">Southbend Flu Clinic Creates Claim</h2>
+          <h2 class="card-entry-title">XYZ Provider Creates Claim</h2>
           <v-layout>
             <v-flex xs12
                     md6>
@@ -107,7 +107,7 @@
         <template v-if="!selected">
           <img src="@/assets/green-check.png">
           <h2 class="success-title">Claim Created</h2>
-          <p class="success-text">Southbend Flu Clinic created a claim producing a block and the claim was sent to All American Health</p>
+          <p class="success-text">XYZ Provider created a claim producing a block and the claim was sent to ABC Healthcare</p>
         </template>
 
       </v-card-text>
