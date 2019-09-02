@@ -10,3 +10,4 @@ chaincode-financial/**
 ./config
 **/server/config
 **/server/.env
+.vscode/settings.json
