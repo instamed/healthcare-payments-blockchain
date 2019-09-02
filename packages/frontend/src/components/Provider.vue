@@ -255,7 +255,7 @@ export default {
       // Build the FHIR JSON for Patient
       let json = {
         resourceType: "Patient",
-        id: new Date(), // Set a date here and later we replace with a Has
+        id: new Date(), // Set a date here and later we replace with a Hash
         identifier: [
           {
             use: "usual",
@@ -312,14 +312,14 @@ export default {
             $class: "org.fhir.datatypes.Identifier",
             use: "usual",
             system: "Blockchain:Provider",
-            value: this.$provider_id
+            value: "Provider::Provida"
           }
         }
       };
       // Hash the object and set the ID to the hash. This creates a unique ID with low chance of collision, which is good enough for our purposes here.
      
       // USE THIS TO CREATE NEW PATIENTS. THIS IS COMMENTED OUT TO REUSE THE SAME DEFAULT PATIENT ID
-      json.id = "resource:org.fhir.core.Patient#".concat(this.first_name, "_", this.last_name, "_",
+      json.id = "resource:org.fhir.core.Patient#com.instamed.patient.".concat(this.first_name, "_", this.last_name, "_",
         Spark.hash(JSON.stringify(json)).toString().substring(0,8)
       );
      
@@ -339,13 +339,14 @@ export default {
       // If using default ID, we don't create a patient
       if(!this.$create_patients){
         json.id = this.$patient_id
-        that.saveClaim(true);        
+        that.saveClaim(true);
+            
       } else {        
         axios
-          .post(`${this.$hostname}/patient`, this.patientJson())
+          .post(`${this.$hostname}/patient?user=provider`, this.patientJson())
           .then(function(response) {
             console.log("saved patient", response);
-            that.saveClaim();
+            that.saveClaim();            
           })
           .catch(function(error) {
             // handle error
@@ -359,6 +360,7 @@ export default {
       
     },
     claimJson() {
+           
       // Creates Claim FHIR JSON
       this.claim_timestamp = new Date();
 
@@ -378,7 +380,7 @@ export default {
         );
       }
       let json = {
-        txDate: this.claim_timestamp.toISOString().slice(0, 10), // this is only getting the day and a full implementation would deal with time and timezone
+        txDate: this.claim_timestamp, //.toISOString().slice(0, 10), // this is only getting the day and a full implementation would deal with time and timezone
         patientId: this.patient_id,
         providerId: this.$provider_id,
         encounterUid: "resource:org.fhir.core.Encounter#",
@@ -400,7 +402,7 @@ export default {
       this.saving = true;
       let that = this;
       axios
-        .post(`${this.$hostname}/claim`, this.claimJson())
+        .post(`${this.$hostname}/claim?user=provider`, this.claimJson())
         .then(function(response) {
           that.timer = 100
           console.log("saved claim", response);

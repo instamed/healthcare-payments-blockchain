@@ -330,7 +330,7 @@ export default {
       this.startTimer();
       let that = this;
       axios
-        .post(`${this.$hostname}/payment/make`, this.paymentJson())
+        .post(`${this.$hostname}/payment/make?user=provider`, this.paymentJson())
         .then(function(response) {
           that.timer = 100
           console.log("paid claim", response);

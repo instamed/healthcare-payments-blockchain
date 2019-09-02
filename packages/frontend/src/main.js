@@ -4,16 +4,17 @@ import App from './App.vue'
 import router from './router'
 
 // Set the backend hostname address. We use this in components to make API calls
-Vue.prototype.$hostname = '/api' // No trailing slash. If its / it defaults to self URL
-
+//Vue.prototype.$hostname = '/api' // No trailing slash. If its / it defaults to self URL
+Vue.prototype.$hostname = 'http://165.22.170.49:8080/api'
 // URL to pull block information from
-Vue.prototype.$block_explorer = window.location.protocol + '//' + window.location.hostname + ':4001' // no trailing slash
+//Vue.prototype.$block_explorer = window.location.protocol + '//' + window.location.hostname + ':4001' // no trailing slash
+Vue.prototype.$block_explorer = 'http://165.22.170.49:4001'
 
 Vue.prototype.$channel_id = 'ch1'
 
-Vue.prototype.$provider_id = 'resource:org.fhir.core.Organization#Southbend_Flu_Clinic'
+Vue.prototype.$provider_id = 'resource:org.fhir.core.Organization#XYZ_Provider'
 
-Vue.prototype.$payer_id = 'resource:org.fhir.core.Organization#All_American_Health'
+Vue.prototype.$payer_id = 'resource:org.fhir.core.Organization#ABC_Healthcare'
 
 // Can be toggled to use reuse a single patient id, which makes the demo run faster, or it can create a patient each time
 Vue.prototype.$patient_id = 'resource:org.fhir.core.Patient#1'

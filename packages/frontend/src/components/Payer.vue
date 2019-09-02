@@ -338,7 +338,7 @@ export default {
       this.saving = true;
       let that = this;
       axios
-        .post(`${this.$hostname}/claim/adjudicate`, this.claimJson())
+        .post(`${this.$hostname}/claim/adjudicate?user=payer`, this.claimJson())
         .then(function(response) {
           console.log("approved claim", response);
           that.saving = false;
