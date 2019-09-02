@@ -443,7 +443,7 @@ export default {
         blockJson.indexOf(this.claim.claim_response_uid) > 0
       ) {
         block.type = "payer";
-         block.name = "Approve Claim for Southbend Flu Clinic for ".concat(
+         block.name = "Approve Claim for XYZ Provider for ".concat(
           this.claim.first_name,
           " ",
           this.claim.last_name, ' on ', moment(this.claim.timestamp).format("MM/DD/YYYY") 
@@ -454,14 +454,14 @@ export default {
         blockJson.indexOf(this.claim.invoice_uid) > 0
       ) {
         block.type = "patient";
-        block.name = `Payment from ${this.claim.first_name} ${this.claim.last_name} to Southbend Flu Clinic for visit on ${moment(this.claim.timestamp).format("MM/DD/YYYY")}`
+        block.name = `Payment from ${this.claim.first_name} ${this.claim.last_name} to XYZ Provider for visit on ${moment(this.claim.timestamp).format("MM/DD/YYYY")}`
         block.fhir = JSON.stringify(this.fhir_payment, null, 2);
       } else if (
         this.claim.encounter_uid &&
         blockJson.indexOf(this.claim.encounter_uid) > 0
       ) {
         block.type = "provider";
-        block.name = "Create Claim for Southbend Flu Clinic for ".concat(
+        block.name = "Create Claim for XYZ Provider for ".concat(
           this.claim.first_name,
           " ",
           this.claim.last_name, ' on ', moment(this.claim.timestamp).format("MM/DD/YYYY") 
