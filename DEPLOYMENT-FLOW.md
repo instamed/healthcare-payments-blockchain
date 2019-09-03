@@ -6,10 +6,95 @@ This project is optimized to be deployed to a [Forma](https://worldsibu.tech/for
 
 ### 1.1 Prerequisites
 
-* You will need to first login/signup to Forma [here](https://forma.worldsibu.com).
+* You will need to first login/signup to Forma [here](https://forma.covalentx.com).
 * Create a blockchain network.
 * Enter into the details of your network and the default Ledger created for you (channel).
+
+#### 1.1.1 Prepare the collection
+
+The file `./packages/administration/prod-env/getCollections.js` will help you set up the private collections json config. Change the line 1 `input` for the names of your organizations to create every possible combination of private data collections.
+
+Run it like this:
+
+```bash
+node ./packages/administration/prod-env/getCollections.js
+```
+
+This will output a JSON similar to this one:
+
+```json
+[
+  {
+    "name": "allamericanhealthvkj",
+    "policy": "OR( 'allamericanhealthvkj.member' )",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 3,
+    "blockToLive": 0,
+    "memberOnlyRead": true
+  },
+  {
+    "name": "allamericanhealthvkj-instamedycb",
+    "policy": "OR( 'allamericanhealthvkj.member','instamedycb.member' )",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 3,
+    "blockToLive": 0,
+    "memberOnlyRead": true
+  },
+  {
+    "name": "allamericanhealthvkj-instamedycb-southbendflucliniclff",
+    "policy": "OR( 'allamericanhealthvkj.member','instamedycb.member','southbendflucliniclff.member' )",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 3,
+    "blockToLive": 0,
+    "memberOnlyRead": true
+  },
+  {
+    "name": "allamericanhealthvkj-southbendflucliniclff",
+    "policy": "OR( 'allamericanhealthvkj.member','southbendflucliniclff.member' )",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 3,
+    "blockToLive": 0,
+    "memberOnlyRead": true
+  },
+  {
+    "name": "instamedycb",
+    "policy": "OR( 'instamedycb.member' )",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 3,
+    "blockToLive": 0,
+    "memberOnlyRead": true
+  },
+  {
+    "name": "instamedycb-southbendflucliniclff",
+    "policy": "OR( 'instamedycb.member','southbendflucliniclff.member' )",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 3,
+    "blockToLive": 0,
+    "memberOnlyRead": true
+  },
+  {
+    "name": "southbendflucliniclff",
+    "policy": "OR( 'southbendflucliniclff.member' )",
+    "requiredPeerCount": 0,
+    "maxPeerCount": 3,
+    "blockToLive": 0,
+    "memberOnlyRead": true
+  }
+]
+```
+
+Private collections are by default mapped like this:
+
+|Organization|Forma Org|
+|---|---|
+|ABC_HEALTHCARE|allamericanhealthvkj-financialfhirtqj|
+|INSTAMED (Patient)|instamedycb-financialfhirtqj|
+|XYZ_PROVIDER|southbendflucliniclff-financialfhirtqj|
+
+#### 1.1.2 Install the smart contract
+
 * Deploy the chaincode through the user interface. Be sure to take notes of the name you give the chaincode, we recommend you set the name to `fhirfinancial`.
+  * In the private data collection section paste the previous JSON from section `1.1.1`.
 
 ### 1.2 Run the server and configure the Network
 
@@ -68,15 +153,23 @@ Find the org name in your Network's Nodes environment.
 ```json
 [
     {
+        "uniqueId": "payer",
         "user": "<username>",
         "org": "<organization>",
-        "networkProfile": "../../../config/<username>.networkprofile.yaml",
-        "keyStore": "../../../config/"
+        "couch":{
+            "host": "<server>",
+            "host": "<protocol>",
+            "host": "<port>"
+        }
     }
 ]
 ```
 
 The default example considers the default folder structure. Change it if needed.
+
+The server will interpret requests like:
+
+Endpoint (`user` param)->`./src/config/identities.prod.json`->chaincode
 
 #### 1.2.4 Enroll the user to get the private key
 
@@ -93,7 +186,15 @@ Before running the following command, be sure to change the CA address to point 
 npx lerna run start --stream --scope administration  -- <username> <password> <organisation>
 ```
 
-You can use this library to enroll any identity you need to.
+You can use this library to enroll any identity you need.
+
+##### 1.2.5 Get the fingerprints
+
+Since 0.2.0 security checks are performed through certificate signatures and to map identities in the private collections, so fingerprints need to be assigned to organizations that perform actions in the network.
+
+```bash
+npm run user:fingerprint -- ./packages/server/config/instamed
+```
 
 #### 1.2.5 Make the first transaction to start the containers
 
@@ -103,7 +204,12 @@ Now you can simply start the server and make a first call through [Postman](http
 npx lerna run start:dev --scope server --stream
 ```
 
-Import the file `Fhir Financial.postman_collection.json` in Postman and execute the request "1. Create Provider Organization".
+1. Import the file `Fhir Financial.postman_collection.json` in Postman and execute the request "1. Create Provider Organization".
+2. Update the fingerprings by getting them like this:
+
+```bash
+
+```
 
 ### 1.3 Install the views
 
