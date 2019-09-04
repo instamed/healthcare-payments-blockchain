@@ -1,9 +1,38 @@
 [
     {
-        "uniqueId": "instamed",
+        "uniqueId": "payer",
+        "user": "payer",
+        "org": "allamericanhealthvkj-fhirfinancialzbe",
+        "couch": {
+            "host": "localhost",
+            "protocol": "http",
+            "port": "5084"
+        },
+        "networkProfile": "../../../config/networkprofile.yaml",
+        "keyStore": "../../../config/" 
+    },
+    {
+        "uniqueId": "patient",
         "user": "instamed",
-        "org": "instamedycb-financialfhirtqj",
-        "networkProfile": "../../../config/instamed.networkprofile.yaml",
+        "org": "instamedycb-fhirfinancialfqa",
+        "couch": {
+            "host": "localhost",
+            "protocol": "http",
+            "port": "5184"
+        },
+        "networkProfile": "../../../config/networkprofile.yaml",
+        "keyStore": "../../../config/" 
+    },
+    { 
+        "uniqueId": "provider",
+        "user": "provider",
+        "org": "southbendflucliniclff-fhirfinancialxwa",
+        "couch": {
+            "host": "localhost",
+            "protocol": "http",
+            "port": "5284"
+        },
+        "networkProfile": "../../../config/networkprofile.yaml",
         "keyStore": "../../../config/" 
     }
 ]
