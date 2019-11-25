@@ -5,10 +5,10 @@ import router from './router'
 
 // Set the backend hostname address. We use this in components to make API calls
 //Vue.prototype.$hostname = '/api' // No trailing slash. If its / it defaults to self URL
-Vue.prototype.$hostname = 'http://165.22.170.49:8080/api'
+Vue.prototype.$hostname = process.env.API_URL || 'http://localhost:8080/api'
 // URL to pull block information from
 //Vue.prototype.$block_explorer = window.location.protocol + '//' + window.location.hostname + ':4001' // no trailing slash
-Vue.prototype.$block_explorer = 'http://165.22.170.49:4001'
+Vue.prototype.$block_explorer = 'http://localhost:4001'
 
 Vue.prototype.$channel_id = 'ch1'
 
