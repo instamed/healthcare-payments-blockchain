@@ -8,7 +8,7 @@ import router from './router'
 Vue.prototype.$hostname = process.env.API_URL || 'http://localhost:8080/api'
 // URL to pull block information from
 //Vue.prototype.$block_explorer = window.location.protocol + '//' + window.location.hostname + ':4001' // no trailing slash
-Vue.prototype.$block_explorer = 'http://localhost:4001'
+Vue.prototype.$block_explorer = 'https://blockchain-demo.instamed.com:8443'
 
 Vue.prototype.$channel_id = 'ch1'
 

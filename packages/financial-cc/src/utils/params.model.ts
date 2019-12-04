@@ -143,6 +143,10 @@ export class CreateClaim extends ConvectorModel<CreateClaim> {
     @Validate(Account.schema())
     account?: Account;
 
+    // Dynamic extra fee
+    @Validate(yup.number())
+    copay?: number;
+
     /**
      * Special date for the tx outside the chain
      */

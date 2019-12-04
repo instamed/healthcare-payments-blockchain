@@ -13,7 +13,7 @@ import {
     InvoiceLineItemPriceComponent, Patient, Organization,
     Encounter, Period, Quantity, Procedure, ProcedurePerformer,
     ChargeItem, ClaimPayee, ClaimCareTeam, ClaimItem, ClaimProcedure,
-    SimpleQuantity, EncounterStatusHistory, Account, Invoice, Identifier, InvoiceLineItem
+    SimpleQuantity, EncounterStatusHistory, Account, Invoice, Identifier, InvoiceLineItem, Extension
 } from '../models/financial.model';
 import {
     InvoiceData, AccountData,
@@ -25,17 +25,19 @@ import {
     buildMoney
 } from '../utils/utils';
 import {
-    IdentifierTypes, ResourceTypes, AccountStatus, InvoiceStatus,
+    IdentifierTypes, AccountStatus, InvoiceStatus,
     EncounterStatus, NarrativeStatus, IdentifierUses, ClaimResponseStatus,
     ClaimStatus, ClaimUses, FQDNObjects, ChargeItemStatus, ProcedureStatus,
     InvoiceLineItemPriceComponentTypes, CodingTypes, ClaimResponseOutcomes,
-    ClaimResponseUses
+    ClaimResponseUses,
+    ResourceTypes
 } from '../utils/enums';
 import { pickRightCollections } from '../utils/privateCollections';
 import { PublicModelRouter } from '../models/public.model';
 import { ChaincodeTx } from '@worldsibu/convector-core-chaincode';
 import { PrivateCollectionsRoutes } from '../models/privateCollectionsRoutes.model';
 import { TransientInvoiceLineItem } from '../models/transient.model';
+import { FeeExtensionsConfig } from '../models/feeExtensions.model';
 
 class parse {
     constructor(data) {
@@ -263,6 +265,8 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
         claimResponse.total.push(totalCost);
         claimResponse.total.push(totalBenefit);
 
+        claimResponse.extension = await FeeExtensionsConfig.getFeeExtension(ResourceTypes.CLAIMRESPONSE)
+
         // Save to the blockchain
         await this.saveClaimResponse(claimResponse, collections.claimResponse);
 
@@ -378,6 +382,7 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
             `${FQDNObjects.CLAIM}#${data.claimUid}`;
 
         const claim = new Claim(id);
+        
         const identifier = buildIdentifier(id, IdentifierUses.USUAL, IdentifierTypes.CLAIM);
         claim.identifier = [identifier];
         claim.resourceType = ResourceTypes.CLAIM;
@@ -460,6 +465,19 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
             this.saveChargeItem(chargeItem, collections.chargeItem);
             counter++;
         }
+
+        claim.extension = await FeeExtensionsConfig.getFeeExtension(ResourceTypes.CLAIM)
+
+        if(data.copay) {
+            claim.extension.push(
+                new Extension({
+                    url: 'https://fhir-ehr.cerner.com/r4/StructureDefinition/copay-balance',
+                    valueMoney: buildMoney(data.copay)
+                })
+            )
+        }
+
+
         claim.total = buildMoney(0);
 
         for (let i = 0; i < claim.item.length; i++) {
@@ -565,6 +583,8 @@ export class ClaimController extends ConvectorController<ChaincodeTx> {
 
         invoice.totalNet = buildMoney(data.invoiceTotalNet);
         invoice.totalGross = buildMoney(data.invoiceTotalGross);
+
+        invoice.extension = await FeeExtensionsConfig.getFeeExtension(ResourceTypes.INVOICE)
 
         // Add Account to ledger
         await this.saveInvoice(invoice, collections.invoice);

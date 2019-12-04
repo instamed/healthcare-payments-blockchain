@@ -10,7 +10,8 @@ import { Patient, Organization } from '../models/financial.model';
 import {
     ConsumerParticipant,
     ProviderParticipant,
-    PayerParticipant
+    PayerParticipant,
+    ConsortiumAdminParticipant
 } from '../models/participant.model';
 import * as yup from 'yup';
 
@@ -38,6 +39,7 @@ export class ParticipantController extends ConvectorController {
         }];
         await participant.save();
     }
+    
     @Invokable()
     public async createProvider(
         @Param(ProviderParticipant)
@@ -63,6 +65,21 @@ export class ParticipantController extends ConvectorController {
         if (!provider || !provider.id) {
             throw new Error(`Associated Payer Organization with ID ${participant.payerUid} does not exist`);
         }
+
+        await participant.save();
+    }
+
+    @Invokable()
+    public async createConsortiumAdmin(
+        @Param(ConsortiumAdminParticipant)
+        participant: ConsortiumAdminParticipant) {
+        participant.id = participant.id.includes(FQDNObjects.CONSORTIUMADMINPARTICIPANT.toString()) ? participant.id :
+            `${FQDNObjects.CONSORTIUMADMINPARTICIPANT}${participant.id}`;
+
+        let provider = await Organization.getOne(participant.consortiumAdminUid);
+        
+        if (!provider || !provider.id) 
+            throw new Error(`Associated ConsortiumAdmin Organization with ID ${participant.consortiumAdminUid} does not exist`);
 
         await participant.save();
     }

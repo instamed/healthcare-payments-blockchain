@@ -6,3 +6,4 @@ export * from './payment.controller';
 export * from './invoice.controller';
 export * from './account.controller';
 export * from './procedure.controller';
+export * from './feeExtensions.controller';

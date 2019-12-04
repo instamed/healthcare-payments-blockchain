@@ -48,5 +48,6 @@ export async function couchQueryAll(view: string, type: any, queryOptions?: {},
 
 export {
   Patient, CreateClaim, AdjudicateClaim,
-  Organization
+  Organization,
+  FeeExtensionsConfig
 } from 'financial-cc';

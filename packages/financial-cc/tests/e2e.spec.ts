@@ -2,7 +2,7 @@
 import { join } from 'path';
 import { expect } from 'chai';
 import { MockControllerAdapter } from '@worldsibu/convector-adapter-mock';
-import { OrganizationController, InvoiceLineItem } from '../src/';
+import { OrganizationController, InvoiceLineItem, FeeExtensionsController, ConsortiumAdminParticipant } from '../src/';
 import 'mocha';
 import { ClientFactory, ConvectorControllerClient } from '@worldsibu/convector-core';
 import {
@@ -14,6 +14,7 @@ import {
 import { CreateClaim, AdjudicateClaim } from '../src/utils/params.model';
 import { InvoiceStatus } from '../src/utils/enums';
 import { TransientInvoiceLineItem } from '../src/models/transient.model';
+import { FeeExtensionsConfig } from '../src/models/feeExtensions.model';
 
 const log = console.log;
 
@@ -25,7 +26,8 @@ describe.only('Fhir Financial', () => {
         patient: ConvectorControllerClient<PatientController>,
         claim: ConvectorControllerClient<ClaimController>,
         payment: ConvectorControllerClient<PaymentController>,
-        governance: GovernanceController
+        governance: GovernanceController,
+        feeExtensions: FeeExtensionsController
     };
     let provider = new Organization;
     let payer = new Organization;
@@ -36,6 +38,7 @@ describe.only('Fhir Financial', () => {
     const claimId = 'resource:org.fhir.core.Claim#Claim-1';
     const accountId = 'resource:org.fhir.core.Account#Account-1';
     const invoiceId = 'resource:org.fhir.core.Invoice#Invoice-1';
+    const consortiumAdminId = 'resource:org.fhir.core.Organization#ConsortiumAdmin'
 
     const mockIdentity = 'B6:0B:37:7C:DF:D2:7A:08:0B:98:BF:52:A4:2C:DC:4E:CC:70:91:E1';
 
@@ -65,7 +68,13 @@ describe.only('Fhir Financial', () => {
             version: '*',
             controller: 'GovernanceController',
             name: join(__dirname, '..')
-        }]);
+        },
+        {
+            version: '*',
+            controller: 'FeeExtensionsController',
+            name: join(__dirname, '..')
+        }
+    ]);
 
         ctrl = {
             org: ClientFactory(OrganizationController, adapter),
@@ -73,7 +82,8 @@ describe.only('Fhir Financial', () => {
             patient: ClientFactory(PatientController, adapter),
             payment: ClientFactory(PaymentController, adapter),
             claim: ClientFactory(ClaimController, adapter),
-            governance: ClientFactory(GovernanceController, adapter)
+            governance: ClientFactory(GovernanceController, adapter),
+            feeExtensions: ClientFactory(FeeExtensionsController, adapter)
         };
     });
 
@@ -247,6 +257,86 @@ describe.only('Fhir Financial', () => {
         expect(createdPayer.id).to.equal(payerId);
     });
 
+    it('should create a ConsortiumAdmin organization', async () => {
+        provider = new Organization({
+            'resourceType': 'Organization',
+            'id': consortiumAdminId,
+            'identifier': [
+                {
+                    'use': 'usual',
+                    'system': 'Blockchain:ConsortiumAdmin',
+                    'value': consortiumAdminId
+                }
+            ],
+            'active': true,
+            'type_': [
+                {
+                    'coding': [
+                        {
+                            'system': 'http://hl7.org/fhir/organization-type',
+                            'code': 'prov',
+                            'display': 'Consortium Admin'
+                        }
+                    ]
+                }
+            ],
+            'name': 'Consortium Admin',
+            'telecom': [
+                {
+                    'system': 'phone',
+                    'value': '098-765 4321'
+                }
+            ],
+            'address': [
+                {
+                    'line': [
+                        'Somewhere Newport Beach'
+                    ]
+                }
+            ],
+            'contact': [
+                {
+                    'purpose': {
+                        'coding': [
+                            {
+                                'system': 'http://terminology.hl7.org/CodeSystem/contactentity-type',
+                                'code': 'ADMIN'
+                            }
+                        ]
+                    },
+                    'name': {
+                        'text': 'Consortium Admin Guy'
+                    },
+                    'telecom': [
+                        {
+                            'system': 'phone',
+                            'value': '022-655 2321'
+                        },
+                        {
+                            'system': 'email',
+                            'value': 'dr@XYZ_Provider.com'
+                        },
+                        {
+                            'system': 'fax',
+                            'value': '022-655 2322'
+                        }
+                    ],
+                    'address': {
+                        'line': [
+                            'Somewhere Newport Beach'
+                        ]
+                    }
+                }
+            ]
+        });
+        await ctrl.org.create(provider, mockIdentity);
+        let createdProvider = await adapter.getById<Organization>(consortiumAdminId);
+
+        console.log('CREATE ORGANIZATION', createdProvider);
+
+        expect(createdProvider.id).to.equal(consortiumAdminId);
+    });
+
     it('should create a patient', async () => {
         const patient = new Patient({
             'resourceType': 'Patient',
@@ -359,8 +449,61 @@ describe.only('Fhir Financial', () => {
         await ctrl.participant.createPayer(participant);
 
         let createdParticipant = await adapter.getById<PayerParticipant>(participantId);
+
         expect(createdParticipant).to.exist;
         expect(createdParticipant.id).to.equal(participantId);
+    });
+
+    it('should create a consortium admin participant', async () => {
+        const participantId = 'consortiumAdmin::ConsortiumAdmin';
+        const participant = new ConsortiumAdminParticipant({
+            id: participantId,
+            consortiumAdminUid: consortiumAdminId
+        });
+
+        await ctrl.participant.createConsortiumAdmin(participant);
+
+
+        let createdParticipant = await adapter.getById<ConsortiumAdminParticipant>(participantId);
+
+        expect(createdParticipant).to.exist;
+        expect(createdParticipant.id).to.equal(participantId);
+    });
+
+    it('should configure fee extensions', async () => {
+        const config = new FeeExtensionsConfig({
+            providerSubmissionFee: 20,
+            payerReceiveClaimFee: 30,
+            providerMemberConsortiumFee: 20,
+            payerMemberConsortiumFee: 30,
+            payerClaimResponseTransmissionFee: 20,
+            providerClaimResponseTransmissionFee: 30,
+            providerStatementTransmissionFee: 20,
+            providerMemberStatementTransmissionFee: 30,
+            financialTransactionAllocationAmount: 20,
+            providerPostingFee: 30,
+            providerMemberTransmissionFee: 55
+        })
+
+        await ctrl.feeExtensions.initConfig(consortiumAdminId, config);
+
+        let savedConfig = await adapter.getById<FeeExtensionsConfig>(FeeExtensionsConfig.ID);
+
+        expect(savedConfig).to.exist;
+    });
+
+    it('should update fee extensions config by field', async () => {
+        const providerMemberTransmissionFee = 888;
+        const payerReceiveClaimFee = 333;
+
+        await ctrl.feeExtensions.updateConfig(consortiumAdminId, 'providerMemberTransmissionFee', providerMemberTransmissionFee);
+        await ctrl.feeExtensions.updateConfig(consortiumAdminId, 'payerReceiveClaimFee', payerReceiveClaimFee);
+
+        const config = await adapter.getById<FeeExtensionsConfig>(FeeExtensionsConfig.ID);
+
+        expect(config).to.exist;
+        expect(config.providerMemberTransmissionFee).equal(providerMemberTransmissionFee);
+        expect(config.payerReceiveClaimFee).equal(payerReceiveClaimFee);
     });
 
     it('create a claim (encounter, chargeItems, procedures)', async () => {
@@ -386,13 +529,18 @@ describe.only('Fhir Financial', () => {
                     'procedureUid': 'resource:org.fhir.core.Procedure#Procedure-2',
                     'chargeItemUid': 'resource:org.fhir.core.ChargeItem#ChargeItem-2'
                 }
-            ]
+            ],
+            'copay': 0.45
         });
+        
         await ctrl.claim.$config({
             transient: { data: claim.toJSON() }
         }).create();
 
         const createdClaim = await adapter.getById<Claim>(claimId);
+        console.log('CREATED CLAIM');
+        console.log(createdClaim);
+
         expect(createdClaim.id).to.equal(claimId);
         log(`Claim with id '${createdClaim.id}' created successfully`);
 
@@ -457,6 +605,7 @@ describe.only('Fhir Financial', () => {
         let claim = await ctrl.claim.$query().getOne(toAdjudicateClaim.claimUid);
 
         console.log('GODT CLAIM');
+        
         console.log(claim);
         await ctrl.claim.$config({
             transient: {

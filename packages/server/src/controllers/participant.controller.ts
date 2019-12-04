@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import {
-    createConsumer, createProvider, createPayer,
+    createConsumer, createProvider, createPayer, createConsortiumAdmin,
     getAllConsumer, getAllProvider, getAllPayer
 } from '../services/participant.service';
 const router: Router = Router();
@@ -59,6 +59,17 @@ router.post('/payer', async (req: Request, res: Response) => {
     try {
         const participant = req.body;
         await createPayer(participant);
+        res.status(201).send();
+    } catch (ex) {
+        console.log(ex);
+        res.status(500).send(ex);
+    }
+});
+
+router.post('/consortiumAdmin', async (req: Request, res: Response) => {
+    try {
+        const participant = req.body;
+        await createConsortiumAdmin(participant);
         res.status(201).send();
     } catch (ex) {
         console.log(ex);

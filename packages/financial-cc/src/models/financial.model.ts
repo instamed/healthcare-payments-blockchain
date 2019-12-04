@@ -141,6 +141,9 @@ export class Extension extends Element<Extension> {
   
   @Validate(yup.lazy(() => Address.schema()))
   public valueAddress?: FlatConvectorModel<Address>;
+
+  @Validate(yup.lazy(() => Money.schema()))
+  public valueMoney?: FlatConvectorModel<Money>;
   
    //o ContactPoint valueContactPoint optional
    //o Schedule valueSchedule optional
@@ -191,8 +194,8 @@ export abstract class DomainResource<T extends DomainResource<any>> extends Reso
   @Validate(yup.lazy(() => Resource.schema()))
   public contained?: FlatConvectorModel<Resource<any>>;
   
-  @Validate(yup.lazy(() => Extension.schema()))
-  public extension?: Extension;
+  @Validate(yup.lazy(() => yup.array(Extension.schema())))
+  public extension?: Array<FlatConvectorModel<Extension>>;
   
   @Validate(yup.lazy(() => Extension.schema()))
   public modifierExtension?: Extension;

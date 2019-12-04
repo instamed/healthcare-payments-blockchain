@@ -40,7 +40,7 @@ npm run server:start
 
 # You can now run transactions (there's a Postman file included to help you talk to the endpoints "./Fhir Financial.postman_collection.json")
 # Read first the section "Identities on the project" of this README
-
+# You should send transactions all transactions from postman_collection.json in the order defined before install the remaining views
 # Views are associated to databases and Fabric doesn't generate them until at least 1 value was saved there
 npm run views:install
 ```
@@ -154,7 +154,7 @@ npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-<org>/<user>
 
 You will need two different identities. One can be shared between the Payer and InstaMed (working on behalf of the patients) and the other one for a provider. The reason for this is that some data is stored only accessible to some identities (look for Private Collections later in this document), therefore a switch in the identity is made.
 
-Go to the Postman collection settings and set the value to the variable `patientFingerprint` to use the same for every transaction after you run `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org1/user1` and go and set the value of `providerFingerprint` to `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org3/user1`.
+Go to the Postman collection settings and set the value to the variable `patientFingerprint` to use the same for every transaction after you run `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org1/user1` then go and set the value of `consortiumAdminFingerprint` to `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org2/user1` and then value of `providerFingerprint` to `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org3/user1`..
 
 #### Private Collections
 

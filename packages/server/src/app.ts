@@ -11,7 +11,7 @@ import {
 } from './utils';
 import {
   OrganizationCtrl, PaymentCtrl, ClaimCtrl, PatientCtrl, ProcedureCtrl,
-  ParticipantCtrl, InvoiceCtrl, AccountCtrl
+  ParticipantCtrl, InvoiceCtrl, AccountCtrl, FeeExtensionsCtrl
 } from './controllers';
 import { ChargeItemCtrl } from './controllers/chargeItem.controller';
 import { ClaimResponseCtrl } from './controllers/claimResponse.controller';
@@ -52,6 +52,7 @@ app.use('/api/procedure', ProcedureCtrl);
 app.use('/api/chargeItem', ChargeItemCtrl);
 app.use('/api/claimResponse', ClaimResponseCtrl);
 app.use('/api/encounter', EncounterCtrl);
+app.use('/api/feeExtensions', FeeExtensionsCtrl)
 app.use('/*', DefaultCtrl); // catch all for frontend routes
 
 const serverIdentity = identity();

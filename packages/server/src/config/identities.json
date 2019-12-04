@@ -28,5 +28,15 @@
             "protocol": "http",
             "port": "5284"
         }
+    },
+    {
+        "uniqueId": "consortiumAdmin",
+        "user": "user1",
+        "org": "org2",
+        "couch": {
+            "host": "localhost",
+            "protocol": "http",
+            "port": "5284"
+        }
     }
 ]

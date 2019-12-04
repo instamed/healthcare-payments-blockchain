@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "df2c5f3a-2956-4d91-93c1-8d125ff3c99e",
+		"_postman_id": "da1b76b9-d231-42a8-bba9-1028416e7fef",
 		"name": "Fhir Financial copy",
 		"description": "Fhir financial blockchain system",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -11,6 +11,23 @@
 			"item": [
 				{
 					"name": "Organizations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server}}/organization",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"organization"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patient test",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -222,7 +239,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Transactions",
@@ -284,7 +302,7 @@
 					"response": []
 				},
 				{
-					"name": "3. Create Consumer Participant",
+					"name": "3. Create ConsortiumAdmin Organization",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -297,23 +315,22 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"participant\": {\n        \"id\": \"com.instamed.patient.Consumer::Bob\"\n    },\n    \"fingerprint\": \"{{patientFingerprint}}\"\n}"
+							"raw": "{\n    \"organization\": {\n        \"resourceType\": \"Organization\",\n        \"id\": \"resource:org.fhir.core.Organization#ABC_Healthcare\",\n        \"identifier\": [\n            {\n                \"use\": \"usual\",\n                \"system\": \"Blockchain:Payer\",\n                \"value\": \"resource:org.fhir.core.Organization#ABC_Healthcare\"\n            }\n        ],\n        \"active\": true,\n        \"type_\": [\n            {\n                \"coding\": [\n                    {\n                        \"system\": \"http://hl7.org/fhir/organization-type\",\n                        \"code\": \"ins\",\n                        \"display\": \"Insurance Company\"\n                    }\n                ]\n            }\n        ],\n        \"name\": \"ABC Healthcare Insurance\",\n        \"telecom\": [\n            {\n                \"system\": \"phone\",\n                \"value\": \"098-765 4321\"\n            }\n        ],\n        \"address\": [\n            {\n                \"line\": [\n                    \"Somewhere Newport Beach\"\n                ]\n            }\n        ],\n        \"contact\": [\n            {\n                \"purpose\": {\n                    \"coding\": [\n                        {\n                            \"system\": \"http://terminology.hl7.org/CodeSystem/contactentity-type\",\n                            \"code\": \"ADMIN\"\n                        }\n                    ]\n                },\n                \"name\": {\n                    \"text\": \"Insurance Management Guy\"\n                },\n                \"telecom\": [\n                    {\n                        \"system\": \"phone\",\n                        \"value\": \"1-234-567-8910\"\n                    },\n                    {\n                        \"system\": \"email\",\n                        \"value\": \"cool_guy@insura.com\"\n                    },\n                    {\n                        \"system\": \"fax\",\n                        \"value\": \"022-655 2322\"\n                    }\n                ],\n                \"address\": {\n                    \"line\": [\n                        \"Somewhere Newport Beach\"\n                    ]\n                }\n            }\n        ]\n    },\n    \"fingerprint\": \"{{payerFingerprint}}\"\n}"
 						},
 						"url": {
-							"raw": "{{server}}/participant/consumer",
+							"raw": "{{server}}/organization",
 							"host": [
 								"{{server}}"
 							],
 							"path": [
-								"participant",
-								"consumer"
+								"organization"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "4. Create Payer Participant",
+					"name": "4. Create ConsortiumAdmin Participant",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -342,7 +359,65 @@
 					"response": []
 				},
 				{
-					"name": "5. Create Provider Participant",
+					"name": "5. Create Consumer Participant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"participant\": {\n        \"id\": \"com.instamed.patient.Consumer::Bob\"\n    },\n    \"fingerprint\": \"{{patientFingerprint}}\"\n}"
+						},
+						"url": {
+							"raw": "{{server}}/participant/consumer",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"participant",
+								"consumer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6. Create Payer Participant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"Payer::Insura\",\n    \"payerUid\": \"resource:org.fhir.core.Organization#ABC_Healthcare\"\n}"
+						},
+						"url": {
+							"raw": "{{server}}/participant/payer",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"participant",
+								"payer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "7. Create Provider Participant",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -371,7 +446,7 @@
 					"response": []
 				},
 				{
-					"name": "6. Create Patient",
+					"name": "8. Create Patient",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -400,7 +475,40 @@
 					"response": []
 				},
 				{
-					"name": "7. Create Claim",
+					"name": "9. Create Fee Extensions config",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}/feeExtensions",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"feeExtensions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "10. Create Claim",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -428,7 +536,7 @@
 					"response": []
 				},
 				{
-					"name": "8. Adjudicate Claim",
+					"name": "11. Adjudicate Claim",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -457,7 +565,7 @@
 					"response": []
 				},
 				{
-					"name": "9. Make Payment",
+					"name": "12. Make Payment",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -490,8 +598,48 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Update Fee Extensions config",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"orgId\": \"resource:org.fhir.core.Organization#ConsortiumAdmin\",\n\t\"fee\": \"payerReceiveClaimFee\",\n\t\"value\": 909090\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{server}}/feeExtensions?user=consortiumAdmin",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"feeExtensions"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "consortiumAdmin"
+								}
+							]
+						}
+					},
+					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		}
 	],
 	"event": [
@@ -535,5 +683,6 @@
 			"value": "E5:D7:AE:95:F1:EE:7E:18:23:1E:13:2B:A0:D4:7A:60:CB:25:7F:97",
 			"type": "string"
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }

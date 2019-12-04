@@ -6,13 +6,15 @@ import {
   Param
 } from '@worldsibu/convector-core';
 import {
-  Invoice, Patient, Organization
+  Invoice, Organization, Basic, CodeableConcept
 } from '../models/financial.model';
-import { InvoiceStatus } from '../utils/enums';
-import { ConsumerParticipant } from '../models/participant.model';
+import { InvoiceStatus, CodingTypes, ResourceTypes } from '../utils/enums';
 import { PublicModelRouter } from '../models/public.model';
 import { ChaincodeTx } from '@worldsibu/convector-core-chaincode';
 import { PrivateCollectionsRoutes } from '..';
+import { FeeExtensionsConfig } from '../models/feeExtensions.model';
+import { buildCoding } from '../utils/utils';
+import * as uuid from 'uuid';
 
 class parse {
   constructor(data) {
@@ -48,6 +50,17 @@ export class PaymentController extends ConvectorController<ChaincodeTx> {
     invoice.status = InvoiceStatus.BALANCED;
 
     await this.saveInvoice(invoice);
+
+    const newBasic: Basic = new Basic({
+      id: `${new Basic().type}#${invoice.id}`,
+      code: new CodeableConcept(),
+      resourceType: ResourceTypes.BASIC,
+      extension: await FeeExtensionsConfig.getFeeExtension(ResourceTypes.BASIC)
+    });
+
+    newBasic.code.coding = [ buildCoding(CodingTypes.FINANCIALTX) ];
+
+    await newBasic.save();
   }
 
   async getInvoice(id: string) {

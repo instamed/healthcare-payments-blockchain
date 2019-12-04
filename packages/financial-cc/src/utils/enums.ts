@@ -4,7 +4,8 @@ export enum FQDNObjects {
     CONSUMERPARTICIPANT = 'Consumer::',
     PROVIDERPARTICIPANT = 'Provider::',
     PAYERPARTICIPANT = 'Payer::',
-    PATIENT = 'resource:org.fhir.core.Patient'
+    PATIENT = 'resource:org.fhir.core.Patient',
+    CONSORTIUMADMINPARTICIPANT = 'consortiumAdmin::'
 }
 export enum InvoiceStatus {
     BALANCED = 'balanced',
@@ -35,7 +36,8 @@ export enum ResourceTypes {
     PATIENT = 'Patient',
     CLAIMRESPONSE = 'ClaimResponse',
     CLAIM = 'Claim',
-    ENCOUNTER = 'Encounter'
+    ENCOUNTER = 'Encounter',
+    BASIC = 'Basic'
 }
 export enum EncounterStatus {
     INPROGRESS = 'in-progress',
@@ -85,5 +87,6 @@ export enum CodingTypes {
     NORMAL = 'normal',
     PROVIDER = 'provider',
     PBILLACCT = 'PBILLACCT',
-    PATIENT = 'PATIENT'
+    PATIENT = 'PATIENT',
+    FINANCIALTX = 'Financial Transaction'
 }

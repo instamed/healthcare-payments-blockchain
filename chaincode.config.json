@@ -37,6 +37,11 @@
       "name": "financial-cc",
       "version": "file:./packages/financial-cc",
       "controller": "GovernanceController"
+    },
+    {
+      "name": "financial-cc",
+      "version": "file:./packages/financial-cc",
+      "controller": "FeeExtensionsController"
     }
   ]
 }

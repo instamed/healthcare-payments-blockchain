@@ -34,5 +34,17 @@
         },
         "networkProfile": "../../../config/networkprofile.yaml",
         "keyStore": "../../../config/" 
+    },
+    {
+        "uniqueId": "consortiumAdmin",
+        "user": "consortiumAdmin",
+        "org": "consortium-admin",
+        "couch": {
+            "host": "localhost",
+            "protocol": "http",
+            "port": "5284"
+        },
+        "networkProfile": "../../../config/networkprofile.yaml",
+        "keyStore": "../../../config/"
     }
 ]

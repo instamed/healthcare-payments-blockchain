@@ -10,7 +10,7 @@ import { SelfGenContext } from './selfGenContext';
 import {
   CHANNEL, CHAINCODE
 } from '../utils';
-import { PatientController, OrganizationController, ClaimController, ParticipantController } from 'financial-cc';
+import { PatientController, OrganizationController, ClaimController, ParticipantController, FeeExtensionsController } from 'financial-cc';
 import { PaymentController } from 'financial-cc';
 import { identity } from '../utils/identity';
 
@@ -45,6 +45,7 @@ export async function Init(user?: string) {
     claim: ClientFactory(ClaimController, adapter),
     organization: ClientFactory(OrganizationController, adapter),
     participant: ClientFactory(ParticipantController, adapter),
+    feeExtensions: ClientFactory(FeeExtensionsController, adapter)
   };
 }
 

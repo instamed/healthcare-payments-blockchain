@@ -5,3 +5,4 @@ export * from './participant.model';
 export * from './privateCollectionsRoutes.model';
 export * from './public.model';
 export * from './transient.model';
+export * from './feeExtensions.model'

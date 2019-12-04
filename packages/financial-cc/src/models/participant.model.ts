@@ -56,3 +56,17 @@ export class PayerParticipant extends Participant<PayerParticipant>{
   @Validate(Organization.schema())
   public payer?: Organization;
 }
+
+export class ConsortiumAdminParticipant extends Participant<ConsortiumAdminParticipant>{
+  @Default('org.fhir.users.consortiumAdmin')
+  @ReadOnly()
+  @Required()
+  public readonly type: string;
+
+  @Required()
+  @Validate(yup.string())
+  public consortiumAdminUid: string;
+
+  @Validate(Organization.schema())
+  public consortiumAdmin?: Organization;
+}
