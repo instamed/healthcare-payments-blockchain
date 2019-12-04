@@ -25,7 +25,7 @@
     "lerna:build": "lerna run build",
     "cc:package": "f() { npm run lerna:build; chaincode-manager --config ./chaincode.config.json --output ./chaincode-financial package; }; f",
     "cc:install": "f() { hurl install financial node -P ./chaincode-financial --collections-config ./packages/administration/dev-env/defaultCollections.config.json -o org1 -o org2 -o org3; }; f",
-    "cc:install:debug": "f() { hurl install financial node -P ./chaincode-financial --collections-config ./packages/administration/dev-env/defaultCollections.config.json --debug; }; f",
+    "cc:install:debug": "f() { hurl install financial node -P ./chaincode-financial --collections-config ./packages/administration/dev-env/defaultCollections.config.json --debug -o org1 -o org2 -o org3; }; f",
     "lerna:test": "lerna exec npm run test",
     "views:install": "./packages/administration/dev-env/installer.sh",
     "mockData": "./packages/administration/dev-env/setup-mockdata.sh",
