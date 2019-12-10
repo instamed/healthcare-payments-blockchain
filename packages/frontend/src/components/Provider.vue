@@ -386,6 +386,7 @@ export default {
         encounterUid: "resource:org.fhir.core.Encounter#",
         claimUid: "resource:org.fhir.core.Claim#",
         payerId: this.$payer_id,
+        copay: this.copay,
         services: s // list of selected services set above
       };
       let id = Spark.hash(JSON.stringify(json));
