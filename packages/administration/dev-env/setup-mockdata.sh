@@ -357,6 +357,6 @@ echo "STEP 6: Completed Creating Patient"
 
 echo "The mock data has been provisioned successfully"
 
-echo "Installing CouchDB views"
-npm run views:install
-echo "CouchDB views ready"
+# echo "Installing CouchDB views"
+# npm run views:install
+# echo "CouchDB views ready"

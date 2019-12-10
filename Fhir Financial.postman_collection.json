@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "da1b76b9-d231-42a8-bba9-1028416e7fef",
-		"name": "Fhir Financial copy",
+		"_postman_id": "3531ea00-482a-42a4-9c90-c98577561d3e",
+		"name": "Fhir Financial",
 		"description": "Fhir financial blockchain system",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -239,8 +239,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Transactions",
@@ -315,7 +314,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"organization\": {\n        \"resourceType\": \"Organization\",\n        \"id\": \"resource:org.fhir.core.Organization#ABC_Healthcare\",\n        \"identifier\": [\n            {\n                \"use\": \"usual\",\n                \"system\": \"Blockchain:Payer\",\n                \"value\": \"resource:org.fhir.core.Organization#ABC_Healthcare\"\n            }\n        ],\n        \"active\": true,\n        \"type_\": [\n            {\n                \"coding\": [\n                    {\n                        \"system\": \"http://hl7.org/fhir/organization-type\",\n                        \"code\": \"ins\",\n                        \"display\": \"Insurance Company\"\n                    }\n                ]\n            }\n        ],\n        \"name\": \"ABC Healthcare Insurance\",\n        \"telecom\": [\n            {\n                \"system\": \"phone\",\n                \"value\": \"098-765 4321\"\n            }\n        ],\n        \"address\": [\n            {\n                \"line\": [\n                    \"Somewhere Newport Beach\"\n                ]\n            }\n        ],\n        \"contact\": [\n            {\n                \"purpose\": {\n                    \"coding\": [\n                        {\n                            \"system\": \"http://terminology.hl7.org/CodeSystem/contactentity-type\",\n                            \"code\": \"ADMIN\"\n                        }\n                    ]\n                },\n                \"name\": {\n                    \"text\": \"Insurance Management Guy\"\n                },\n                \"telecom\": [\n                    {\n                        \"system\": \"phone\",\n                        \"value\": \"1-234-567-8910\"\n                    },\n                    {\n                        \"system\": \"email\",\n                        \"value\": \"cool_guy@insura.com\"\n                    },\n                    {\n                        \"system\": \"fax\",\n                        \"value\": \"022-655 2322\"\n                    }\n                ],\n                \"address\": {\n                    \"line\": [\n                        \"Somewhere Newport Beach\"\n                    ]\n                }\n            }\n        ]\n    },\n    \"fingerprint\": \"{{payerFingerprint}}\"\n}"
+							"raw": "{\n    \"organization\": {\n        \"resourceType\": \"Organization\",\n        \"id\": \"resource:org.fhir.core.Organization#ConsortiumAdmin\",\n        \"identifier\": [\n            {\n                \"use\": \"usual\",\n                \"system\": \"Blockchain:Payer\",\n                \"value\": \"resource:org.fhir.core.Organization#ConsortiumAdmin\"\n            }\n        ],\n        \"active\": true,\n        \"type_\": [\n            {\n                \"coding\": [\n                    {\n                        \"system\": \"http://hl7.org/fhir/organization-type\",\n                        \"code\": \"ins\",\n                        \"display\": \"Insurance Company\"\n                    }\n                ]\n            }\n        ],\n        \"name\": \"Consortium Admin\",\n        \"telecom\": [\n            {\n                \"system\": \"phone\",\n                \"value\": \"098-765 4321\"\n            }\n        ],\n        \"address\": [\n            {\n                \"line\": [\n                    \"Somewhere Newport Beach\"\n                ]\n            }\n        ],\n        \"contact\": [\n            {\n                \"purpose\": {\n                    \"coding\": [\n                        {\n                            \"system\": \"http://terminology.hl7.org/CodeSystem/contactentity-type\",\n                            \"code\": \"ADMIN\"\n                        }\n                    ]\n                },\n                \"name\": {\n                    \"text\": \"Insurance Management Guy\"\n                },\n                \"telecom\": [\n                    {\n                        \"system\": \"phone\",\n                        \"value\": \"1-234-567-8910\"\n                    },\n                    {\n                        \"system\": \"email\",\n                        \"value\": \"cool_guy@insura.com\"\n                    },\n                    {\n                        \"system\": \"fax\",\n                        \"value\": \"022-655 2322\"\n                    }\n                ],\n                \"address\": {\n                    \"line\": [\n                        \"Somewhere Newport Beach\"\n                    ]\n                }\n            }\n        ]\n    },\n    \"fingerprint\": \"{{payerFingerprint}}\"\n}"
 						},
 						"url": {
 							"raw": "{{server}}/organization",
@@ -488,20 +487,21 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n\t\"config\":\n\t{\n            \"providerSubmissionFee\": 20,\n            \"payerReceiveClaimFee\": 30,\n            \"providerMemberConsortiumFee\": 20,\n            \"payerMemberConsortiumFee\": 30,\n            \"payerClaimResponseTransmissionFee\": 20,\n            \"providerClaimResponseTransmissionFee\": 30,\n            \"providerStatementTransmissionFee\": 20,\n            \"providerMemberStatementTransmissionFee\": 30,\n            \"financialTransactionAllocationAmount\": 20,\n            \"providerPostingFee\": 30,\n            \"providerMemberTransmissionFee\": 55\n        },\n        \"orgId\":\"resource:org.fhir.core.Organization#ConsortiumAdmin\"\n}"
 						},
 						"url": {
-							"raw": "{{server}}/feeExtensions",
+							"raw": "{{server}}/feeExtensions?user=consortiumAdmin",
 							"host": [
 								"{{server}}"
 							],
 							"path": [
 								"feeExtensions"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "consortiumAdmin"
+								}
 							]
 						}
 					},
@@ -613,12 +613,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"orgId\": \"resource:org.fhir.core.Organization#ConsortiumAdmin\",\n\t\"fee\": \"payerReceiveClaimFee\",\n\t\"value\": 909090\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n\t\"orgId\": \"resource:org.fhir.core.Organization#ConsortiumAdmin\",\n\t\"fee\": \"payerReceiveClaimFee\",\n\t\"value\": 909090\n}"
 						},
 						"url": {
 							"raw": "{{server}}/feeExtensions?user=consortiumAdmin",
@@ -638,8 +633,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		}
 	],
 	"event": [
@@ -666,23 +660,28 @@
 	],
 	"variable": [
 		{
-			"id": "59db479b-fe82-4bc1-89a8-6cdae65c579e",
+			"id": "36a2a0b5-620a-4e4b-8b48-cd5ba308475b",
 			"key": "server",
 			"value": "http://localhost:8080/api",
 			"type": "string"
 		},
 		{
-			"id": "0f1f39c0-c803-43d6-9874-0752a21c82ea",
+			"id": "8c458539-c2c4-4313-b200-bcb5cc86d36f",
 			"key": "patientFingerprint",
 			"value": "A7:CE:AC:7A:0F:34:E9:52:62:3B:5F:87:AB:E5:DB:E7:A3:AD:DE:63",
 			"type": "string"
 		},
 		{
-			"id": "a7758fdc-7402-4422-b889-fca32f73d830",
+			"id": "fd6de7b0-0943-419b-ac25-c2f628faa50a",
 			"key": "providerFingerprint",
 			"value": "E5:D7:AE:95:F1:EE:7E:18:23:1E:13:2B:A0:D4:7A:60:CB:25:7F:97",
 			"type": "string"
+		},
+		{
+			"id": "6bb88362-6960-4b68-b260-913e4c43f3fb",
+			"key": "payerFingerprint",
+			"value": "BB:6E:35:CE:0D:1D:4B:45:7E:B4:98:A1:17:5F:DF:C1:E9:4A:E9:8F",
+			"type": "string"
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }

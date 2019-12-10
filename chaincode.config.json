@@ -3,9 +3,9 @@
   "txTimeout": 300000,
   "skipInit": true,
   "channel": "ch1",
-  "keyStore": "/Users/hungtsou/hyperledger-fabric-network/.hfc-org1",
+  "keyStore": "/Users/walter/hyperledger-fabric-network/.hfc-org1",
   "//**INSIDE-DOCKER**//keyStore": "/config/.hfc-org1",
-  "networkProfile": "/Users/hungtsou/hyperledger-fabric-network/network-profiles/org1.network-profile.yaml",
+  "networkProfile": "/Users/walter/hyperledger-fabric-network/network-profiles/org1.network-profile.yaml",
   "//**INSIDE-DOCKER**//networkProfile": "/config/network-profiles/org1.network-profile.inside-docker.yaml",
   "controllers": [
     {

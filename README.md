@@ -54,6 +54,10 @@ This will:
 * Instantiate the chaincode servers.
 * Create some mock data for you.
 
+To get the **front end** to work properly, you need to run the postman added in the repository by configuring the fingerprints correctly.
+
+Go to the Postman collection settings and set the value to the variable `patientFingerprint` to use the same for every transaction after you run `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org1/user1` then go and set the value of `consortiumAdminFingerprint` to `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org2/user1` and then value of `providerFingerprint` to `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org3/user1`.
+
 ### Individual tasks
 
 * Just start the server in dev mode `npm run server:start`. Run this in case after the `npm start` you close the terminal. This won't install the network again, just the NodeJS server.
@@ -154,7 +158,7 @@ npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-<org>/<user>
 
 You will need two different identities. One can be shared between the Payer and InstaMed (working on behalf of the patients) and the other one for a provider. The reason for this is that some data is stored only accessible to some identities (look for Private Collections later in this document), therefore a switch in the identity is made.
 
-Go to the Postman collection settings and set the value to the variable `patientFingerprint` to use the same for every transaction after you run `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org1/user1` then go and set the value of `consortiumAdminFingerprint` to `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org2/user1` and then value of `providerFingerprint` to `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org3/user1`..
+Go to the Postman collection settings and set the value to the variable `patientFingerprint` to use the same for every transaction after you run `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org1/user1` then go and set the value of `consortiumAdminFingerprint` to `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org2/user1` and then value of `providerFingerprint` to `npm run user:fingerprint -- $HOME/hyperledger-fabric-network/.hfc-org3/user1`.
 
 #### Private Collections
 

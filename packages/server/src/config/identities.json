@@ -32,7 +32,7 @@
     {
         "uniqueId": "consortiumAdmin",
         "user": "user1",
-        "org": "org2",
+        "org": "org1",
         "couch": {
             "host": "localhost",
             "protocol": "http",
