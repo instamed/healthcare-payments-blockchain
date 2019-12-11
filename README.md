@@ -32,7 +32,7 @@ npm install
 # Start the blockchain and the server
 npm start
 
-# Create some mock data automatically
+# Create some mock data automatically to setup the network
 npm run mockData
 
 # Start the server
