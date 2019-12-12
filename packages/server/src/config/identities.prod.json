@@ -2,7 +2,7 @@
     {
         "uniqueId": "payer",
         "user": "payer",
-        "org": "allamericanhealthvkj-fhirfinancialzbe",
+        "org": "allamericanhealthvkj-fhirfinancialnetworkgke",
         "couch": {
             "host": "localhost",
             "protocol": "http",
@@ -14,7 +14,7 @@
     {
         "uniqueId": "patient",
         "user": "instamed",
-        "org": "instamedycb-fhirfinancialfqa",
+        "org": "instamedycb-fhirfinancialnetworksun",
         "couch": {
             "host": "localhost",
             "protocol": "http",
@@ -26,19 +26,19 @@
     { 
         "uniqueId": "provider",
         "user": "provider",
-        "org": "southbendflucliniclff-fhirfinancialxwa",
+        "org": "southbendflucliniclff-fhirfinancialnetworkahb",
         "couch": {
             "host": "localhost",
             "protocol": "http",
             "port": "5284"
         },
-        "networkProfile": "../../../config/networkprofile.yaml",
+        "networkProfile": "../../../config/networkprofile-provider.yaml",
         "keyStore": "../../../config/" 
     },
     {
         "uniqueId": "consortiumAdmin",
-        "user": "consortiumAdmin",
-        "org": "consortium-admin",
+        "user": "payer",
+        "org": "allamericanhealthvkj-fhirfinancialnetworkgke",
         "couch": {
             "host": "localhost",
             "protocol": "http",
