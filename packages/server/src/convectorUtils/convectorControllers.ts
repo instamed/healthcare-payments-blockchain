@@ -15,7 +15,7 @@ import { PaymentController } from 'financial-cc';
 import { identity } from '../utils/identity';
 
 async function InitFabricAdapter(user?: string) {
-  await SelfGenContext.getClient(user);
+  await SelfGenContext.getClient();
 
   const adapter = new FabricControllerAdapter({
     txTimeout: 300000,
