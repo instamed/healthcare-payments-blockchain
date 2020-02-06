@@ -36,7 +36,7 @@
     "@worldsibu/convector-adapter-mock": "~1.3.8",
     "@worldsibu/convector-platform-fabric": "~1.3.8",
     "@worldsibu/convector-tool-chaincode-manager": "~1.3.8",
-    "@worldsibu/hurley": "~1.1.2",
+    "@worldsibu/hurley": "~1.1.3",
     "fabric-ca-client": "~1.4.0",
     "fabric-client": "~1.4.0",
     "lerna": "^3.19.0",
