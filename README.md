@@ -1,3 +1,8 @@
+PROJECT IS DEPRECIATED. CODE PROVIDED FOR REFERENCE ONLY.
+
+------------
+
+
 # Healthcare Payments on Blockchain
 
 __This is a prototype useful for exploring blockchain or as a basis for a project. It is not intended for production use without further modification and testing.__
@@ -6,9 +11,9 @@ In the InstaMed Innovation Lab, we built a blockchain prototype focused on healt
 
 This is a [Hyperledger Fabric](https://www.hyperledger.org/projects/fabric) blockchain project that implements the FHIR Financial module. It is built with [Convector](https://github.com/worldsibu/convector) and follows the [FHIR spec](https://www.hl7.org/fhir/). A Vuejs demo frontend app is included in the project in /packages/frontend. 
 
-The live demo can be found at: https://blockchain-demo.instamed.com/
+~~The live demo can be found at: https://blockchain-demo.instamed.com/~~
 
-The live network block browser can be found at: https://blockchain-demo.instamed.com:8443/
+~~The live network block browser can be found at: https://blockchain-demo.instamed.com:8443/~~
 
 A video describing this flow can be found at: https://vimeo.com/325931177/e21834462d
 
@@ -21,7 +26,7 @@ A video describing this flow can be found at: https://vimeo.com/325931177/e21834
 
 ## How to run the project
 
-Detailed instructions for installing on Ubuntu can be found here: https://developers.instamed.com/healthcare-payments-blockchain/install-blockchain-on-linux/
+~~Detailed instructions for installing on Ubuntu can be found here: https://developers.instamed.com/healthcare-payments-blockchain/install-blockchain-on-linux/~~
 
 ### Start from scratch
 
