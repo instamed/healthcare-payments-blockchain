@@ -1,15 +1,16 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "module": "commonjs",
-        "declaration": true,
-        "sourceMap": true,
-        "importHelpers": true,
-        "experimentalDecorators": true,
-        "removeComments": true,
-        "lib": [
-            "es2015"
-        ],
-        "outDir": "./dist"
+  "compilerOptions": {
+    "target": "es6",
+    "module": "esnext",
+    "declaration": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "lib": ["es2015"],
+    "outDir": "./dist",
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"]
     }
+  }
 }
