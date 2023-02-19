@@ -3,15 +3,21 @@ const fs = require('fs');
 const path = require('path');
 const homedir = os.homedir();
 
-console.log('Replacing references in config.json')
-const configFilePath = path.join(__dirname, './chaincode.config.json');
+console.log('Replacing references in config.json');
+const configFilePath = path.resolve(__dirname, 'chaincode.config.json');
 
-const configFile = require(configFilePath);
+try {
+  const configFile = JSON.parse(fs.readFileSync(configFilePath));
 
-fs.writeFileSync(configFilePath, JSON.stringify({
+  const updatedConfig = {
     ...configFile,
-    keyStore: configFile.keyStore.replace(/^.+\/hyperledger-fabric-network/, path.join(homedir, 'hyperledger-fabric-network')),
-    networkProfile: configFile.networkProfile.replace(/^.+\/hyperledger-fabric-network/, path.join(homedir, 'hyperledger-fabric-network'))
-}, null, 2));
+    keyStore: configFile.keyStore.replace(/^.+\/hyperledger-fabric-network/, path.resolve(homedir, 'hyperledger-fabric-network')),
+    networkProfile: configFile.networkProfile.replace(/^.+\/hyperledger-fabric-network/, path.resolve(homedir, 'hyperledger-fabric-network')),
+  };
 
-console.log('Paths updated successfully')
+  fs.writeFileSync(configFilePath, JSON.stringify(updatedConfig, null, 2));
+
+  console.log('Paths updated successfully');
+} catch (error) {
+  console.error(`Error updating paths: ${error}`);
+}
